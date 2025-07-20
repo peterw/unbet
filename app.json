@@ -1,0 +1,85 @@
+{
+  "expo": {
+    "name": "Protein AI",
+    "slug": "prot-ai",
+    "version": "1.2.2",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "protai",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.edgarhnd.protai",
+      "infoPlist": {
+        "NSUserTrackingUsageDescription": "We need your permission to track your usage of the app to improve the app for you.",
+        "NSCameraUsageDescription": "We need camera access to take a photo of your food and analyze the amount of protein in it using AI.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.edgarhnd.protai",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE"
+      ]
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "We need camera access to take a photo of your food and analyze the amount of protein in it using AI"
+        }
+      ],
+      "expo-font",
+      "expo-tracking-transparency",
+      [
+        "react-native-fbsdk-next",
+        {
+          "appID": "2189816538127814",
+          "clientToken": "607d6eca13cb11c7f87dd17a0f89cf01",
+          "displayName": "Protein AI",
+          "scheme": "fb2189816538127814",
+          "advertiserIDCollectionEnabled": false,
+          "autoLogAppEventsEnabled": true,
+          "isAutoInitEnabled": true,
+          "iosUserTrackingPermission": "This identifier will be used to deliver personalized ads to you."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "de7470d6-6a45-4bab-bd8f-1778e8b340d7"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/de7470d6-6a45-4bab-bd8f-1778e8b340d7"
+    }
+  }
+}
