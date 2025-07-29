@@ -4,7 +4,10 @@ import { Id } from "./_generated/dataModel";
 import { api, internal } from "./_generated/api";
 import OpenAI from 'openai';
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const openai = new OpenAI({ 
+  apiKey: process.env.OPENROUTER_API_KEY,
+  baseURL: 'https://openrouter.ai/api/v1'
+});
 
 export const createImageAnalysisJob = mutation({
   args: {
@@ -40,7 +43,7 @@ export const analyzeImage = internalAction({
 
     try {
       const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "openai/gpt-4o",
         messages: [
           {
             role: "system",
@@ -246,7 +249,7 @@ export const analyzeText = internalAction({
 
     try {
       const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "openai/gpt-4o",
         messages: [
           {
             role: "system",
@@ -362,7 +365,7 @@ export const fixEntryWithAI = internalAction({
       if (!job) throw new Error('Fix job not found');
 
       const response = await openai.chat.completions.create({
-        model: "gpt-4o",
+        model: "openai/gpt-4o",
         messages: [
           {
             role: "system",
