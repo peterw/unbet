@@ -1,7 +1,9 @@
 import { Redirect, SplashScreen, Stack, Tabs } from 'expo-router';
 import { useSession } from "@clerk/clerk-expo";
+import { Ionicons } from '@expo/vector-icons';
+import { View } from 'react-native';
 
-export default function TabLayout() {
+export default function MainLayout() {
   const { isSignedIn, session, isLoaded } = useSession();
 
   if (!isLoaded) {
@@ -17,7 +19,10 @@ export default function TabLayout() {
 
   return (
     <Stack>
-      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen 
+        name="(tabs)" 
+        options={{ headerShown: false }} 
+      />
       <Stack.Screen
         name="camera"
         options={{
@@ -45,14 +50,6 @@ export default function TabLayout() {
       }} />
       <Stack.Screen name="entry/[id]" options={{ headerShown: false }} />
       <Stack.Screen name="settings" options={{
-        headerShown: false,
-        animation: 'slide_from_right'
-      }} />
-      <Stack.Screen name="statistics" options={{
-        headerShown: false,
-        animation: 'slide_from_bottom'
-      }} />
-      <Stack.Screen name="journal" options={{
         headerShown: false,
         animation: 'slide_from_right'
       }} />

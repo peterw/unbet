@@ -7,7 +7,9 @@ import {
   SafeAreaView, 
   ScrollView, 
   Dimensions,
-  Animated
+  Animated,
+  Image,
+  Platform
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -186,7 +188,10 @@ export default function JournalScreen() {
                 style={styles.entryCard}
                 onPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  router.push(`/entry/journal-${entry.id}`);
+                  router.push({
+                    pathname: '/entry/journal-[id]',
+                    params: { id: entry.id }
+                  });
                 }}
                 activeOpacity={0.7}
               >
@@ -286,10 +291,20 @@ export default function JournalScreen() {
               <View style={styles.tapeCard}>
                 <Text style={styles.tapeTitle}>The Introduction</Text>
                 <Text style={styles.tapeStatus}>Unlocked</Text>
-                <Image 
-                  source={{ uri: 'https://via.placeholder.com/300x200' }}
-                  style={styles.tapeImage}
-                />
+                {Platform.OS === 'web' ? (
+                  <View style={styles.tapeImage}>
+                    <img 
+                      src="https://via.placeholder.com/300x200"
+                      alt="Tape cover"
+                      style={{ width: '100%', height: '100%', borderRadius: 12, objectFit: 'cover' }}
+                    />
+                  </View>
+                ) : (
+                  <Image 
+                    source={{ uri: 'https://via.placeholder.com/300x200' }}
+                    style={styles.tapeImage}
+                  />
+                )}
                 <Text style={styles.tapeDescription}>
                   This introduction equips you with the proper mental frameworks and strategies for using and implementing the SEED rewiring tapes collection. You will understand how the collection has been engineered. And you will learn how to use the tapes in the most effective way.
                 </Text>
