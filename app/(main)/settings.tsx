@@ -21,7 +21,7 @@ export default function SettingsScreen() {
   const { user, isLoading } = useSimpleAuth();
   const updateUser = useMutation(api.users.updateCurrentUser);
   const { signOut } = useAuth();
-  const { user: revenueUser } = useRevenueCat();
+  const { user: revenueUser, packages, purchasePackage } = useRevenueCat();
 
   // Determine effective pro status
   const hasFreeReferral = user?.referralCode && getReferralDetails(user.referralCode)?.type === 'free';
@@ -396,6 +396,45 @@ export default function SettingsScreen() {
                 <Text style={styles.settingText}>Invite a friend</Text>
               </View>
             </TouchableOpacity>
+
+            {/* Upgrade to Pro - Only show for non-pro users */}
+            {!isEffectivelyPro && (
+              <TouchableOpacity 
+                style={styles.upgradeButton}
+                onPress={async () => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                  if (packages && packages.length > 0 && purchasePackage) {
+                    try {
+                      // Purchase the first available package
+                      const result = await purchasePackage(packages[0]);
+                      if (result.customerInfo.entitlements.active.pro) {
+                        Alert.alert('Success', 'Welcome to Pro!');
+                      }
+                    } catch (error) {
+                      console.error('Purchase error:', error);
+                    }
+                  }
+                }}
+              >
+                <LinearGradient
+                  colors={['#FFD700', '#FFA500', '#FF8C00']}
+                  style={styles.upgradeGradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                >
+                  <View style={styles.upgradeButtonInner}>
+                    <View style={styles.upgradeShine} />
+                    <View style={styles.upgradeContent}>
+                      <View style={styles.upgradeIcon}>
+                        <Ionicons name="star" size={24} color="#FFF" />
+                      </View>
+                      <Text style={styles.upgradeText}>Upgrade to Pro</Text>
+                      <Ionicons name="chevron-forward" size={20} color="#FFF" />
+                    </View>
+                  </View>
+                </LinearGradient>
+              </TouchableOpacity>
+            )}
 
             {/* Customer Support */}
             <TouchableOpacity 
@@ -797,5 +836,53 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#666',
     marginBottom: 8,
+  },
+  // Upgrade to Pro button styles
+  upgradeButton: {
+    marginHorizontal: 20,
+    marginVertical: 16,
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: '#FFD700',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  upgradeGradient: {
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  upgradeButtonInner: {
+    paddingVertical: 20,
+    paddingHorizontal: 24,
+    position: 'relative',
+  },
+  upgradeShine: {
+    position: 'absolute',
+    top: -20,
+    left: -50,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    transform: [{ skewX: '-20deg' }],
+  },
+  upgradeContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  upgradeIcon: {
+    marginRight: 12,
+  },
+  upgradeText: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#FFF',
+    flex: 1,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 1, height: 1 },
+    textShadowRadius: 2,
   },
 });

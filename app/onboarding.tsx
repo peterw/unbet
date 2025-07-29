@@ -556,7 +556,6 @@ export default function Onboarding() {
             <Text style={styles.questionTitle}>What is your age range ?</Text>
             <View style={styles.optionsContainer}>
               {[
-                'Before 13',
                 '14 - 17',
                 '18 - 24',
                 '25 - 30',
@@ -588,7 +587,6 @@ export default function Onboarding() {
             <Text style={styles.questionTitle}>When did you start watching porn ?</Text>
             <View style={styles.optionsContainer}>
               {[
-                'Before 13',
                 '14 - 17',
                 '18 - 24',
                 '25 - 30',
@@ -621,7 +619,6 @@ export default function Onboarding() {
             <View style={styles.optionsContainer}>
               {[
                 'Never',
-                'Before 13',
                 '14 - 17',
                 '18 -24',
                 '25 - 30',
