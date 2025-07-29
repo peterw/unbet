@@ -7,8 +7,12 @@ export const store = mutation({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
+      console.error("No identity found in store mutation");
       throw new Error("Called storeUser without authentication present");
     }
+    
+    console.log("Store user called with identity:", identity.tokenIdentifier);
+    
     // Check if we've already stored this identity before.
     const user = await ctx.db
       .query("users")
@@ -17,15 +21,19 @@ export const store = mutation({
       )
       .unique();
     if (user !== null) {
+      console.log("User already exists:", user._id);
       return user._id;
     }
 
     // If it's a new identity, create a new `User`.
-    return await ctx.db.insert("users", {
+    const userId = await ctx.db.insert("users", {
       name: identity.name ?? identity.email ?? identity.tokenIdentifier,
       tokenIdentifier: identity.tokenIdentifier,
       onboarded: false,
     });
+    
+    console.log("Created new user:", userId);
+    return userId;
   },
 });
 

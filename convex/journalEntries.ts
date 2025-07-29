@@ -14,7 +14,10 @@ export const create = mutation({
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
+    console.log("Journal create - identity:", identity?.tokenIdentifier);
+    
     if (!identity) {
+      console.error("No identity in journal create");
       throw new Error("Not authenticated");
     }
 
@@ -25,9 +28,12 @@ export const create = mutation({
         q.eq("tokenIdentifier", identity.tokenIdentifier)
       )
       .unique();
+      
+    console.log("Journal create - user found:", user?._id);
 
     if (!user) {
-      throw new Error("User not found");
+      console.error("User not found for token:", identity.tokenIdentifier);
+      throw new Error("User not found - please sign out and sign in again");
     }
 
     // Create the journal entry

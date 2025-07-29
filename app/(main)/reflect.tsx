@@ -3,9 +3,8 @@ import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, TextInput, Scro
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Haptics } from '@/utils/haptics';
-import { useMutation, useQuery } from 'convex/react';
+import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import { useEffect } from 'react';
 
 export default function ReflectScreen() {
   const router = useRouter();
@@ -14,25 +13,6 @@ export default function ReflectScreen() {
   const [isSaving, setIsSaving] = useState(false);
   
   const createEntry = useMutation(api.journalEntries.create);
-  const storeUser = useMutation(api.users.store);
-  const currentUser = useQuery(api.users.getCurrentUser);
-  
-  // Ensure user exists in Convex
-  useEffect(() => {
-    const ensureUser = async () => {
-      console.log('[Reflect] Current user status:', currentUser);
-      if (currentUser === null) {
-        try {
-          console.log('[Reflect] No user found, attempting to create...');
-          const userId = await storeUser();
-          console.log('[Reflect] User created with ID:', userId);
-        } catch (error) {
-          console.error('[Reflect] Failed to create user:', error);
-        }
-      }
-    };
-    ensureUser();
-  }, [currentUser, storeUser]);
 
   const handleSave = async () => {
     if (!reflection.trim()) return;
