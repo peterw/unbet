@@ -520,10 +520,19 @@ export default function Onboarding() {
         // Add delay to ensure auth is ready
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        // Check if user exists in Convex database
+        // First, ensure the user exists in Convex by calling store
+        // This handles the case where user exists in Clerk but not in Convex
+        try {
+          await store();
+        } catch (error) {
+          console.error('Error storing user in Convex:', error);
+        }
+
+        // Now check if user exists in Convex database
         const convexUser = await convex.query(api.users.getCurrentUser);
 
         if (!convexUser) {
+          // This should rarely happen now, but keep as failsafe
           // User doesn't exist in Convex, sign out, alert, and reset
           await signOut();
           await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);

@@ -15,6 +15,7 @@ export default function DescribeScreen() {
   const router = useRouter();
   const user = useQuery(api.users.getCurrentUser);
   const createTextAnalysisJob = useMutation(api.analyse.createTextAnalysisJob);
+  const store = useMutation(api.users.store);
   const { selectedDate } = useLocalSearchParams<{ selectedDate: string }>();
 
   // Analytics
@@ -24,6 +25,21 @@ export default function DescribeScreen() {
     analytics.track({ name: 'Describe Viewed' });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Ensure user exists in Convex
+  useEffect(() => {
+    const ensureUserExists = async () => {
+      if (user === null) {
+        try {
+          await store();
+        } catch (error) {
+          console.error('Failed to create user in Convex:', error);
+        }
+      }
+    };
+    
+    ensureUserExists();
+  }, [user, store]);
 
   const handleSubmit = async () => {
     if (!description.trim()) {

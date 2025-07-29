@@ -18,8 +18,25 @@ export default function SettingsScreen() {
   const router = useRouter();
   const user = useQuery(api.users.getCurrentUser);
   const updateUser = useMutation(api.users.updateCurrentUser);
-  const { signOut } = useAuth();
+  const { signOut, isLoaded: clerkLoaded } = useAuth();
   const { user: revenueUser } = useRevenueCat();
+
+  // Debug logging
+  useEffect(() => {
+    console.log('[Settings] Component mounted');
+    console.log('[Settings] Clerk loaded:', clerkLoaded);
+    console.log('[Settings] User query result:', user);
+    console.log('[Settings] Revenue user:', revenueUser);
+  }, [clerkLoaded, user, revenueUser]);
+
+  // Add a timeout to prevent infinite loading
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoadingTimeout(true);
+    }, 10000); // 10 second timeout
+    return () => clearTimeout(timer);
+  }, []);
 
   // Determine effective pro status
   const hasFreeReferral = user?.referralCode && getReferralDetails(user.referralCode)?.type === 'free';
@@ -75,10 +92,37 @@ export default function SettingsScreen() {
     }
   };
 
-  if (!user) {
+  // Enhanced loading state with timeout and error handling
+  if (!clerkLoaded || (user === undefined && !loadingTimeout)) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={Colors.light.tint} />
+        <Text style={styles.loadingText}>Loading settings...</Text>
+      </View>
+    );
+  }
+
+  // Show error state if loading timed out or user is null (not just undefined)
+  if (loadingTimeout || user === null) {
+    return (
+      <View style={styles.loadingContainer}>
+        <Ionicons name="alert-circle" size={48} color={Colors.light.text} />
+        <Text style={styles.errorText}>Unable to load settings</Text>
+        <TouchableOpacity 
+          style={styles.retryButton}
+          onPress={() => {
+            router.back();
+            setTimeout(() => router.push('/settings'), 100);
+          }}
+        >
+          <Text style={styles.retryButtonText}>Retry</Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          style={[styles.retryButton, styles.signOutButton]}
+          onPress={signOut}
+        >
+          <Text style={styles.retryButtonText}>Sign Out</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -157,7 +201,7 @@ export default function SettingsScreen() {
         
         <TouchableOpacity
           style={styles.section}
-          onPress={handlePrivacyPolicy}
+          onPress={() => Linking.openURL('https://protai.app/privacy')}
         >
           <View style={styles.sectionContent}>
             <Text style={styles.optionText}>Privacy Policy</Text>
@@ -220,6 +264,34 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: Colors.light.text,
+  },
+  errorText: {
+    marginTop: 16,
+    fontSize: 18,
+    color: Colors.light.text,
+    textAlign: 'center',
+    marginBottom: 24,
+  },
+  retryButton: {
+    backgroundColor: Colors.light.tint,
+    paddingHorizontal: 32,
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginTop: 8,
+  },
+  retryButtonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  signOutButton: {
+    backgroundColor: '#666',
   },
   section: {
     backgroundColor: 'rgba(255, 255, 255, 0.8)',

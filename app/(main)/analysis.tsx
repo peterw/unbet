@@ -78,12 +78,28 @@ export default function AnalysisScreen() {
     endDate
   });
   const user = useQuery(api.users.getCurrentUser);
+  const store = useMutation(api.users.store);
 
   useEffect(() => {
     if (proteinData) {
       setPrevData(proteinData);
     }
   }, [proteinData]);
+  
+  // Ensure user exists in Convex
+  useEffect(() => {
+    const ensureUserExists = async () => {
+      if (user === null) {
+        try {
+          await store();
+        } catch (error) {
+          console.error('Failed to create user in Convex:', error);
+        }
+      }
+    };
+    
+    ensureUserExists();
+  }, [user, store]);
 
   if (!user) return null;
   if (!proteinData && !prevData) return null;

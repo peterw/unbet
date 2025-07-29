@@ -11,6 +11,7 @@ import { useAnalytics } from '@/providers/AnalyticsProvider';
 
 export default function CameraScreen() {
   const user = useQuery(api.users.getCurrentUser);
+  const store = useMutation(api.users.store);
   const [permission, requestPermission] = useCameraPermissions();
   const [torch, setTorch] = useState(false);
   const [camera, setCamera] = useState<CameraView | null>(null);
@@ -24,6 +25,21 @@ export default function CameraScreen() {
 
   // Analytics
   const analytics = useAnalytics();
+  
+  // Ensure user exists in Convex
+  useEffect(() => {
+    const ensureUserExists = async () => {
+      if (user === null) {
+        try {
+          await store();
+        } catch (error) {
+          console.error('Failed to create user in Convex:', error);
+        }
+      }
+    };
+    
+    ensureUserExists();
+  }, [user, store]);
 
   useEffect(() => {
     analytics.track({ name: 'Camera Viewed' });

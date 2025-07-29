@@ -94,19 +94,30 @@ export default function HomeScreen() {
   const user = useQuery(api.users.getCurrentUser);
   const recentJobs = useQuery(api.analyse.getRecentAnalysisJobs);
   const deleteEntry = useMutation(api.protein.deleteProteinEntry);
+  const store = useMutation(api.users.store);
   const today = format(new Date(), 'yyyy-MM-dd');
   const router = useRouter();
   
-  // Log authentication state for debugging
+  // Log authentication state for debugging and ensure user creation
   useEffect(() => {
-    if (user === undefined) {
-      console.log('User query is loading...');
-    } else if (user === null) {
-      console.log('User is not authenticated');
-    } else {
-      console.log('User authenticated:', user._id);
-    }
-  }, [user]);
+    const ensureUserExists = async () => {
+      if (user === undefined) {
+        console.log('User query is loading...');
+      } else if (user === null) {
+        console.log('User is not authenticated in Convex, attempting to create...');
+        try {
+          await store();
+          console.log('User created successfully in Convex');
+        } catch (error) {
+          console.error('Failed to create user in Convex:', error);
+        }
+      } else {
+        console.log('User authenticated:', user._id);
+      }
+    };
+    
+    ensureUserExists();
+  }, [user, store]);
   const [selectedDate, setSelectedDate] = useState(today);
   const multiWeekData = useQuery(api.protein.getMultiWeekProteinData, { date: today });
   const proteinEntries = multiWeekData?.dailyTotals[selectedDate];
