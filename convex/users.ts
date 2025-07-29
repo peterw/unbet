@@ -84,8 +84,32 @@ export const updateCurrentUser = mutation({
       ...(args.recoveryStartDate !== undefined && { recoveryStartDate: args.recoveryStartDate }),
       ...(args.accountabilityPartner !== undefined && { accountabilityPartner: args.accountabilityPartner }),
       ...(args.blockedSites !== undefined && { blockedSites: args.blockedSites }),
-      onboarded: true,
     });
     return user._id;
+  },
+});
+
+// Dev only mutation to reset onboarding
+export const resetOnboarding = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) {
+      throw new Error("Not authenticated");
+    }
+
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_token", (q) =>
+        q.eq("tokenIdentifier", identity.tokenIdentifier)
+      )
+      .unique();
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    await ctx.db.patch(user._id, { onboarded: false });
+    return { success: true };
   },
 });

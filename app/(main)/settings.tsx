@@ -10,18 +10,21 @@ import { useAuth } from '@clerk/clerk-expo';
 import { Haptics } from '@/utils/haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRevenueCat } from '@/providers/RevenueCatProvider';
-import { NumericInput } from '@/components/home/NumericInput';
-import { ExternalLink } from '@/components/ExternalLink';
 import { getReferralDetails } from '@/utils/referralCodes';
-import { useSimpleAuth } from '@/providers/SimpleAuthProvider';
+import { useConvexAuth } from '@/providers/ConvexAuthProvider';
 import * as Clipboard from 'expo-clipboard';
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { user, isLoading } = useSimpleAuth();
-  const updateUser = useMutation(api.users.updateCurrentUser);
   const { signOut } = useAuth();
   const { user: revenueUser, packages, purchasePackage } = useRevenueCat();
+  const { isAuthenticated } = useConvexAuth();
+  
+  // Use Convex to get user data - only query if authenticated
+  const user = useQuery(api.users.getCurrentUser, isAuthenticated ? {} : 'skip');
+  const updateUser = useMutation(api.users.updateCurrentUser);
+  const resetOnboarding = useMutation(api.users.resetOnboarding);
+  const isLoading = isAuthenticated && user === undefined;
 
   // Determine effective pro status
   const hasFreeReferral = user?.referralCode && getReferralDetails(user.referralCode)?.type === 'free';
@@ -117,12 +120,24 @@ export default function SettingsScreen() {
     }
   };
 
-  // Simple loading state
-  if (isLoading || !user) {
+  // Handle loading and authentication states
+  if (!isAuthenticated || isLoading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#FFF" />
-        <Text style={styles.loadingText}>Loading profile...</Text>
+        <Text style={styles.loadingText}>
+          {!isAuthenticated ? 'Authenticating...' : 'Loading profile...'}
+        </Text>
+      </View>
+    );
+  }
+  
+  // If authenticated but no user data yet
+  if (!user) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#FFF" />
+        <Text style={styles.loadingText}>Setting up profile...</Text>
       </View>
     );
   }
@@ -478,6 +493,29 @@ export default function SettingsScreen() {
                 <Text style={[styles.settingText, { color: '#EF4444' }]}>Delete my Account</Text>
               </View>
             </TouchableOpacity>
+
+            {/* Dev Mode: Reset Onboarding */}
+            {__DEV__ && (
+              <TouchableOpacity 
+                style={styles.settingItem} 
+                onPress={async () => {
+                  try {
+                    await resetOnboarding();
+                    Alert.alert('Success', 'Onboarding reset. Sign out and sign in to see onboarding again.');
+                  } catch (error) {
+                    console.error('Reset onboarding error:', error);
+                    Alert.alert('Error', 'Failed to reset onboarding');
+                  }
+                }}
+              >
+                <View style={styles.settingItemContent}>
+                  <View style={styles.settingIcon}>
+                    <Ionicons name="refresh" size={24} color="#10B981" />
+                  </View>
+                  <Text style={[styles.settingText, { color: '#10B981' }]}>DEV: Reset Onboarding</Text>
+                </View>
+              </TouchableOpacity>
+            )}
 
             {/* Email and Device ID */}
             <View style={styles.settingsFooter}>
