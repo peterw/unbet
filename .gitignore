@@ -12,9 +12,10 @@ web-build/
 android/
 ios/
 inspo/
-convex/_generated/
+# convex/_generated/ - DO NOT IGNORE! These files are needed for builds
 .env
 .env.local
+.env.production
 
 # macOS
 .DS_Store
@@ -24,3 +25,19 @@ convex/_generated/
 
 expo-env.d.ts
 # @end expo-cli
+
+# Credentials and test files
+credentials.json
+*.mjs
+test-screenshots/
+visual-test-*/
+qa-*/
+*-screenshot.png
+*-diff.png
+*-report.json
+*-report.md
+*ANALYSIS.md
+*REPORT.md
+*SUBMISSION.md
+generate-app-icons.sh
+detailed-ui-inspection.json

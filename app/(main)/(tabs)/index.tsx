@@ -12,7 +12,7 @@ import Animated, {
   Extrapolate
 } from 'react-native-reanimated';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { Haptics } from '../../utils/haptics';
+import { Haptics } from '../../../utils/haptics';
 import { BlurView } from 'expo-blur';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = RNDimensions.get('window');
@@ -277,40 +277,6 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Bottom Navigation */}
-        <View style={styles.bottomNav}>
-          <TouchableOpacity style={styles.navItem}>
-            <Ionicons name="time-outline" size={24} color="#999" />
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.navItem}
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              router.push('/journal');
-            }}
-          >
-            <Ionicons name="book-outline" size={24} color="#5B7FDE" />
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.navItem}
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              router.push('/statistics');
-            }}
-          >
-            <Ionicons name="bar-chart-outline" size={24} color="#999" />
-          </TouchableOpacity>
-          <TouchableOpacity 
-            style={styles.navItem}
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              router.push('/settings');
-            }}
-          >
-            <Ionicons name="person-outline" size={24} color="#999" />
-          </TouchableOpacity>
-        </View>
-
         {/* Overlay for expanded state */}
         {isExpanded && (
           <TouchableWithoutFeedback onPress={toggleExpand}>
@@ -484,22 +450,6 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 20,
     fontWeight: '500',
-  },
-  bottomNav: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    height: 80,
-    backgroundColor: '#0A0A0A',
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: '#1A1A1A',
-  },
-  navItem: {
-    padding: 10,
   },
   overlay: {
     position: 'absolute',

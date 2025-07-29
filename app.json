@@ -1,10 +1,10 @@
 {
   "expo": {
     "name": "Unbet",
-    "slug": "unbet",
+    "slug": "unbet-oiowoj0reohd6gbnpyung",
     "version": "1.2.2",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./app_logo.png",
     "scheme": "unbet",
     "userInterfaceStyle": "automatic",
     "splash": {
@@ -14,11 +14,19 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.unbet.app",
+      "bundleIdentifier": "com.peterwang.unbet",
       "infoPlist": {
-        "NSUserTrackingUsageDescription": "We need your permission to track your usage of the app to improve the app for you.",
+        "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
         "NSCameraUsageDescription": "We need camera access to take a photo of your food and analyze the amount of protein in it using AI.",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "SKAdNetworkItems": [
+          {
+            "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork"
+          },
+          {
+            "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork"
+          }
+        ]
       }
     },
     "android": {
@@ -26,12 +34,13 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.unbet.app",
+      "package": "com.peterwang.unbet",
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO",
         "android.permission.INTERNET",
-        "android.permission.ACCESS_NETWORK_STATE"
+        "android.permission.ACCESS_NETWORK_STATE",
+        "com.google.android.gms.permission.AD_ID"
       ]
     },
     "web": {
@@ -72,7 +81,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "de7470d6-6a45-4bab-bd8f-1778e8b340d7"
+        "projectId": "b4771b23-d403-45f1-9c24-0bfd4e837079"
       }
     },
     "runtimeVersion": {
@@ -80,6 +89,7 @@
     },
     "updates": {
       "url": "https://u.expo.dev/de7470d6-6a45-4bab-bd8f-1778e8b340d7"
-    }
+    },
+    "owner": "wpeter"
   }
 }
