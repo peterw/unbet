@@ -53,7 +53,7 @@ import {
   DMSerifDisplay_400Regular_Italic,
 } from '@expo-google-fonts/dm-serif-display';
 import { initializeApp } from '@/utils/envCheck';
-import { SimpleAuthProvider } from '@/providers/SimpleAuthProvider';
+import { ConvexAuthProvider } from '@/providers/ConvexAuthProvider';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { View, Text, ActivityIndicator } from 'react-native';
 
@@ -257,11 +257,11 @@ const RootLayoutNav = () => {
           <RevenueCatProvider>
             <AnalyticsProviderComponent provider={mixpanelProvider}>
               <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-                <SimpleAuthProvider>
+                <ConvexAuthProvider>
                   <GestureHandlerRootView style={{ flex: 1 }}>
                     <Slot />
                   </GestureHandlerRootView>
-                </SimpleAuthProvider>
+                </ConvexAuthProvider>
               </ConvexProviderWithClerk>
             </AnalyticsProviderComponent>
           </RevenueCatProvider>

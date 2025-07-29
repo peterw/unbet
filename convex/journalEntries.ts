@@ -54,6 +54,7 @@ export const list = query({
   handler: async (ctx) => {
     const identity = await ctx.auth.getUserIdentity();
     if (!identity) {
+      console.log("Journal list - no identity");
       return [];
     }
 
@@ -65,6 +66,7 @@ export const list = query({
       .unique();
 
     if (!user) {
+      console.log("Journal list - no user found for token:", identity.tokenIdentifier);
       return [];
     }
 
@@ -74,6 +76,7 @@ export const list = query({
       .order("desc")
       .collect();
 
+    console.log(`Journal list - returning ${entries.length} entries for user ${user._id}`);
     return entries;
   },
 });

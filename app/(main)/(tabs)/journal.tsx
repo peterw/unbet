@@ -17,6 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Haptics } from '@/utils/haptics';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import { useConvexAuth } from '@/providers/ConvexAuthProvider';
 // import { BlurView } from 'expo-blur'; // Requires rebuild
 // Remove Canvas import as we're using View-based stars
 
@@ -65,10 +66,14 @@ export default function JournalScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'Tapes' | 'Reflections'>('Reflections');
   const fadeAnim = useRef(new Animated.Value(1)).current;
+  const { isAuthenticated } = useConvexAuth();
 
-  // Fetch journal entries from Convex
-  const journalEntriesData = useQuery(api.journalEntries.list);
-  const isLoading = journalEntriesData === undefined;
+  // Fetch journal entries from Convex only if authenticated
+  const journalEntriesData = useQuery(
+    api.journalEntries.list,
+    isAuthenticated ? {} : 'skip'
+  );
+  const isLoading = isAuthenticated && journalEntriesData === undefined;
   
   // Remove debug logging that could cause re-renders
   // useEffect(() => {

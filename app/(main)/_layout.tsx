@@ -2,23 +2,25 @@ import { Redirect, SplashScreen, Stack, Tabs } from 'expo-router';
 import { useSession } from "@clerk/clerk-expo";
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, ActivityIndicator } from 'react-native';
+import { useConvexAuth } from '@/providers/ConvexAuthProvider';
 
 export default function MainLayout() {
   const { isSignedIn, session, isLoaded } = useSession();
+  const { isAuthenticated, isLoading: convexLoading } = useConvexAuth();
 
   // Add timestamp to logs to track timing issues
   const logWithTime = (message: string) => {
     console.log(`[${new Date().toISOString()}] MainLayout - ${message}`);
   };
 
-  logWithTime(`Auth state: isSignedIn=${isSignedIn}, isLoaded=${isLoaded}, hasSession=${!!session}`);
+  logWithTime(`Auth state: isSignedIn=${isSignedIn}, isLoaded=${isLoaded}, hasSession=${!!session}, isAuthenticated=${isAuthenticated}`);
 
-  if (!isLoaded) {
-    logWithTime('Clerk not loaded yet, showing loading screen');
+  if (!isLoaded || convexLoading) {
+    logWithTime('Auth not fully loaded yet, showing loading screen');
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
         <ActivityIndicator size="large" color="#fff" />
-        <Text style={{ marginTop: 10, color: '#fff' }}>Loading authentication...</Text>
+        <Text style={{ marginTop: 10, color: '#fff' }}>Loading...</Text>
       </View>
     );
   }
@@ -28,7 +30,17 @@ export default function MainLayout() {
     return <Redirect href="/onboarding" />;
   }
 
-  logWithTime('User is signed in, rendering main content - tabs layout');
+  if (!isAuthenticated) {
+    logWithTime('Not authenticated in Convex, showing loading');
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
+        <ActivityIndicator size="large" color="#fff" />
+        <Text style={{ marginTop: 10, color: '#fff' }}>Setting up your account...</Text>
+      </View>
+    );
+  }
+
+  logWithTime('User is fully authenticated, rendering main content');
 
   return (
     <Stack>
