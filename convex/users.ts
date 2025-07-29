@@ -57,16 +57,10 @@ export const getCurrentUser = query({
 
 export const updateCurrentUser = mutation({
   args: {
-    sex: v.optional(v.string()),
-    age: v.optional(v.number()),
-    height: v.optional(v.number()),
-    weight: v.optional(v.number()),
-    goals: v.optional(v.string()),
-    diet: v.optional(v.string()),
-    dailyProtein: v.optional(v.number()),
-    training_type: v.optional(v.array(v.string())),
-    training_frequency: v.optional(v.number()),
-    referralCode: v.optional(v.string()),
+    lastRelapseDate: v.optional(v.string()),
+    recoveryStartDate: v.optional(v.string()),
+    accountabilityPartner: v.optional(v.string()),
+    blockedSites: v.optional(v.array(v.string())),
   },
   handler: async (ctx, args) => {
     const identity = await ctx.auth.getUserIdentity();
@@ -86,16 +80,10 @@ export const updateCurrentUser = mutation({
     }
 
     await ctx.db.patch(user._id, {
-      ...(args.sex !== undefined && { sex: args.sex }),
-      ...(args.age !== undefined && { age: args.age }),
-      ...(args.height !== undefined && { height: args.height }),
-      ...(args.weight !== undefined && { weight: args.weight }),
-      ...(args.goals !== undefined && { goals: args.goals }),
-      ...(args.diet !== undefined && { diet: args.diet }),
-      ...(args.dailyProtein !== undefined && { dailyProtein: args.dailyProtein }),
-      ...(args.training_type !== undefined && { training_type: args.training_type }),
-      ...(args.training_frequency !== undefined && { training_frequency: args.training_frequency }),
-      ...(args.referralCode !== undefined && { referralCode: args.referralCode }),
+      ...(args.lastRelapseDate !== undefined && { lastRelapseDate: args.lastRelapseDate }),
+      ...(args.recoveryStartDate !== undefined && { recoveryStartDate: args.recoveryStartDate }),
+      ...(args.accountabilityPartner !== undefined && { accountabilityPartner: args.accountabilityPartner }),
+      ...(args.blockedSites !== undefined && { blockedSites: args.blockedSites }),
       onboarded: true,
     });
     return user._id;

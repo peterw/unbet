@@ -214,7 +214,7 @@ export default function JournalScreen() {
                 onPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   router.push({
-                    pathname: '/journal-entry-[id]',
+                    pathname: '/(main)/(tabs)/journal-entry-[id]',
                     params: { id: entry.id }
                   });
                 }}

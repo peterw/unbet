@@ -64,10 +64,6 @@ export default function MainLayout() {
         headerShown: false,
         presentation: 'modal'
       }} />
-      <Stack.Screen name="journal-entry-[id]" options={{
-        headerShown: false,
-        animation: 'slide_from_right'
-      }} />
       <Stack.Screen name="settings/lockdown" options={{
         headerShown: false,
         animation: 'slide_from_right'
