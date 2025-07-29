@@ -17,7 +17,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Haptics } from '@/utils/haptics';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import { BlurView } from 'expo-blur';
+// import { BlurView } from 'expo-blur'; // Requires rebuild
 // Remove Canvas import as we're using View-based stars
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -183,11 +183,8 @@ export default function JournalScreen() {
             ) : (
               journalEntries.map((entry) => (
               <View key={entry.id} style={styles.entryCardContainer}>
-                <BlurView
-                  intensity={30}
-                  tint="dark"
-                  style={styles.entryCard}
-                >
+                <View style={styles.entryCard}>
+                  <View style={styles.entryCardGlass} />
                   <View style={styles.entryCardInner}>
                     <View style={styles.entryHeader}>
                       <Text style={styles.entryDate}>{formatDate(entry.date)}</Text>
@@ -199,7 +196,7 @@ export default function JournalScreen() {
                       {entry.content}
                     </Text>
                   </View>
-                </BlurView>
+                </View>
               </View>
               ))
             )}
@@ -398,13 +395,26 @@ const styles = StyleSheet.create({
   entryCard: {
     borderRadius: 24,
     overflow: 'hidden',
+    backgroundColor: 'rgba(30, 30, 35, 0.7)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.15)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  entryCardGlass: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
   },
   entryCardInner: {
     paddingVertical: 20,
     paddingHorizontal: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   entryHeader: {
     flexDirection: 'row',
