@@ -190,19 +190,29 @@ export default function HomeScreen() {
       <View style={styles.container}>
         {/* Stars background */}
         <View style={styles.starsContainer}>
-          {[...Array(50)].map((_, i) => (
-            <View
-              key={i}
-              style={[
-                styles.star,
-                {
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  opacity: Math.random() * 0.8 + 0.2,
-                },
-              ]}
-            />
-          ))}
+          {[...Array(200)].map((_, i) => {
+            // Generate consistent star positions based on index
+            const x = ((i * 137.5) % 100); // Golden angle distribution
+            const y = ((i * 23.7) % 100);
+            const size = 0.3 + (i % 5) * 0.3; // Vary sizes
+            const opacity = 0.1 + (i % 10) * 0.05; // Vary opacity
+            
+            return (
+              <View
+                key={i}
+                style={[
+                  styles.star,
+                  {
+                    left: `${x}%`,
+                    top: `${y}%`,
+                    width: size * 2,
+                    height: size * 2,
+                    opacity: opacity,
+                  },
+                ]}
+              />
+            );
+          })}
         </View>
 
         {/* Quote */}

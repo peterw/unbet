@@ -17,68 +17,38 @@ import { Ionicons } from '@expo/vector-icons';
 import { Haptics } from '@/utils/haptics';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
+import { BlurView } from 'expo-blur';
 // Remove Canvas import as we're using View-based stars
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-// Starfield background component with animated particles
+// Starfield background component with static particles
 function StarfieldBackground() {
-  const stars = useRef(
-    Array.from({ length: 200 }, () => ({
-      x: Math.random() * SCREEN_WIDTH,
-      y: Math.random() * SCREEN_HEIGHT,
-      size: Math.random() * 1.5 + 0.3,
-      opacity: Math.random() * 0.6 + 0.1,
-      speed: Math.random() * 0.5 + 0.1,
-    }))
-  ).current;
-
-  const animationRef = useRef<any>();
-  const [, forceUpdate] = useState({});
-
-  useEffect(() => {
-    // Disable animation for now to prevent constant refreshing
-    // TODO: Implement with Reanimated 2 for better performance
-    return;
-    
-    const animate = () => {
-      stars.forEach(star => {
-        star.y += star.speed;
-        if (star.y > SCREEN_HEIGHT) {
-          star.y = -10;
-          star.x = Math.random() * SCREEN_WIDTH;
-        }
-      });
-      forceUpdate({});
-      animationRef.current = requestAnimationFrame(animate);
-    };
-    animationRef.current = requestAnimationFrame(animate);
-
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, []);
-
   return (
     <View style={StyleSheet.absoluteFillObject}>
-      {stars.map((star, i) => (
-        <View
-          key={i}
-          style={[
-            styles.star,
-            {
-              left: star.x,
-              top: star.y,
-              width: star.size * 2,
-              height: star.size * 2,
-              borderRadius: star.size,
-              opacity: star.opacity,
-            },
-          ]}
-        />
-      ))}
+      {[...Array(200)].map((_, i) => {
+        // Generate consistent star positions based on index
+        const x = ((i * 137.5) % 100); // Golden angle distribution
+        const y = ((i * 23.7) % 100);
+        const size = 0.3 + (i % 5) * 0.3; // Vary sizes
+        const opacity = 0.1 + (i % 10) * 0.05; // Vary opacity
+        
+        return (
+          <View
+            key={i}
+            style={[
+              styles.star,
+              {
+                left: `${x}%`,
+                top: `${y}%`,
+                width: size * 2,
+                height: size * 2,
+                opacity: opacity,
+              },
+            ]}
+          />
+        );
+      })}
     </View>
   );
 }
@@ -100,14 +70,14 @@ export default function JournalScreen() {
   const journalEntriesData = useQuery(api.journalEntries.list);
   const isLoading = journalEntriesData === undefined;
   
-  // Log the query result for debugging
-  useEffect(() => {
-    console.log('[Journal] Query result:', { 
-      entriesCount: journalEntriesData?.length,
-      isLoading,
-      data: journalEntriesData 
-    });
-  }, [journalEntriesData, isLoading]);
+  // Remove debug logging that could cause re-renders
+  // useEffect(() => {
+  //   console.log('[Journal] Query result:', { 
+  //     entriesCount: journalEntriesData?.length,
+  //     isLoading,
+  //     data: journalEntriesData 
+  //   });
+  // }, [journalEntriesData, isLoading]);
 
   // Transform Convex data to match our interface
   const journalEntries: JournalEntry[] = journalEntriesData?.map(entry => ({
@@ -212,19 +182,24 @@ export default function JournalScreen() {
               </View>
             ) : (
               journalEntries.map((entry) => (
-              <View
-                key={entry.id}
-                style={styles.entryCard}
-              >
-                <View style={styles.entryHeader}>
-                  <Text style={styles.entryDate}>{formatDate(entry.date)}</Text>
-                  <View style={[styles.categoryBadge, { backgroundColor: getCategoryColor(entry.category) }]}>
-                    <Text style={styles.categoryText}>{entry.category}</Text>
+              <View key={entry.id} style={styles.entryCardContainer}>
+                <BlurView
+                  intensity={30}
+                  tint="dark"
+                  style={styles.entryCard}
+                >
+                  <View style={styles.entryCardInner}>
+                    <View style={styles.entryHeader}>
+                      <Text style={styles.entryDate}>{formatDate(entry.date)}</Text>
+                      <View style={[styles.categoryBadge, { backgroundColor: getCategoryColor(entry.category) }]}>
+                        <Text style={styles.categoryText}>{entry.category}</Text>
+                      </View>
+                    </View>
+                    <Text style={styles.entryContent} numberOfLines={3}>
+                      {entry.content}
+                    </Text>
                   </View>
-                </View>
-                <Text style={styles.entryContent} numberOfLines={3}>
-                  {entry.content}
-                </Text>
+                </BlurView>
               </View>
               ))
             )}
@@ -417,14 +392,19 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 100,
   },
+  entryCardContainer: {
+    marginBottom: 16,
+  },
   entryCard: {
-    backgroundColor: 'rgba(25, 25, 25, 0.95)',
     borderRadius: 24,
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.15)',
+  },
+  entryCardInner: {
     paddingVertical: 20,
     paddingHorizontal: 24,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.06)',
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
   entryHeader: {
     flexDirection: 'row',
