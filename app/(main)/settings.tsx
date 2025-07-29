@@ -12,7 +12,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRevenueCat } from '@/providers/RevenueCatProvider';
 import { NumericInput } from '@/components/home/NumericInput';
 import { ExternalLink } from '@/components/ExternalLink';
-import { getReferralDetails } from '../utils/referralCodes';
+import { getReferralDetails } from '@/utils/referralCodes';
 import { useSimpleAuth } from '@/providers/SimpleAuthProvider';
 import * as Clipboard from 'expo-clipboard';
 

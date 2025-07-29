@@ -21,7 +21,7 @@ if (Platform.OS !== 'web') {
 import { Haptics } from '../utils/haptics';
 import { ExternalLink } from '../components/ExternalLink';
 import { requestRating, trackRatingAction, shouldShowRating } from '../utils/ratings';
-import { validateReferralCode, getReferralDetails } from './utils/referralCodes';
+import { validateReferralCode, getReferralDetails } from '@/utils/referralCodes';
 import AdjustEvents from '@/utils/adjustEvents';
 import FacebookSDK from '@/utils/facebook';
 import LottieView from 'lottie-react-native';
