@@ -1063,7 +1063,7 @@ export default function Onboarding() {
 
       case 'commitment':
         return (
-          <View style={styles.commitmentContainer}>
+          <ScrollView style={styles.commitmentContainer} contentContainerStyle={styles.commitmentContent}>
             <Text style={styles.commitmentTitle}>Let's commit.</Text>
             <Text style={styles.commitmentSubtitle}>From this day onwards, I commit to</Text>
             <View style={styles.commitmentItems}>
@@ -1090,7 +1090,7 @@ export default function Onboarding() {
             <TouchableOpacity style={styles.commitButton} onPress={handleNext}>
               <Text style={styles.commitButtonText}>I commit to myself</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         );
 
 
@@ -1810,10 +1810,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#5B8DFF',
     paddingVertical: 20,
     borderRadius: 40,
-    position: 'absolute',
-    bottom: 50,
-    left: 20,
-    right: 20,
+    marginTop: 30,
+    marginHorizontal: 20,
+    marginBottom: 20,
   },
   getStartedButtonText: {
     color: '#FFFFFF',
@@ -2462,8 +2461,12 @@ const styles = StyleSheet.create({
   },
   commitmentContainer: {
     flex: 1,
+  },
+  commitmentContent: {
+    flexGrow: 1,
     paddingHorizontal: 30,
     paddingTop: 40,
+    paddingBottom: 30,
   },
   commitmentTitle: {
     fontSize: 40,
@@ -2509,10 +2512,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#5B8DFF',
     paddingVertical: 20,
     borderRadius: 40,
-    position: 'absolute',
-    bottom: 50,
-    left: 30,
-    right: 30,
+    marginTop: 30,
+    marginHorizontal: 30,
+    marginBottom: 20,
   },
   commitButtonText: {
     color: '#FFFFFF',

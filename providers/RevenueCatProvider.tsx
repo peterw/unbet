@@ -1,9 +1,8 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
+import { Platform, View, Text, ActivityIndicator } from 'react-native';
 import RevenueCatAdjustIntegration from '@/utils/revenueCatAdjustIntegration';
 import FacebookSDK from '@/utils/facebook';
 import * as SecureStore from 'expo-secure-store';
-import { useRef } from 'react';
 import { isExpoGo } from '@/utils/isExpoGo';
 
 // Only import RevenueCat on native platforms
@@ -21,14 +20,18 @@ let PurchasesPackage: any;
 let CustomerInfo: any;
 let Adjust: any = {};
 
-// Only load native modules in production/development builds, not in Expo Go
-if (Platform.OS !== 'web' && !isExpoGo()) {
+// Load native modules - RevenueCat works in Preview Mode in Expo Go
+if (Platform.OS !== 'web') {
   try {
     const rcLib = require('react-native-purchases');
     Purchases = rcLib.default;
     LOG_LEVEL = rcLib.LOG_LEVEL;
     PurchasesPackage = rcLib.PurchasesPackage;
     CustomerInfo = rcLib.CustomerInfo;
+    
+    if (isExpoGo()) {
+      console.log('📱 RevenueCat running in Expo Go Preview Mode - purchases will be mocked');
+    }
   } catch (error) {
     console.warn('Failed to load react-native-purchases:', error);
   }
@@ -47,8 +50,8 @@ const SUBSCRIBE_LOGGED_KEY = 'protai_subscribe_logged_v1';
 
 // Use keys from you RevenueCat API Keys
 const APIKeys = {
-  apple: process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY!,
-  // google: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY!,
+  apple: process.env.EXPO_PUBLIC_REVENUECAT_APPLE_API_KEY || 'dummy_key_for_development',
+  // google: process.env.EXPO_PUBLIC_REVENUECAT_GOOGLE_API_KEY || 'dummy_key_for_development',
 };
 
 interface RevenueCatProps {
@@ -74,6 +77,8 @@ export const RevenueCatProvider = ({ children }: any) => {
   const [previousCustomerInfo, setPreviousCustomerInfo] = useState<CustomerInfo | null>(null);
   const [subscribeLogged, setSubscribeLogged] = useState<boolean>(false);
   const subscribeLoggedRef = useRef<boolean>(false);
+  
+  console.log('RevenueCatProvider - isReady:', isReady, 'isExpoGo:', isExpoGo());
   // Keep ref in sync with state so listener closure always has latest value
   useEffect(() => {
     subscribeLoggedRef.current = subscribeLogged;
@@ -153,13 +158,20 @@ export const RevenueCatProvider = ({ children }: any) => {
   };
 
   useEffect(() => {
+    console.log('RevenueCatProvider useEffect running');
     const init = async () => {
-      console.log('init');
+      console.log('RevenueCatProvider init() called');
 
-      // Skip initialization on web
+      // Skip initialization only on web
       if (Platform.OS === 'web') {
+        console.log('RevenueCatProvider - Skipping init for web');
         setIsReady(true);
         return;
+      }
+      
+      // In Expo Go, RevenueCat works in sandbox mode
+      if (isExpoGo()) {
+        console.log('🏖️ Expo Go detected - RevenueCat will run in sandbox mode');
       }
 
       // Load Subscribe flag BEFORE configuring Purchases so listener uses correct state
@@ -173,11 +185,21 @@ export const RevenueCatProvider = ({ children }: any) => {
         console.warn('Failed to read subscribe flag (init):', err);
       }
 
-      // if (Platform.OS === 'android') {
-      //   await Purchases.configure({ apiKey: APIKeys.google });
-      // } else {
-      await Purchases.configure({ apiKey: APIKeys.apple });
-      // }
+      try {
+        // if (Platform.OS === 'android') {
+        //   await Purchases.configure({ apiKey: APIKeys.google });
+        // } else {
+        if (Purchases && Purchases.configure) {
+          await Purchases.configure({ apiKey: APIKeys.apple });
+          console.log('RevenueCat configured successfully');
+        } else {
+          console.log('RevenueCat module not available - skipping configuration');
+        }
+        // }
+      } catch (error) {
+        console.error('Error configuring RevenueCat:', error);
+      }
+      
       setIsReady(true);
 
       // Use more logging during debug if want!
@@ -292,8 +314,17 @@ export const RevenueCatProvider = ({ children }: any) => {
   };
 
   // Return empty fragment if provider is not ready (Purchase not yet initialised)
-  if (!isReady) return <></>;
+  if (!isReady) {
+    console.log('RevenueCatProvider - Not ready yet, showing loading...');
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+        <Text style={{ marginTop: 10 }}>Loading RevenueCat...</Text>
+      </View>
+    );
+  }
 
+  console.log('RevenueCatProvider - Ready, rendering children');
   return <RevenueCatContext.Provider value={value}>{children}</RevenueCatContext.Provider>;
 };
 

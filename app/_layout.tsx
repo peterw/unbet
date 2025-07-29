@@ -1,5 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
-import { ClerkLoaded, ClerkProvider, useAuth } from '@clerk/clerk-expo';
+import { ClerkLoaded, ClerkProvider, useAuth, ClerkLoading } from '@clerk/clerk-expo';
 import { Slot, SplashScreen } from 'expo-router';
 import { ConvexReactClient } from 'convex/react';
 import { ConvexProviderWithClerk } from 'convex/react-clerk';
@@ -54,6 +54,8 @@ import {
 } from '@expo-google-fonts/dm-serif-display';
 import { initializeApp } from '@/utils/envCheck';
 import { SimpleAuthProvider } from '@/providers/SimpleAuthProvider';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { View, Text, ActivityIndicator } from 'react-native';
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
 
@@ -91,7 +93,10 @@ const tokenCache = {
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
+const convexUrl = process.env.EXPO_PUBLIC_CONVEX_URL;
+console.log('Convex URL:', convexUrl);
+
+const convex = new ConvexReactClient(convexUrl!, {
   unsavedChangesWarning: false,
 });
 
@@ -117,6 +122,7 @@ const RootLayoutNav = () => {
 
   useEffect(() => {
     if (fontsLoaded) {
+      console.log('Fonts loaded, hiding splash screen');
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
@@ -209,25 +215,40 @@ const RootLayoutNav = () => {
   }, []);
 
   if (!fontsLoaded) {
-    return null;
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+        <Text style={{ marginTop: 10 }}>Loading fonts...</Text>
+      </View>
+    );
   }
 
+  console.log('Rendering app with Clerk key:', publishableKey ? 'Set' : 'Missing');
+
   return (
-    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-      <ClerkLoaded>
-        <RevenueCatProvider>
-          <AnalyticsProviderComponent provider={mixpanelProvider}>
-            <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-              <SimpleAuthProvider>
-                <GestureHandlerRootView style={{ flex: 1 }}>
-                  <Slot />
-                </GestureHandlerRootView>
-              </SimpleAuthProvider>
-            </ConvexProviderWithClerk>
-          </AnalyticsProviderComponent>
-        </RevenueCatProvider>
-      </ClerkLoaded>
-    </ClerkProvider>
+    <ErrorBoundary>
+      <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+        <ClerkLoading>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="large" />
+            <Text style={{ marginTop: 10 }}>Loading Clerk...</Text>
+          </View>
+        </ClerkLoading>
+        <ClerkLoaded>
+          <RevenueCatProvider>
+            <AnalyticsProviderComponent provider={mixpanelProvider}>
+              <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+                <SimpleAuthProvider>
+                  <GestureHandlerRootView style={{ flex: 1 }}>
+                    <Slot />
+                  </GestureHandlerRootView>
+                </SimpleAuthProvider>
+              </ConvexProviderWithClerk>
+            </AnalyticsProviderComponent>
+          </RevenueCatProvider>
+        </ClerkLoaded>
+      </ClerkProvider>
+    </ErrorBoundary>
   );
 };
 

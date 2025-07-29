@@ -1,3 +1,5 @@
+import { Platform } from 'react-native';
+
 // Environment variable checker
 export const checkEnvironmentVariables = () => {
   const required = [
@@ -50,6 +52,6 @@ export const initializeApp = () => {
   console.log('Current environment:', {
     convexUrl: process.env.EXPO_PUBLIC_CONVEX_URL ? 'Set' : 'Missing',
     clerkKey: process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY ? 'Set' : 'Missing',
-    platform: typeof window !== 'undefined' ? 'web' : 'native'
+    platform: Platform.OS
   });
 };
