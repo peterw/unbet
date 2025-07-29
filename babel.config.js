@@ -3,6 +3,7 @@ module.exports = function (api) {
   return {
     presets: ['babel-preset-expo'],
     plugins: [
+      '@babel/plugin-transform-export-namespace-from',
       [
         'module-resolver',
         {
@@ -12,6 +13,7 @@ module.exports = function (api) {
           },
         },
       ],
+      'react-native-reanimated/plugin', // Must be last
     ],
   };
 };

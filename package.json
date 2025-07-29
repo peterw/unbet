@@ -6,18 +6,28 @@
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo run:android",
-    "ios": "expo run:ios",
+    "ios": "node scripts/smart-clean.js && expo run:ios",
+    "ios:clean": "npm run clean && expo run:ios",
+    "ios:force": "node scripts/smart-clean.js --force && expo run:ios",
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
     "prebuild": "npx convex codegen",
-    "eas-build-pre-install": "npx convex codegen"
+    "eas-build-pre-install": "npx convex codegen",
+    "clean": "npm run clean:all",
+    "clean:all": "npm run clean:watchman && npm run clean:metro && npm run clean:ios",
+    "clean:watchman": "watchman watch-del-all 2>/dev/null || true",
+    "clean:metro": "rm -rf node_modules/.cache/metro && rm -rf .expo",
+    "clean:ios": "cd ios && rm -rf build Pods ~/Library/Developer/Xcode/DerivedData/* && pod cache clean --all && cd ..",
+    "reinstall": "rm -rf node_modules && npm install && cd ios && pod install && cd ..",
+    "fresh": "npm run clean:all && npm run reinstall"
   },
   "jest": {
     "preset": "jest-expo"
   },
   "dependencies": {
     "@auth/core": "^0.37.0",
+    "@babel/runtime": "^7.28.2",
     "@clerk/clerk-expo": "^2.8.5",
     "@convex-dev/auth": "^0.0.87",
     "@expo-google-fonts/dm-sans": "^0.4.1",
@@ -72,6 +82,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
+    "@babel/plugin-transform-export-namespace-from": "^7.27.1",
+    "@react-native-community/cli": "^19.1.1",
     "@types/jest": "^29.5.12",
     "@types/react": "~18.3.12",
     "@types/react-test-renderer": "^18.0.7",

@@ -26,6 +26,9 @@ inspo/
 expo-env.d.ts
 # @end expo-cli
 
+# Build tracking
+.last-clean
+
 # Credentials and test files
 credentials.json
 *.mjs
