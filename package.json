@@ -15,7 +15,9 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@auth/core": "^0.37.0",
     "@clerk/clerk-expo": "^2.8.5",
+    "@convex-dev/auth": "^0.0.87",
     "@expo-google-fonts/dm-sans": "^0.4.1",
     "@expo-google-fonts/dm-serif-display": "^0.4.1",
     "@expo/vector-icons": "^14.0.2",

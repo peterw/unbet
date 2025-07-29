@@ -26,6 +26,7 @@ import {
   DMSerifDisplay_400Regular,
   DMSerifDisplay_400Regular_Italic,
 } from '@expo-google-fonts/dm-serif-display';
+import { initializeApp } from '@/utils/envCheck';
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
 
@@ -94,6 +95,9 @@ const RootLayoutNav = () => {
   }, [fontsLoaded]);
 
   useEffect(() => {
+    // Check environment variables on app initialization
+    initializeApp();
+    
     // Initialize Adjust SDK
     const adjustAppToken = process.env.EXPO_PUBLIC_ADJUST_APP_TOKEN || 'YOUR_APP_TOKEN';
     const adjustEnvironment = process.env.NODE_ENV === 'production' ? 'production' : 'sandbox';

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useCallback, useMemo, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image, ActivityIndicator, Platform, Alert, TouchableWithoutFeedback, FlatList, ScrollView } from 'react-native';
+import { Dimensions } from '@/utils/dimensions';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useQuery, useMutation } from 'convex/react';
@@ -89,11 +90,23 @@ const PROTEIN_PRESETS: ProteinPreset[] = [
 ];
 
 export default function HomeScreen() {
+  // Add error handling for user query
   const user = useQuery(api.users.getCurrentUser);
   const recentJobs = useQuery(api.analyse.getRecentAnalysisJobs);
   const deleteEntry = useMutation(api.protein.deleteProteinEntry);
   const today = format(new Date(), 'yyyy-MM-dd');
   const router = useRouter();
+  
+  // Log authentication state for debugging
+  useEffect(() => {
+    if (user === undefined) {
+      console.log('User query is loading...');
+    } else if (user === null) {
+      console.log('User is not authenticated');
+    } else {
+      console.log('User authenticated:', user._id);
+    }
+  }, [user]);
   const [selectedDate, setSelectedDate] = useState(today);
   const multiWeekData = useQuery(api.protein.getMultiWeekProteinData, { date: today });
   const proteinEntries = multiWeekData?.dailyTotals[selectedDate];
