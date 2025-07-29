@@ -36,32 +36,10 @@ export default function MainLayout() {
         name="(tabs)" 
         options={{ headerShown: false }} 
       />
-      <Stack.Screen
-        name="camera"
-        options={{
-          presentation: 'modal',
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="describe"
-        options={{
-          presentation: 'modal',
-          headerShown: false,
-        }}
-      />
-      <Stack.Screen
-        name="analysis"
-        options={{
-          presentation: 'modal',
-          headerShown: false,
-        }}
-      />
       <Stack.Screen name="qr" options={{
         presentation: 'modal',
         headerShown: false,
       }} />
-      <Stack.Screen name="entry/[id]" options={{ headerShown: false }} />
       <Stack.Screen name="settings" options={{
         headerShown: false,
         animation: 'slide_from_right'
@@ -86,7 +64,7 @@ export default function MainLayout() {
         headerShown: false,
         presentation: 'modal'
       }} />
-      <Stack.Screen name="entry/journal-[id]" options={{
+      <Stack.Screen name="journal-entry-[id]" options={{
         headerShown: false,
         animation: 'slide_from_right'
       }} />

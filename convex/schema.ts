@@ -18,6 +18,19 @@ export default defineSchema({
       referralCode: v.optional(v.string()),
     }).index('by_token', ['tokenIdentifier']),
 
+    journalEntries: defineTable({
+      userId: v.id('users'),
+      content: v.string(),
+      category: v.union(
+        v.literal("Thoughts"),
+        v.literal("Feelings"),
+        v.literal("Gratitude"),
+        v.literal("Progress")
+      ),
+      createdAt: v.string(),
+      updatedAt: v.optional(v.string()),
+    }).index('by_user', ['userId']),
+
     proteinEntries: defineTable({
         userId: v.id('users'),
         date: v.string(),

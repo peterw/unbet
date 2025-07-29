@@ -26,29 +26,38 @@ interface SimpleAuthProviderProps {
 }
 
 export function SimpleAuthProvider({ children }: SimpleAuthProviderProps) {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, isLoaded } = useAuth();
   const user = useQuery(api.users.getCurrentUser);
   const storeUser = useMutation(api.users.store);
 
   // Create user in Convex if signed in but user doesn't exist
   useEffect(() => {
     const createUserIfNeeded = async () => {
-      console.log('[SimpleAuth] Auth state:', { isSignedIn, userStatus: user === undefined ? 'loading' : user === null ? 'not exists' : 'exists' });
+      console.log('[SimpleAuth] Auth state:', { 
+        isSignedIn, 
+        isLoaded,
+        userStatus: user === undefined ? 'loading' : user === null ? 'not exists' : 'exists',
+        userId: user?._id 
+      });
       
-      if (isSignedIn && user === null) {
+      // Only try to create user if auth is loaded and user query has resolved
+      if (isLoaded && isSignedIn && user === null) {
         try {
           console.log('[SimpleAuth] User signed in but not in Convex, creating user...');
           const userId = await storeUser();
-          console.log('[SimpleAuth] User created successfully:', userId);
+          console.log('[SimpleAuth] User created successfully with ID:', userId);
         } catch (error) {
           console.error('[SimpleAuth] Error creating user:', error);
-          // Don't throw - let the app continue
+          // Log more details about the error
+          if (error && error.toString().includes('authentication')) {
+            console.error('[SimpleAuth] Authentication error - Clerk token may not be passed to Convex');
+          }
         }
       }
     };
 
     createUserIfNeeded();
-  }, [isSignedIn, user, storeUser]);
+  }, [isSignedIn, isLoaded, user, storeUser]);
 
   return (
     <SimpleAuthContext.Provider 

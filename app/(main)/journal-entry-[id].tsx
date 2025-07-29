@@ -6,11 +6,16 @@ import {
   TouchableOpacity, 
   SafeAreaView, 
   ScrollView,
-  Dimensions
+  Dimensions,
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Haptics } from '@/utils/haptics';
+import { useQuery, useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { Id } from '@/convex/_generated/dataModel';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -49,14 +54,36 @@ function StarfieldBackground() {
 export default function JournalEntryScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams();
+  
+  // Fetch the entry from Convex
+  const entry = useQuery(api.journalEntries.get, { 
+    id: id as Id<"journalEntries"> 
+  });
+  const deleteEntry = useMutation(api.journalEntries.remove);
+  
+  const isLoading = entry === undefined;
 
-  // Mock data - in a real app, this would be fetched based on the ID
-  const entry = {
-    id: id as string,
-    date: new Date(2024, 6, 23, 15, 7),
-    content: 'Bekebensnne\n\nToday was challenging but I managed to stay strong. Had some difficult moments when I felt triggered, but I used the breathing exercises from the app and it really helped.\n\nFeeling grateful for:\n- My support system\n- The progress I\'ve made\n- This app for being there when I need it\n\nTomorrow I want to focus on staying present and taking things one moment at a time.',
-    category: 'Thoughts',
-    mood: 'reflective',
+  const handleDelete = () => {
+    Alert.alert(
+      "Delete Reflection",
+      "Are you sure you want to delete this reflection?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { 
+          text: "Delete", 
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteEntry({ id: id as Id<"journalEntries"> });
+              router.back();
+            } catch (error) {
+              console.error('Error deleting entry:', error);
+              Alert.alert("Error", "Failed to delete reflection");
+            }
+          }
+        }
+      ]
+    );
   };
 
   const formatDate = (date: Date) => {
@@ -74,8 +101,6 @@ export default function JournalEntryScreen() {
     };
   };
 
-  const dateInfo = formatDate(entry.date);
-
   const getCategoryColor = (category: string) => {
     switch (category) {
       case 'Thoughts': return '#5B7FDE';
@@ -85,6 +110,37 @@ export default function JournalEntryScreen() {
       default: return '#5B7FDE';
     }
   };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StarfieldBackground />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#5B7FDE" />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  if (!entry) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StarfieldBackground />
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Reflection not found</Text>
+          <TouchableOpacity 
+            style={styles.backButtonLarge}
+            onPress={() => router.back()}
+          >
+            <Text style={styles.backButtonText}>Go Back</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const entryDate = new Date(entry.createdAt);
+  const dateInfo = formatDate(entryDate);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -164,7 +220,7 @@ export default function JournalEntryScreen() {
           style={[styles.actionButton, styles.deleteButton]}
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-            // Handle delete
+            handleDelete();
           }}
         >
           <Ionicons name="trash-outline" size={20} color="#FF3B30" />
@@ -285,5 +341,32 @@ const styles = StyleSheet.create({
   },
   deleteText: {
     color: '#FF3B30',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 40,
+  },
+  errorText: {
+    fontSize: 18,
+    color: '#FFF',
+    marginBottom: 20,
+  },
+  backButtonLarge: {
+    backgroundColor: '#5B7FDE',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 20,
+  },
+  backButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: '500',
   },
 });

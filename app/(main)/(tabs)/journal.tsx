@@ -9,11 +9,14 @@ import {
   Dimensions,
   Animated,
   Image,
-  Platform
+  Platform,
+  ActivityIndicator
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Haptics } from '@/utils/haptics';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 // Remove Canvas import as we're using View-based stars
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -89,17 +92,27 @@ export default function JournalScreen() {
   const [activeTab, setActiveTab] = useState<'Tapes' | 'Reflections'>('Reflections');
   const fadeAnim = useRef(new Animated.Value(1)).current;
 
-  // Mock journal entries
-  const journalEntries: JournalEntry[] = [
-    {
-      id: '1',
-      date: new Date(2024, 6, 23, 15, 7), // Jul 23, 3:07 PM
-      content: 'Bekebensnne',
-      category: 'Thoughts',
-      preview: 'Bekebensnne'
-    },
-    // Add more entries as needed
-  ];
+  // Fetch journal entries from Convex
+  const journalEntriesData = useQuery(api.journalEntries.list);
+  const isLoading = journalEntriesData === undefined;
+  
+  // Log the query result for debugging
+  useEffect(() => {
+    console.log('[Journal] Query result:', { 
+      entriesCount: journalEntriesData?.length,
+      isLoading,
+      data: journalEntriesData 
+    });
+  }, [journalEntriesData, isLoading]);
+
+  // Transform Convex data to match our interface
+  const journalEntries: JournalEntry[] = journalEntriesData?.map(entry => ({
+    id: entry._id,
+    date: new Date(entry.createdAt),
+    content: entry.content,
+    category: entry.category,
+    preview: entry.content.substring(0, 100) + (entry.content.length > 100 ? '...' : '')
+  })) || [];
 
   const handleTabChange = (tab: 'Tapes' | 'Reflections') => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -182,14 +195,26 @@ export default function JournalScreen() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
           >
-            {journalEntries.map((entry) => (
+            {isLoading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#5B7FDE" />
+                <Text style={styles.loadingText}>Loading reflections...</Text>
+              </View>
+            ) : journalEntries.length === 0 ? (
+              <View style={styles.emptyContainer}>
+                <Ionicons name="book-outline" size={64} color="#444" />
+                <Text style={styles.emptyTitle}>No reflections yet</Text>
+                <Text style={styles.emptyText}>Start your journey by writing your first reflection</Text>
+              </View>
+            ) : (
+              journalEntries.map((entry) => (
               <TouchableOpacity
                 key={entry.id}
                 style={styles.entryCard}
                 onPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   router.push({
-                    pathname: '/entry/journal-[id]',
+                    pathname: '/journal-entry-[id]',
                     params: { id: entry.id }
                   });
                 }}
@@ -205,9 +230,10 @@ export default function JournalScreen() {
                   {entry.preview}
                 </Text>
               </TouchableOpacity>
-            ))}
+              ))
+            )}
             
-            {/* Add new reflection button */}
+            {/* Add new reflection button - always show */}
             <TouchableOpacity
               style={styles.addButton}
               onPress={() => {
@@ -617,5 +643,35 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'rgba(255, 255, 255, 0.4)',
     textAlign: 'center',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 60,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 16,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 60,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#FFF',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    maxWidth: 250,
   },
 });
