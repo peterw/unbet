@@ -10,11 +10,20 @@ export class MixpanelProvider implements AnalyticsProvider {
   ) {}
 
   async initialize(): Promise<void> {
+    // Prevent re-initialization if already initialized
+    if (this.client) {
+      console.log('Mixpanel already initialized');
+      return;
+    }
+    
     try {
       this.client = new Mixpanel(this.token, this.trackAutomaticEvents);
       await this.client.init();
+      console.log('Mixpanel initialized successfully');
     } catch (error) {
       console.error('Failed to initialize Mixpanel:', error);
+      // Set client to null to allow retry if needed
+      this.client = null;
     }
   }
 

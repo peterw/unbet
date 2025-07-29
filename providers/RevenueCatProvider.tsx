@@ -27,8 +27,13 @@ if (Platform.OS !== 'web') {
   PurchasesPackage = rcLib.PurchasesPackage;
   CustomerInfo = rcLib.CustomerInfo;
   
-  const adjustLib = require('react-native-adjust');
-  Adjust = adjustLib.Adjust;
+  try {
+    const adjustLib = require('react-native-adjust');
+    Adjust = adjustLib.Adjust || adjustLib.default || {};
+  } catch (error) {
+    console.warn('Failed to load react-native-adjust:', error);
+    Adjust = {};
+  }
 }
 
 // Key used to remember if the "Subscribe" event was already logged for the current active subscription period.

@@ -25,14 +25,20 @@ class FacebookSDK {
       return;
     }
 
-    // Configure and initialise the SDK
-    Settings.setAppID(appId);
-    Settings.initializeSDK();
+    try {
+      // Configure and initialise the SDK
+      Settings.setAppID(appId);
+      Settings.initializeSDK();
 
-    // Enable advertiser tracking so events contain IDFA when users allow it
-    Settings.setAdvertiserTrackingEnabled(true);
+      // Enable advertiser tracking so events contain IDFA when users allow it
+      Settings.setAdvertiserTrackingEnabled(true);
 
-    this.initialized = true;
+      this.initialized = true;
+      console.log('Facebook SDK initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize Facebook SDK:', error);
+      // Don't set initialized to true if initialization failed
+    }
   }
 
   /** Log the standard Completed Tutorial/Onboarding event. */
