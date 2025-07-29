@@ -959,7 +959,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontFamily: 'DMSerifDisplay_400Regular',
   },
   logoContainer: {
     flexDirection: 'row',
@@ -973,7 +973,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: 'DMSans_700Bold',
     marginBottom: 10,
   },
   recentUploads: {

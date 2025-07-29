@@ -128,8 +128,11 @@ export default function Onboarding() {
   const windowDimensions = Dimensions.get('window');
   const isSmallDevice = windowDimensions.height < 700;
 
+  // DEV ONLY: Check for skip to paywall parameter
+  const skipToPaywall = __DEV__ && onboardingMode === 'skip-to-paywall';
+  
   const steps = [
-    { key: 'intro', question: 'Welcome to Protein AI', subtext: 'The easiest way to hit your daily protein goal' },
+    { key: 'intro', question: '', subtext: '' },
     ...(mode === 'signin' ? [
       { key: 'signin', question: 'Sign In', subtext: 'Welcome back to Protein AI' }
     ] : [
@@ -152,8 +155,13 @@ export default function Onboarding() {
     if (onboardingMode === 'user_details') {
       setMode('user_details');
       setCurrentStep(1);
+    } else if (skipToPaywall) {
+      // DEV ONLY: Skip to results step (paywall shows after this)
+      setProteinResult({ dailyProtein: '120' }); // Mock protein result
+      const resultsStepIndex = steps.findIndex(step => step.key === 'results');
+      setCurrentStep(resultsStepIndex);
     }
-  }, [mode]);
+  }, [mode, skipToPaywall]);
 
   // Track whenever the user views a new onboarding step, emitting a unique
   // event name for each screen so we can analyse them separately in Mixpanel.
@@ -663,55 +671,30 @@ export default function Onboarding() {
     const step = steps[currentStep];
     return (
       <>
-        <View style={styles.stepHeader}>
-          <Text style={styles.question}>{step.question}</Text>
-          <Text style={styles.subtext}>{step.subtext}</Text>
-        </View>
-        <View style={styles.stepContent}>
+        {step.question && (
+          <View style={styles.stepHeader}>
+            <Text style={styles.question}>{step.question}</Text>
+            <Text style={styles.subtext}>{step.subtext}</Text>
+          </View>
+        )}
+        <View style={[styles.stepContent, currentStep === 0 && { flex: 1 }]}>
           {(() => {
             switch (step.key) {
               case 'intro':
-                const slideWidth = Dimensions.get('window').width - 40;
-                
-                const handleScroll = (event: any) => {
-                  const offsetX = event.nativeEvent.contentOffset.x;
-                  const newPage = Math.round(offsetX / slideWidth);
-                  if (newPage !== currentSlide) {
-                    setCurrentSlide(newPage);
-                  }
-                };
-
                 return (
-                  <View style={styles.introContainer}>
-                    <ScrollView
-                      ref={scrollRef}
-                      horizontal
-                      pagingEnabled
-                      showsHorizontalScrollIndicator={false}
-                      onScroll={handleScroll}
-                      scrollEventThrottle={16}
-                      contentContainerStyle={styles.scrollViewContent}
-                      style={[styles.pagerView, { height: getCarouselHeight() }]}
-                    >
-                      {introSlides.map((slide, index) => (
-                        <View key={index} style={[styles.carouselItem, { width: slideWidth }]}>
-                          {renderCarouselItem({ item: slide })}
-                        </View>
-                      ))}
-                    </ScrollView>
-                    <View style={styles.paginationContainer}>
-                      <View style={styles.paginationDots}>
-                        {introSlides.map((_, index) => (
-                          <View
-                            key={index}
-                            style={[
-                              styles.paginationDot,
-                              index === currentSlide && styles.paginationDotActive,
-                              isSmallDevice && styles.paginationDotSmall
-                            ]}
-                          />
-                        ))}
-                      </View>
+                  <View style={styles.welcomeContainer}>
+                    {/* Star decorations */}
+                    <View style={styles.starsContainer}>
+                      <View style={[styles.star, { top: '15%', left: '10%', width: 4, height: 4 }]} />
+                      <View style={[styles.star, { top: '25%', left: '85%', width: 6, height: 6 }]} />
+                      <View style={[styles.star, { top: '35%', left: '15%', width: 3, height: 3 }]} />
+                      <View style={[styles.star, { top: '60%', left: '90%', width: 5, height: 5 }]} />
+                      <View style={[styles.star, { top: '70%', left: '5%', width: 4, height: 4 }]} />
+                      <View style={[styles.star, { top: '80%', left: '80%', width: 3, height: 3 }]} />
+                    </View>
+                    <View style={styles.welcomeContent}>
+                      <Text style={styles.welcomeTitle}>Welcome{'\n'}to Seed</Text>
+                      <Text style={styles.welcomeSubtitle}>Unleash your Potential.{'\n'}Leave Porn Behind.</Text>
                     </View>
                   </View>
                 );
@@ -1079,20 +1062,18 @@ export default function Onboarding() {
   };
 
   return (
-    <LinearGradient colors={['#F5F5F5', '#F5F5F5']} style={styles.container}>
+    <View style={[styles.container, currentStep === 0 && styles.darkContainer]}>
       <SafeAreaView style={styles.container}>
-        <View style={styles.headerContainer}>
-          {currentStep > 0 && (
+        {currentStep > 0 && (
+          <View style={styles.headerContainer}>
             <TouchableOpacity style={styles.backButton} onPress={handleBack}>
               <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
             </TouchableOpacity>
-          )}
-          {currentStep > 0 && (
             <View style={styles.progressBarContainer}>
               <View style={[styles.progressBar, { width: `${(currentStep / (steps.length - 1)) * 100}%` }]} />
             </View>
-          )}
-        </View>
+          </View>
+        )}
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.keyboardAvoidingView}
@@ -1106,13 +1087,14 @@ export default function Onboarding() {
               style={[
                 styles.nextButton,
                 !isStepComplete() && styles.nextButtonDisabled,
-                currentStep === 0 && { marginBottom: 0, marginTop: 5 }
+                currentStep === 0 && styles.introButton
               ]}
               onPress={handleNext}
               disabled={!isStepComplete()}
             >
-              <Text style={styles.nextButtonText}>
-                {mode === 'user_details' && currentStep === 10 ? 'Continue' :
+              <Text style={[styles.nextButtonText, currentStep === 0 && styles.introButtonText]}>
+                {currentStep === 0 ? "Start my journey" :
+                  mode === 'user_details' && currentStep === 10 ? 'Continue' :
                   currentStep === steps.length - 2 ? "Let's get started!" :
                     steps[currentStep].key === 'rating' ? "Ok, I rated 👍" : "Next"}
               </Text>
@@ -1120,24 +1102,40 @@ export default function Onboarding() {
           )}
 
           {currentStep === 0 && (
-            <TouchableOpacity
-              style={[styles.loginButton, { marginTop: 0 }]}
-              onPress={handleSwitchToSignIn}
-            >
-              <Text style={styles.loginButtonText}>
-                Already have an account? Sign in
-              </Text>
-            </TouchableOpacity>
+            <>
+              <TouchableOpacity
+                style={[styles.loginButton, styles.introLoginButton]}
+                onPress={handleSwitchToSignIn}
+              >
+                <Text style={styles.introLoginButtonText}>
+                  Login
+                </Text>
+              </TouchableOpacity>
+            </>
           )}
         </KeyboardAvoidingView>
+        
+        {currentStep === 0 && (
+          <View style={styles.gradientOrbContainer}>
+            <LinearGradient
+              colors={['#5B6FED', '#7B8FFF', '#9BAFFF', 'transparent']}
+              style={styles.gradientOrb}
+              start={{ x: 0.5, y: 0 }}
+              end={{ x: 0.5, y: 1 }}
+            />
+          </View>
+        )}
       </SafeAreaView>
-    </LinearGradient>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  darkContainer: {
+    backgroundColor: '#000000',
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -1176,12 +1174,13 @@ const styles = StyleSheet.create({
   },
   question: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontFamily: 'DMSerifDisplay_400Regular',
     marginBottom: 10,
     color: Colors.light.text,
   },
   subtext: {
     fontSize: 16,
+    fontFamily: 'DMSans_400Regular',
     color: Colors.light.text,
     marginBottom: 20,
     textAlign: 'left',
@@ -1248,7 +1247,7 @@ const styles = StyleSheet.create({
   nextButtonText: {
     color: Colors.light.background,
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: 'DMSans_700Bold',
   },
   loginButton: {
     padding: 15,
@@ -1433,7 +1432,7 @@ const styles = StyleSheet.create({
   },
   resultText: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontFamily: 'DMSans_700Bold',
     marginBottom: 10,
     color: Colors.light.text,
     textAlign: 'center',
@@ -1543,5 +1542,80 @@ const styles = StyleSheet.create({
   },
   scrollViewContent: {
     alignItems: 'center',
+  },
+  welcomeContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingBottom: 100,
+  },
+  welcomeContent: {
+    alignItems: 'center',
+  },
+  welcomeTitle: {
+    fontSize: 52,
+    fontFamily: 'DMSerifDisplay_400Regular',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    lineHeight: 58,
+    marginBottom: 24,
+    letterSpacing: -0.5,
+  },
+  welcomeSubtitle: {
+    fontSize: 20,
+    fontFamily: 'DMSans_400Regular',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    lineHeight: 28,
+    opacity: 0.85,
+  },
+  gradientOrbContainer: {
+    position: 'absolute',
+    bottom: -250,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+  },
+  gradientOrb: {
+    width: 700,
+    height: 700,
+    borderRadius: 350,
+    opacity: 0.4,
+  },
+  introButton: {
+    backgroundColor: '#5B8DFF',
+    marginHorizontal: 30,
+    marginBottom: 15,
+    paddingVertical: 16,
+    borderRadius: 25,
+  },
+  introButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontFamily: 'DMSans_500Medium',
+  },
+  introLoginButton: {
+    backgroundColor: 'transparent',
+    marginTop: 0,
+    marginBottom: 40,
+  },
+  introLoginButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '400',
+    textDecorationLine: 'underline',
+  },
+  starsContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  star: {
+    position: 'absolute',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 50,
+    opacity: 0.3,
   },
 });

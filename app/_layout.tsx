@@ -15,6 +15,17 @@ import FacebookSDK from '@/utils/facebook';
 import Purchases from 'react-native-purchases';
 import { Adjust } from 'react-native-adjust';
 import { Platform } from 'react-native';
+import { useFonts } from 'expo-font';
+import {
+  DMSans_300Light,
+  DMSans_400Regular,
+  DMSans_500Medium,
+  DMSans_700Bold,
+} from '@expo-google-fonts/dm-sans';
+import {
+  DMSerifDisplay_400Regular,
+  DMSerifDisplay_400Regular_Italic,
+} from '@expo-google-fonts/dm-serif-display';
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
 
@@ -57,6 +68,16 @@ const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
 });
 
 const RootLayoutNav = () => {
+  // Load fonts
+  const [fontsLoaded] = useFonts({
+    DMSans_300Light,
+    DMSans_400Regular,
+    DMSans_500Medium,
+    DMSans_700Bold,
+    DMSerifDisplay_400Regular,
+    DMSerifDisplay_400Regular_Italic,
+  });
+
   // Initialise the Mixpanel analytics provider once. The token should be
   // provided via your app configuration (e.g. app.config.ts or .env files)
   // and exposed to the client through the Expo "EXPO_PUBLIC_" prefix.
@@ -65,6 +86,12 @@ const RootLayoutNav = () => {
 
     return new MixpanelProvider(token);
   }, []);
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
 
   useEffect(() => {
     // Initialize Adjust SDK
@@ -139,6 +166,10 @@ const RootLayoutNav = () => {
       AdjustSDK.cleanup();
     };
   }, []);
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
