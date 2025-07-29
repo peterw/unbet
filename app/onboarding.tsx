@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TextInput, Image, Dimensions, ActivityIndicator, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TextInput, Image, Dimensions, ActivityIndicator, Animated, Alert } from 'react-native';
 import { useSignUp, useOAuth, useAuth as useClerkAuth } from '@clerk/clerk-expo';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -131,10 +131,20 @@ export default function Onboarding() {
   // DEV ONLY: Check for skip to paywall parameter
   const skipToPaywall = __DEV__ && onboardingMode === 'skip-to-paywall';
   
+  // Set mode based on URL parameter
+  useEffect(() => {
+    if (onboardingMode === 'signin') {
+      setMode('signin');
+      setCurrentStep(1);
+    } else if (onboardingMode === 'user_details') {
+      setMode('user_details');
+    }
+  }, [onboardingMode]);
+  
   const steps = [
     { key: 'intro', question: '', subtext: '' },
     ...(mode === 'signin' ? [
-      { key: 'signin', question: 'Sign In', subtext: 'Welcome back to Protein AI' }
+      { key: 'signin', question: 'Sign In', subtext: 'Welcome back to Seed' }
     ] : [
       { key: 'sex', question: 'Choose your Gender', subtext: 'This helps us tailor your protein recommendations' },
       { key: 'age', question: 'How old are you?', subtext: 'Age affects your protein needs and metabolism' },
@@ -492,6 +502,14 @@ export default function Onboarding() {
   const handleOAuthSignIn = async (strategy: "oauth_google" | "oauth_apple") => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     analytics.track({ name: 'Signin Attempt', properties: { strategy } });
+    
+    // Check if user is already signed in
+    if (isSignedIn) {
+      console.log('User already signed in, redirecting...');
+      router.replace('/(main)');
+      return;
+    }
+    
     try {
       const startOAuthFlow = strategy === "oauth_google" ? startGoogleOAuthFlow : startAppleOAuthFlow;
       const { createdSessionId, setActive } = await startOAuthFlow();
@@ -510,10 +528,10 @@ export default function Onboarding() {
           await signOut();
           await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
           // Alert import might be missing, ensure it's imported from 'react-native'
-          alert(
+          Alert.alert(
             "Account Not Found",
-            // "Account not found, please sign up first.",
-            // [{ text: "OK" }]
+            "Account not found, please sign up first.",
+            [{ text: "OK" }]
           );
           // analytics.track logic from diff would go here
           setMode('full');
@@ -538,10 +556,10 @@ export default function Onboarding() {
       // alert('Sign in failed. Please try again.');
       // Avoid generic alert if we handled specific case above
       if (err instanceof Error && !err.message?.includes('User not found')) { // Check if it's an Error and not the specific handled case
-        alert('Sign in failed. Please try again.');
+        Alert.alert('Sign In Failed', 'Please try again.');
       } else if (!(err instanceof Error)) {
         // Handle cases where err is not an Error object (e.g., a string or other type)
-        alert('An unknown sign-in error occurred. Please try again.');
+        Alert.alert('Sign In Failed', 'An unknown error occurred. Please try again.');
       }
     } finally {
       setIsLoading(false);
@@ -701,20 +719,46 @@ export default function Onboarding() {
               case 'signin':
                 return (
                   <View style={styles.signupButtonsContainer}>
-                    <TouchableOpacity
-                      style={styles.oauthButton}
-                      onPress={() => handleOAuthSignIn("oauth_google")}
-                    >
-                      <Ionicons name="logo-google" size={24} color={Colors.light.text} />
-                      <Text style={styles.oauthButtonText}>Sign in with Google</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      style={styles.oauthButton}
-                      onPress={() => handleOAuthSignIn("oauth_apple")}
-                    >
-                      <Ionicons name="logo-apple" size={24} color={Colors.light.text} />
-                      <Text style={styles.oauthButtonText}>Sign in with Apple</Text>
-                    </TouchableOpacity>
+                    {isSignedIn ? (
+                      <>
+                        <Text style={styles.alreadySignedInText}>You're already signed in</Text>
+                        <TouchableOpacity
+                          style={styles.oauthButton}
+                          onPress={() => router.replace('/(main)')}
+                        >
+                          <Ionicons name="home-outline" size={24} color={Colors.light.text} />
+                          <Text style={styles.oauthButtonText}>Go to Home</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={[styles.oauthButton, { backgroundColor: '#FF3B30' }]}
+                          onPress={async () => {
+                            await signOut();
+                            setMode('full');
+                            setCurrentStep(0);
+                          }}
+                        >
+                          <Ionicons name="log-out-outline" size={24} color="#FFFFFF" />
+                          <Text style={[styles.oauthButtonText, { color: '#FFFFFF' }]}>Sign Out</Text>
+                        </TouchableOpacity>
+                      </>
+                    ) : (
+                      <>
+                        <TouchableOpacity
+                          style={styles.oauthButton}
+                          onPress={() => handleOAuthSignIn("oauth_google")}
+                        >
+                          <Ionicons name="logo-google" size={24} color={Colors.light.text} />
+                          <Text style={styles.oauthButtonText}>Sign in with Google</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={styles.oauthButton}
+                          onPress={() => handleOAuthSignIn("oauth_apple")}
+                        >
+                          <Ionicons name="logo-apple" size={24} color={Colors.light.text} />
+                          <Text style={styles.oauthButtonText}>Sign in with Apple</Text>
+                        </TouchableOpacity>
+                      </>
+                    )}
                   </View>
                 );
               case 'goals':
@@ -1232,6 +1276,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.light.buttonText,
     marginLeft: 10,
+  },
+  alreadySignedInText: {
+    fontSize: 18,
+    fontFamily: 'DMSans_500Medium',
+    color: Colors.light.text,
+    textAlign: 'center',
+    marginBottom: 20,
   },
   nextButton: {
     backgroundColor: Colors.light.tint,

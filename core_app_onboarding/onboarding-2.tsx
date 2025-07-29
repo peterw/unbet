@@ -85,22 +85,22 @@ export default function Onboarding() {
     { id: 9, type: 'motivation_2' },
     { id: 10, type: 'age_range' },
     { id: 11, type: 'start_age' },
-    { id: 12, type: 'sexually_active_age' },
-    { id: 13, type: 'porn_increase' },
-    { id: 14, type: 'explicit_content' },
-    { id: 15, type: 'blockers' },
-    { id: 16, type: 'track' },
-    { id: 17, type: 'religious' },
-    { id: 18, type: 'last_relapse' },
-    { id: 19, type: 'wakeup' },
-    { id: 20, type: 'bedtime' },
-    { id: 21, type: 'science' },
-    { id: 22, type: 'days' },
-    { id: 23, type: 'symptoms' },
-    { id: 24, type: 'plan' },
-    { id: 25, type: 'graph' },
-    { id: 26, type: 'commitment' },
-    { id: 27, type: 'notification' },
+    { id: 12, type: 'blockers' },
+    { id: 13, type: 'track' },
+    { id: 14, type: 'science' },
+    { id: 15, type: 'days' },
+    { id: 16, type: 'plan' },
+    { id: 17, type: 'choose_plan' },
+    { id: 18, type: 'success' },
+    { id: 19, type: 'notification' },
+    { id: 20, type: 'notification_time' },
+    { id: 21, type: 'notification_time_2' },
+    { id: 22, type: 'wakeup' },
+    { id: 23, type: 'bedtime' },
+    { id: 24, type: 'partner' },
+    { id: 25, type: 'goal' },
+    { id: 26, type: 'frequency' },
+    { id: 27, type: 'trigger' },
     { id: 28, type: 'signup' },
     { id: 29, type: 'complete' },
   ];
@@ -118,40 +118,21 @@ export default function Onboarding() {
   const [goal, setGoal] = useState('');
   const [frequency, setFrequency] = useState('');
   const [triggers, setTriggers] = useState<string[]>([]);
-  const [sexuallyActiveAge, setSexuallyActiveAge] = useState('');
-  const [pornIncrease, setPornIncrease] = useState('');
-  const [explicitContent, setExplicitContent] = useState('');
-  const [religious, setReligious] = useState('');
-  const [lastRelapse, setLastRelapse] = useState('');
-  const [symptoms, setSymptoms] = useState<string[]>([]);
 
   const handleNext = async () => {
-    console.log('handleNext called, currentStep:', currentStep);
-    
-    try {
-      if (Platform.OS !== 'web') {
-        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-    } catch (error) {
-      console.log('Haptics not available');
-    }
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     
     // Track step completion
-    try {
-      analytics.track({
-        name: `Onboarding Step Completed - ${screens[currentStep].type}`,
-        properties: {
-          stepNumber: currentStep + 1,
-          screenType: screens[currentStep].type,
-        },
-      });
-    } catch (error) {
-      console.log('Analytics error:', error);
-    }
+    analytics.track({
+      name: `Onboarding Step Completed - ${screens[currentStep].type}`,
+      properties: {
+        stepNumber: currentStep + 1,
+        screenType: screens[currentStep].type,
+      },
+    });
 
     if (currentStep < screens.length - 1) {
-      console.log('Moving to next step:', currentStep + 1);
-      setCurrentStep(prev => prev + 1);
+      setCurrentStep(currentStep + 1);
     } else {
       router.replace('/(main)');
     }
@@ -184,23 +165,11 @@ export default function Onboarding() {
   };
 
   const handleBack = async () => {
-    try {
-      if (Platform.OS !== 'web') {
-        await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      }
-    } catch (error) {
-      console.log('Haptics not available');
-    }
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
   };
-
-  // Add effect to log state changes
-  useEffect(() => {
-    console.log('Current step changed to:', currentStep);
-    console.log('Current screen type:', screens[currentStep]?.type);
-  }, [currentStep]);
 
   const renderScreen = () => {
     const screen = screens[currentStep];
@@ -210,15 +179,12 @@ export default function Onboarding() {
         return (
           <View style={styles.welcomeContainer}>
             <View style={styles.starsContainer}>
-              <View style={[styles.star, { top: '10%', left: '10%', width: 4, height: 4 }]} />
-              <View style={[styles.star, { top: '20%', left: '85%', width: 6, height: 6 }]} />
-              <View style={[styles.star, { top: '30%', left: '15%', width: 3, height: 3 }]} />
-              <View style={[styles.star, { top: '50%', left: '90%', width: 5, height: 5 }]} />
-              <View style={[styles.star, { top: '65%', left: '5%', width: 4, height: 4 }]} />
-              <View style={[styles.star, { top: '75%', left: '80%', width: 3, height: 3 }]} />
-              <View style={[styles.star, { top: '85%', left: '20%', width: 5, height: 5 }]} />
-              <View style={[styles.star, { top: '45%', left: '92%', width: 3, height: 3 }]} />
-              <View style={[styles.star, { top: '35%', left: '8%', width: 4, height: 4 }]} />
+              <View style={[styles.star, { top: '15%', left: '10%', width: 4, height: 4 }]} />
+              <View style={[styles.star, { top: '25%', left: '85%', width: 6, height: 6 }]} />
+              <View style={[styles.star, { top: '35%', left: '15%', width: 3, height: 3 }]} />
+              <View style={[styles.star, { top: '60%', left: '90%', width: 5, height: 5 }]} />
+              <View style={[styles.star, { top: '70%', left: '5%', width: 4, height: 4 }]} />
+              <View style={[styles.star, { top: '80%', left: '80%', width: 3, height: 3 }]} />
             </View>
             <View style={styles.welcomeContent}>
               <Text style={styles.welcomeTitle}>Welcome{'\n'}to Seed</Text>
@@ -228,50 +194,21 @@ export default function Onboarding() {
               style={styles.welcomeButton} 
               onPress={() => {
                 console.log('Start journey button pressed');
-                console.log('Current step before:', currentStep);
-                console.log('Screens length:', screens.length);
                 handleNext();
               }}
               activeOpacity={0.8}
             >
               <Text style={styles.welcomeButtonText}>Start my journey</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.loginButton} 
-              onPress={() => {
-                console.log('Login button pressed from onboarding-2');
-                // Use router.replace to ensure navigation happens
-                router.replace({
-                  pathname: '/onboarding',
-                  params: { mode: 'signin' }
-                });
-              }}
-            >
+            <TouchableOpacity style={styles.loginButton} onPress={() => router.push('/login')}>
               <Text style={styles.loginButtonText}>Login</Text>
             </TouchableOpacity>
-            <View style={styles.gradientOrbContainer}>
-              <LinearGradient
-                colors={['#5B6FED', '#7B8FFF', '#9BAFFF', 'transparent']}
-                style={styles.gradientOrb}
-                start={{ x: 0.5, y: 0 }}
-                end={{ x: 0.5, y: 1 }}
-              />
-            </View>
           </View>
         );
       
       case 'stats':
         return (
           <View style={styles.statsContainer}>
-            <View style={styles.starsContainer}>
-              <View style={[styles.star, { top: '5%', left: '8%', width: 3, height: 3 }]} />
-              <View style={[styles.star, { top: '15%', left: '90%', width: 4, height: 4 }]} />
-              <View style={[styles.star, { top: '25%', left: '12%', width: 2, height: 2 }]} />
-              <View style={[styles.star, { top: '40%', left: '85%', width: 3, height: 3 }]} />
-              <View style={[styles.star, { top: '60%', left: '10%', width: 4, height: 4 }]} />
-              <View style={[styles.star, { top: '75%', left: '88%', width: 3, height: 3 }]} />
-              <View style={[styles.star, { top: '85%', left: '15%', width: 2, height: 2 }]} />
-            </View>
             <Text style={styles.statsTitle}>A science-based approach to defeat porn addiction for good.</Text>
             <View style={styles.statsBig}>
               <Text style={styles.statsBigNumber}>41</Text>
@@ -389,42 +326,32 @@ export default function Onboarding() {
       case 'session_duration':
         return (
           <View style={styles.durationContainer}>
-            <View style={styles.starsContainer}>
-              <View style={[styles.star, { top: '10%', left: '5%', width: 3, height: 3 }]} />
-              <View style={[styles.star, { top: '20%', left: '92%', width: 4, height: 4 }]} />
-              <View style={[styles.star, { top: '35%', left: '15%', width: 2, height: 2 }]} />
-              <View style={[styles.star, { top: '50%', left: '88%', width: 3, height: 3 }]} />
-              <View style={[styles.star, { top: '70%', left: '10%', width: 4, height: 4 }]} />
-              <View style={[styles.star, { top: '80%', left: '85%', width: 2, height: 2 }]} />
-            </View>
             <Text style={styles.questionTitle}>How long do your sessions last ?</Text>
-            <ScrollView style={styles.scrollContainer} showsVerticalScrollIndicator={false}>
-              <View style={styles.optionsContainer}>
-                {[
-                  'Less than 5 minutes',
-                  '10 to 20 minutes',
-                  '30 minutes',
-                  '30 to 60 minutes',
-                  '1 to 2 hours',
-                  '2+ hours'
-                ].map((option) => (
-                  <TouchableOpacity
-                    key={option}
-                    style={[styles.optionButton, sessionDuration === option && styles.optionButtonSelected]}
-                    onPress={() => setSessionDuration(option)}
-                  >
-                    <Text style={styles.optionButtonText}>{option}</Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
-              <TouchableOpacity 
-                style={[styles.continueButton, !sessionDuration && styles.continueButtonDisabled]} 
-                onPress={handleNext}
-                disabled={!sessionDuration}
-              >
-                <Text style={styles.continueButtonText}>Continue</Text>
-              </TouchableOpacity>
-            </ScrollView>
+            <View style={styles.optionsContainer}>
+              {[
+                'Less than 5 minutes',
+                '10 to 20 minutes',
+                '30 minutes',
+                '30 to 60 minutes',
+                '1 to 2 hours',
+                '2+ hours'
+              ].map((option) => (
+                <TouchableOpacity
+                  key={option}
+                  style={[styles.optionButton, sessionDuration === option && styles.optionButtonSelected]}
+                  onPress={() => setSessionDuration(option)}
+                >
+                  <Text style={styles.optionButtonText}>{option}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <TouchableOpacity 
+              style={[styles.continueButton, !sessionDuration && styles.continueButtonDisabled]} 
+              onPress={handleNext}
+              disabled={!sessionDuration}
+            >
+              <Text style={styles.continueButtonText}>Continue</Text>
+            </TouchableOpacity>
           </View>
         );
 
@@ -454,7 +381,7 @@ export default function Onboarding() {
                   }}
                 >
                   <View style={[styles.checkbox, motivations.includes(option) && styles.checkboxSelected]}>
-                    {motivations.includes(option) && <View style={styles.radioInner} />}
+                    {motivations.includes(option) && <Ionicons name="checkmark" size={16} color="#FFFFFF" />}
                   </View>
                   <Text style={styles.checkboxText}>{option}</Text>
                 </TouchableOpacity>
@@ -496,7 +423,7 @@ export default function Onboarding() {
                   }}
                 >
                   <View style={[styles.checkbox, motivations.includes(option) && styles.checkboxSelected]}>
-                    {motivations.includes(option) && <View style={styles.radioInner} />}
+                    {motivations.includes(option) && <Ionicons name="checkmark" size={16} color="#FFFFFF" />}
                   </View>
                   <Text style={styles.checkboxText}>{option}</Text>
                 </TouchableOpacity>
@@ -570,95 +497,6 @@ export default function Onboarding() {
               style={[styles.continueButton, !startAge && styles.continueButtonDisabled]} 
               onPress={handleNext}
               disabled={!startAge}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
-          </View>
-        );
-
-      case 'sexually_active_age':
-        return (
-          <View style={styles.sexuallyActiveContainer}>
-            <Text style={styles.questionTitle}>How old were you when your first became sexually active ?</Text>
-            <View style={styles.optionsContainer}>
-              {[
-                'Never',
-                'Before 13',
-                '14 - 17',
-                '18 -24',
-                '25 - 30',
-                '30 - 40',
-                '40+'
-              ].map((option) => (
-                <TouchableOpacity
-                  key={option}
-                  style={[styles.optionButton, sexuallyActiveAge === option && styles.optionButtonSelected]}
-                  onPress={() => setSexuallyActiveAge(option)}
-                >
-                  <Text style={styles.optionButtonText}>{option}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <TouchableOpacity 
-              style={[styles.continueButton, !sexuallyActiveAge && styles.continueButtonDisabled]} 
-              onPress={handleNext}
-              disabled={!sexuallyActiveAge}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
-          </View>
-        );
-
-      case 'porn_increase':
-        return (
-          <View style={styles.pornIncreaseContainer}>
-            <Text style={styles.questionTitle}>Has the amount of porn you watch increased over time ?</Text>
-            <View style={styles.optionsContainer}>
-              {[
-                'Yes',
-                'No'
-              ].map((option) => (
-                <TouchableOpacity
-                  key={option}
-                  style={[styles.optionButton, pornIncrease === option && styles.optionButtonSelected]}
-                  onPress={() => setPornIncrease(option)}
-                >
-                  <Text style={styles.optionButtonText}>{option}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <TouchableOpacity 
-              style={[styles.continueButton, !pornIncrease && styles.continueButtonDisabled]} 
-              onPress={handleNext}
-              disabled={!pornIncrease}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
-          </View>
-        );
-
-      case 'explicit_content':
-        return (
-          <View style={styles.explicitContentContainer}>
-            <Text style={styles.questionTitle}>Have you started to watch content that is more explicit or extreme over time ?</Text>
-            <View style={styles.optionsContainer}>
-              {[
-                'Yes',
-                'No'
-              ].map((option) => (
-                <TouchableOpacity
-                  key={option}
-                  style={[styles.optionButton, explicitContent === option && styles.optionButtonSelected]}
-                  onPress={() => setExplicitContent(option)}
-                >
-                  <Text style={styles.optionButtonText}>{option}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <TouchableOpacity 
-              style={[styles.continueButton, !explicitContent && styles.continueButtonDisabled]} 
-              onPress={handleNext}
-              disabled={!explicitContent}
             >
               <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
@@ -791,40 +629,117 @@ export default function Onboarding() {
           </View>
         );
 
+      case 'choose_plan':
+        return (
+          <View style={styles.choosePlanContainer}>
+            <Text style={styles.choosePlanTitle}>Choose your commitment</Text>
+            <TouchableOpacity 
+              style={[styles.planOption, selectedPlan === 'yearly' && styles.planOptionSelected]}
+              onPress={() => setSelectedPlan('yearly')}
+            >
+              <View style={styles.planOptionHeader}>
+                <Text style={styles.planOptionTitle}>Yearly</Text>
+                <View style={styles.planBadge}>
+                  <Text style={styles.planBadgeText}>BEST VALUE</Text>
+                </View>
+              </View>
+              <Text style={styles.planPrice}>$8.33/month</Text>
+              <Text style={styles.planSavings}>Save 58%</Text>
+              <Text style={styles.planTotal}>$99.99 billed yearly</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.planOption, selectedPlan === 'monthly' && styles.planOptionSelected]}
+              onPress={() => setSelectedPlan('monthly')}
+            >
+              <Text style={styles.planOptionTitle}>Monthly</Text>
+              <Text style={styles.planPrice}>$19.99/month</Text>
+              <Text style={styles.planTotal}>Billed monthly</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={[styles.continueButton, !selectedPlan && styles.continueButtonDisabled]} 
+              onPress={handleNext}
+              disabled={!selectedPlan}
+            >
+              <Text style={styles.continueButtonText}>Continue</Text>
+            </TouchableOpacity>
+            <Text style={styles.termsText}>7-day free trial • Cancel anytime</Text>
+          </View>
+        );
+
+      case 'success':
+        return (
+          <View style={styles.successContainer}>
+            <View style={styles.successIcon}>
+              <Ionicons name="checkmark-circle" size={80} color="#4CAF50" />
+            </View>
+            <Text style={styles.successTitle}>Welcome to Seed!</Text>
+            <Text style={styles.successSubtitle}>Your journey to freedom starts now</Text>
+            <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
+              <Text style={styles.continueButtonText}>Continue</Text>
+            </TouchableOpacity>
+          </View>
+        );
 
       case 'notification':
         return (
           <View style={styles.notificationContainer}>
-            <Text style={styles.notificationTitle}>Increase your willpower with some notification buffs</Text>
-            <View style={styles.notificationCard}>
-              <Text style={styles.notificationCardTitle}>Seed Would Like to Send You Notifications</Text>
-              <Text style={styles.notificationCardSubtext}>Notifications may include alerts, sounds, and icon badges. These can be configured in Settings.</Text>
-              <View style={styles.notificationButtonsRow}>
-                <TouchableOpacity style={styles.dontAllowButton} onPress={handleNext}>
-                  <Text style={styles.dontAllowButtonText}>Don't Allow</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.allowButton} onPress={handleNext}>
-                  <Text style={styles.allowButtonText}>Allow</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            <View style={styles.notificationPreviewCard}>
-              <View style={styles.notificationPreviewHeader}>
-                <View style={styles.notificationPreviewIcon}>
-                  <Text style={styles.notificationPreviewIconText}>🟣</Text>
-                </View>
-                <View style={styles.notificationPreviewDetails}>
-                  <Text style={styles.notificationPreviewApp}>nafs</Text>
-                  <Text style={styles.notificationPreviewTime}>now</Text>
-                </View>
-              </View>
-              <Text style={styles.notificationPreviewTitle}>Don't lose your streak!</Text>
-              <Text style={styles.notificationPreviewBody}>Small steps compound to big results.</Text>
-              <Text style={styles.notificationPreviewMore}>3 more notifications</Text>
-            </View>
+            <Ionicons name="notifications" size={60} color="#5B8DFF" style={styles.notificationIcon} />
+            <Text style={styles.notificationTitle}>Daily check-ins keep you on track</Text>
+            <Text style={styles.notificationSubtitle}>Get reminded to log your progress and stay accountable</Text>
+            <TouchableOpacity style={styles.enableButton} onPress={handleNext}>
+              <Text style={styles.enableButtonText}>Enable Notifications</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.skipButton} onPress={handleNext}>
+              <Text style={styles.skipButtonText}>Not now</Text>
+            </TouchableOpacity>
           </View>
         );
 
+      case 'notification_time':
+        return (
+          <View style={styles.notificationTimeContainer}>
+            <Text style={styles.notificationTimeTitle}>What time works best for your daily check-in?</Text>
+            <View style={styles.timeOptions}>
+              {[
+                'Morning (8 AM)',
+                'Afternoon (2 PM)',
+                'Evening (7 PM)',
+                'Night (10 PM)'
+              ].map((time) => (
+                <TouchableOpacity
+                  key={time}
+                  style={[styles.timeOption, notificationTime === time && styles.timeOptionSelected]}
+                  onPress={() => setNotificationTime(time)}
+                >
+                  <Text style={[styles.timeOptionText, notificationTime === time && styles.timeOptionTextSelected]}>
+                    {time}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <TouchableOpacity 
+              style={[styles.continueButton, !notificationTime && styles.continueButtonDisabled]} 
+              onPress={handleNext}
+              disabled={!notificationTime}
+            >
+              <Text style={styles.continueButtonText}>Set Reminder</Text>
+            </TouchableOpacity>
+          </View>
+        );
+
+      case 'notification_time_2':
+        return (
+          <View style={styles.customTimeContainer}>
+            <Text style={styles.customTimeTitle}>Or set a custom time</Text>
+            <TouchableOpacity style={styles.timePickerButton} onPress={handleNext}>
+              <Ionicons name="time" size={24} color="#5B8DFF" />
+              <Text style={styles.timePickerText}>Select Time</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
+              <Text style={styles.continueButtonText}>Continue</Text>
+            </TouchableOpacity>
+          </View>
+        );
 
       case 'wakeup':
         return (
@@ -910,173 +825,152 @@ export default function Onboarding() {
           </View>
         );
 
-      case 'religious':
+      case 'partner':
         return (
-          <View style={styles.religiousContainer}>
-            <Text style={styles.questionTitle}>Are you religious ?</Text>
-            <View style={styles.optionsContainer}>
-              {[
-                'Not Religious',
-                'Christian',
-                'Muslim',
-                'Hindu',
-                'Buddhist',
-                'Judaism',
-                'Other'
-              ].map((option) => (
-                <TouchableOpacity
-                  key={option}
-                  style={[styles.optionButton, religious === option && styles.optionButtonSelected]}
-                  onPress={() => setReligious(option)}
-                >
-                  <Text style={styles.optionButtonText}>{option}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
+          <View style={styles.partnerContainer}>
+            <Text style={styles.partnerTitle}>Are you in a relationship?</Text>
+            <Text style={styles.partnerSubtitle}>We'll provide specific guidance for your situation</Text>
+            <TouchableOpacity
+              style={[styles.partnerOption, hasPartner === 'yes' && styles.partnerOptionSelected]}
+              onPress={() => setHasPartner('yes')}
+            >
+              <Text style={[styles.partnerOptionText, hasPartner === 'yes' && styles.partnerOptionTextSelected]}>Yes</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.partnerOption, hasPartner === 'no' && styles.partnerOptionSelected]}
+              onPress={() => setHasPartner('no')}
+            >
+              <Text style={[styles.partnerOptionText, hasPartner === 'no' && styles.partnerOptionTextSelected]}>No</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.partnerOption, hasPartner === 'complicated' && styles.partnerOptionSelected]}
+              onPress={() => setHasPartner('complicated')}
+            >
+              <Text style={[styles.partnerOptionText, hasPartner === 'complicated' && styles.partnerOptionTextSelected]}>It's complicated</Text>
+            </TouchableOpacity>
             <TouchableOpacity 
-              style={[styles.continueButton, !religious && styles.continueButtonDisabled]} 
+              style={[styles.continueButton, !hasPartner && styles.continueButtonDisabled]} 
               onPress={handleNext}
-              disabled={!religious}
+              disabled={!hasPartner}
             >
               <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
           </View>
         );
 
-      case 'last_relapse':
+      case 'goal':
         return (
-          <View style={styles.lastRelapseContainer}>
-            <Text style={styles.questionTitle}>When was your last relapse ?</Text>
-            <View style={styles.optionsContainer}>
+          <View style={styles.goalContainer}>
+            <Text style={styles.goalTitle}>What's your main goal?</Text>
+            <ScrollView style={styles.goalScroll}>
               {[
-                'Today',
-                'Yesterday',
-                '2 days ago',
-                '3 days ago',
-                '4 days ago',
-                'A week ago',
-                '2 weeks ago'
-              ].map((option) => (
+                'Complete abstinence from porn',
+                'Reduce frequency significantly',
+                'Break compulsive habits',
+                'Improve intimate relationships',
+                'Increase productivity',
+                'Better mental health',
+                'Spiritual growth'
+              ].map((goalOption) => (
                 <TouchableOpacity
-                  key={option}
-                  style={[styles.optionButton, lastRelapse === option && styles.optionButtonSelected]}
-                  onPress={() => setLastRelapse(option)}
+                  key={goalOption}
+                  style={[styles.goalOption, goal === goalOption && styles.goalOptionSelected]}
+                  onPress={() => setGoal(goalOption)}
                 >
-                  <Text style={styles.optionButtonText}>{option}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <TouchableOpacity 
-              style={[styles.continueButton, !lastRelapse && styles.continueButtonDisabled]} 
-              onPress={handleNext}
-              disabled={!lastRelapse}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
-          </View>
-        );
-
-      case 'symptoms':
-        return (
-          <View style={styles.symptomsContainer}>
-            <Text style={styles.symptomsTitle}>High reliance on porn may lead to these common symptoms</Text>
-            <ScrollView style={styles.scrollContainer}>
-              {[
-                'Fatigue and low energy',
-                'Weakened erection',
-                'Decreased libido',
-                'Anxiety and stress',
-                'Low motivation',
-                'Social isolation',
-                'Low focus and concentration'
-              ].map((option) => (
-                <TouchableOpacity
-                  key={option}
-                  style={styles.checkboxContainer}
-                  onPress={() => {
-                    if (symptoms.includes(option)) {
-                      setSymptoms(symptoms.filter(s => s !== option));
-                    } else {
-                      setSymptoms([...symptoms, option]);
-                    }
-                  }}
-                >
-                  <View style={[styles.checkbox, symptoms.includes(option) && styles.checkboxSelected]}>
-                    {symptoms.includes(option) && <View style={styles.radioInner} />}
-                  </View>
-                  <Text style={styles.checkboxText}>{option}</Text>
+                  <Text style={[styles.goalOptionText, goal === goalOption && styles.goalOptionTextSelected]}>
+                    {goalOption}
+                  </Text>
                 </TouchableOpacity>
               ))}
             </ScrollView>
             <TouchableOpacity 
-              style={styles.continueButton} 
+              style={[styles.continueButton, !goal && styles.continueButtonDisabled]} 
               onPress={handleNext}
+              disabled={!goal}
             >
               <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
           </View>
         );
 
-      case 'graph':
+      case 'frequency':
         return (
-          <View style={styles.graphContainer}>
-            <Text style={styles.graphTitle}>Quit porn forever in as little as 34 days.</Text>
-            <View style={styles.graphPlaceholder}>
-              <Text style={styles.graphPlaceholderText}>Graph visualization</Text>
+          <View style={styles.frequencyContainer}>
+            <Text style={styles.frequencyTitle}>How often do you currently watch porn?</Text>
+            <Text style={styles.frequencySubtitle}>Be honest - this is a judgement-free zone</Text>
+            <View style={styles.frequencyOptions}>
+              {[
+                'Multiple times daily',
+                'Once daily',
+                '3-5 times per week',
+                '1-2 times per week',
+                'Few times per month',
+                'Rarely'
+              ].map((freq) => (
+                <TouchableOpacity
+                  key={freq}
+                  style={[styles.frequencyOption, frequency === freq && styles.frequencyOptionSelected]}
+                  onPress={() => setFrequency(freq)}
+                >
+                  <Text style={[styles.frequencyOptionText, frequency === freq && styles.frequencyOptionTextSelected]}>
+                    {freq}
+                  </Text>
+                </TouchableOpacity>
+              ))}
             </View>
-            <Text style={styles.graphSubtitle}>The key milestones are</Text>
-            <View style={styles.graphItems}>
-              <View style={styles.graphItem}>
-                <Text style={styles.graphIcon}>🟠</Text>
-                <Text style={styles.graphItemText}>Reduced anxiety and depression symptoms by around 20-30%.</Text>
-              </View>
-              <View style={styles.graphItem}>
-                <Text style={styles.graphIcon}>🟢</Text>
-                <Text style={styles.graphItemText}>Enhanced focus and cognitive performance, with improvements of 30-50%.</Text>
-              </View>
-              <View style={styles.graphItem}>
-                <Text style={styles.graphIcon}>🔵</Text>
-                <Text style={styles.graphItemText}>Increased relationship satisfaction by around 15-20%.</Text>
-              </View>
-            </View>
-            <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
+            <TouchableOpacity 
+              style={[styles.continueButton, !frequency && styles.continueButtonDisabled]} 
+              onPress={handleNext}
+              disabled={!frequency}
+            >
               <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
           </View>
         );
 
-      case 'commitment':
+      case 'trigger':
         return (
-          <View style={styles.commitmentContainer}>
-            <Text style={styles.commitmentTitle}>Let's commit.</Text>
-            <Text style={styles.commitmentSubtitle}>From this day onwards, I commit to</Text>
-            <View style={styles.commitmentItems}>
-              <View style={styles.commitmentItem}>
-                <Ionicons name="checkmark-circle" size={24} color="#5B8DFF" />
-                <Text style={styles.commitmentItemText}>Prioritizing my mental and physical</Text>
-              </View>
-              <View style={styles.commitmentItem}>
-                <Ionicons name="checkmark-circle" size={24} color="#5B8DFF" />
-                <Text style={styles.commitmentItemText}>Staying focused and productive</Text>
-              </View>
-              <View style={styles.commitmentItem}>
-                <Ionicons name="checkmark-circle" size={24} color="#5B8DFF" />
-                <Text style={styles.commitmentItemText}>Letting go of my past self</Text>
-              </View>
-              <View style={styles.commitmentItem}>
-                <Ionicons name="checkmark-circle" size={24} color="#5B8DFF" />
-                <Text style={styles.commitmentItemText}>Becoming the person I want to be</Text>
-              </View>
-            </View>
-            <View style={styles.signatureBox}>
-              <Text style={styles.signatureText}>Your signature is not recorded</Text>
-            </View>
-            <TouchableOpacity style={styles.commitButton} onPress={handleNext}>
-              <Text style={styles.commitButtonText}>I commit to myself</Text>
+          <View style={styles.triggerContainer}>
+            <Text style={styles.triggerTitle}>What usually triggers you?</Text>
+            <Text style={styles.triggerSubtitle}>Select all that apply</Text>
+            <ScrollView style={styles.triggerScroll}>
+              {[
+                'Stress or anxiety',
+                'Boredom',
+                'Loneliness',
+                'Before sleep',
+                'Morning routine',
+                'Social media',
+                'Being alone',
+                'Relationship issues'
+              ].map((trigger) => (
+                <TouchableOpacity
+                  key={trigger}
+                  style={styles.checkboxContainer}
+                  onPress={() => {
+                    if (triggers.includes(trigger)) {
+                      setTriggers(triggers.filter(t => t !== trigger));
+                    } else {
+                      setTriggers([...triggers, trigger]);
+                    }
+                  }}
+                >
+                  <View style={[styles.checkbox, triggers.includes(trigger) && styles.checkboxSelected]}>
+                    {triggers.includes(trigger) && <Ionicons name="checkmark" size={16} color="#FFFFFF" />}
+                  </View>
+                  <Text style={styles.checkboxText}>{trigger}</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+            <TouchableOpacity 
+              style={[styles.continueButton, triggers.length === 0 && styles.continueButtonDisabled]} 
+              onPress={handleNext}
+              disabled={triggers.length === 0}
+            >
+              <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
           </View>
         );
-
 
       case 'signup':
         return (
@@ -1128,6 +1022,16 @@ export default function Onboarding() {
         )}
         {renderScreen()}
       </SafeAreaView>
+      {currentStep === 0 && (
+        <View style={styles.gradientOrbContainer}>
+          <LinearGradient
+            colors={['#5B8DFF', '#8B5CF6', '#A78BFA', 'transparent']}
+            style={styles.gradientOrb}
+            start={{ x: 0.5, y: 0 }}
+            end={{ x: 0.5, y: 1 }}
+          />
+        </View>
+      )}
     </View>
   );
 }
@@ -1135,7 +1039,7 @@ export default function Onboarding() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000',
+    backgroundColor: '#0A0A1B',
     ...(Platform.OS === 'web' ? { height: '100vh' } : {}),
   },
   safeArea: {
@@ -1151,7 +1055,7 @@ const styles = StyleSheet.create({
   progressBarContainer: {
     flex: 1,
     height: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: '#1A1A3A',
     marginLeft: 20,
     borderRadius: 2,
     overflow: 'hidden',
@@ -1169,7 +1073,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 30,
   },
   starsContainer: {
     position: 'absolute',
@@ -1182,67 +1086,63 @@ const styles = StyleSheet.create({
     position: 'absolute',
     backgroundColor: '#FFFFFF',
     borderRadius: 50,
-    opacity: 0.2,
+    opacity: 0.3,
   },
   welcomeContent: {
     alignItems: 'center',
-    marginBottom: 60,
+    marginBottom: 80,
   },
   welcomeTitle: {
-    fontSize: 56,
-    fontFamily: 'DMSerifDisplay_400Regular',
+    fontSize: 52,
+    fontWeight: '700',
     color: '#FFFFFF',
     textAlign: 'center',
-    lineHeight: 64,
-    marginBottom: 16,
-    letterSpacing: -2,
+    lineHeight: 58,
+    marginBottom: 24,
+    letterSpacing: -0.5,
+    fontFamily: Platform.OS === 'ios' ? 'System' : 'sans-serif',
   },
   welcomeSubtitle: {
-    fontSize: 22,
+    fontSize: 20,
     color: '#FFFFFF',
     textAlign: 'center',
-    lineHeight: 32,
+    lineHeight: 28,
     opacity: 0.85,
-    fontFamily: 'DMSans_400Regular',
+    fontWeight: '400',
   },
   welcomeButton: {
     backgroundColor: '#5B8DFF',
-    paddingHorizontal: 80,
-    paddingVertical: 18,
-    borderRadius: 32,
+    paddingHorizontal: 60,
+    paddingVertical: 16,
+    borderRadius: 25,
     marginBottom: 20,
-    width: '100%',
-    maxWidth: 380,
-    alignItems: 'center',
   },
   welcomeButtonText: {
     color: '#FFFFFF',
-    fontSize: 20,
-    fontFamily: 'DMSans_500Medium',
+    fontSize: 18,
+    fontWeight: '600',
   },
   loginButton: {
-    marginTop: 20,
+    marginTop: 10,
   },
   loginButtonText: {
     color: '#FFFFFF',
-    fontSize: 18,
-    fontFamily: 'DMSans_400Regular',
+    fontSize: 16,
+    fontWeight: '400',
     textDecorationLine: 'underline',
-    opacity: 0.7,
   },
   gradientOrbContainer: {
     position: 'absolute',
-    bottom: -400,
+    bottom: -250,
     left: 0,
     right: 0,
     alignItems: 'center',
-    pointerEvents: 'none',
   },
   gradientOrb: {
-    width: 800,
-    height: 800,
-    borderRadius: 400,
-    opacity: 0.3,
+    width: 700,
+    height: 700,
+    borderRadius: 350,
+    opacity: 0.4,
   },
   statsContainer: {
     flex: 1,
@@ -1250,32 +1150,32 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   statsTitle: {
-    fontSize: 32,
-    fontFamily: 'DMSerifDisplay_400Regular',
+    fontSize: 28,
+    fontWeight: '700',
     color: '#FFFFFF',
-    lineHeight: 40,
-    marginBottom: 48,
+    lineHeight: 36,
+    marginBottom: 40,
   },
   statsBig: {
     marginBottom: 20,
   },
   statsBigNumber: {
-    fontSize: 90,
-    fontFamily: 'DMSerifDisplay_400Regular',
+    fontSize: 72,
+    fontWeight: '700',
     color: '#FFFFFF',
-    lineHeight: 90,
+    lineHeight: 72,
   },
   statsBigUnit: {
-    fontSize: 36,
-    fontFamily: 'DMSans_400Regular',
+    fontSize: 32,
+    fontWeight: '400',
     color: '#FFFFFF',
-    lineHeight: 40,
+    lineHeight: 36,
   },
   statsDescription: {
-    fontSize: 20,
+    fontSize: 18,
     color: '#5B8DFF',
-    marginBottom: 48,
-    lineHeight: 28,
+    marginBottom: 40,
+    lineHeight: 24,
   },
   statsItems: {
     marginBottom: 60,
@@ -1286,29 +1186,29 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   statsIcon: {
-    fontSize: 28,
-    marginRight: 16,
+    fontSize: 24,
+    marginRight: 15,
   },
   statsItemText: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#FFFFFF',
-    lineHeight: 24,
+    lineHeight: 22,
     flex: 1,
-    opacity: 0.9,
   },
   continueButton: {
     backgroundColor: '#5B8DFF',
-    paddingVertical: 20,
-    borderRadius: 40,
+    paddingVertical: 16,
+    borderRadius: 25,
     alignItems: 'center',
-    marginTop: 20,
-    marginHorizontal: 30,
-    marginBottom: 40,
+    position: 'absolute',
+    bottom: 40,
+    left: 30,
+    right: 30,
   },
   continueButtonText: {
     color: '#FFFFFF',
-    fontSize: 20,
-    fontFamily: 'DMSans_500Medium',
+    fontSize: 18,
+    fontWeight: '600',
   },
   communityContainer: {
     flex: 1,
@@ -1316,25 +1216,24 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   communityTitle: {
-    fontSize: 40,
-    fontFamily: 'DMSerifDisplay_400Regular',
+    fontSize: 36,
+    fontWeight: '700',
     color: '#FFFFFF',
-    marginBottom: 16,
+    marginBottom: 10,
   },
   communitySubtitle: {
-    fontSize: 20,
-    fontFamily: 'DMSans_400Regular',
+    fontSize: 18,
     color: '#FFFFFF',
-    opacity: 0.7,
-    marginBottom: 48,
+    opacity: 0.8,
+    marginBottom: 40,
   },
   communityCard: {
-    backgroundColor: '#1A1A2E',
-    borderRadius: 24,
-    padding: 32,
+    backgroundColor: '#1A1A3A',
+    borderRadius: 20,
+    padding: 30,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#2A2A3E',
+    borderColor: '#2A2A4A',
   },
   communityEmoji: {
     fontSize: 48,
@@ -1378,7 +1277,7 @@ const styles = StyleSheet.create({
   healingPlaceholder: {
     width: 300,
     height: 300,
-    backgroundColor: '#1A1A2E',
+    backgroundColor: '#1A1A3A',
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
@@ -1393,11 +1292,11 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   lifeTitle: {
-    fontSize: 40,
-    fontWeight: '600',
+    fontSize: 36,
+    fontWeight: '700',
     color: '#FFFFFF',
-    lineHeight: 48,
-    marginBottom: 48,
+    lineHeight: 44,
+    marginBottom: 40,
   },
   lifeGrid: {
     flexDirection: 'row',
@@ -1406,26 +1305,26 @@ const styles = StyleSheet.create({
   },
   lifeItem: {
     width: '48%',
-    backgroundColor: '#1A1A2E',
-    borderRadius: 24,
-    padding: 24,
-    marginBottom: 16,
+    backgroundColor: '#1A1A3A',
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 15,
     alignItems: 'center',
   },
   lifeIcon: {
-    fontSize: 40,
-    marginBottom: 12,
+    fontSize: 36,
+    marginBottom: 10,
   },
   lifeItemTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: '600',
     color: '#FFFFFF',
-    marginBottom: 6,
+    marginBottom: 5,
   },
   lifeItemSubtitle: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#FFFFFF',
-    opacity: 0.6,
+    opacity: 0.7,
     textAlign: 'center',
   },
   transformContainer: {
@@ -1444,7 +1343,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   testimonial: {
-    backgroundColor: '#1A1A2E',
+    backgroundColor: '#1A1A3A',
     borderRadius: 20,
     padding: 20,
     marginBottom: 15,
@@ -1478,7 +1377,7 @@ const styles = StyleSheet.create({
   },
   questionTitle: {
     fontSize: 32,
-    fontFamily: 'DMSerifDisplay_400Regular',
+    fontWeight: '700',
     color: '#FFFFFF',
     lineHeight: 40,
     marginBottom: 40,
@@ -1487,21 +1386,23 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   optionButton: {
-    backgroundColor: '#5B8DFF',
-    borderRadius: 30,
+    backgroundColor: '#1A1A3A',
+    borderRadius: 25,
     paddingVertical: 20,
-    paddingHorizontal: 32,
-    marginBottom: 12,
-    borderWidth: 0,
+    paddingHorizontal: 30,
+    marginBottom: 15,
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
   optionButtonSelected: {
-    backgroundColor: '#5B8DFF',
+    borderColor: '#5B8DFF',
+    backgroundColor: '#2A2A4A',
   },
   optionButtonText: {
-    fontSize: 20,
+    fontSize: 18,
     color: '#FFFFFF',
     textAlign: 'center',
-    fontFamily: 'DMSans_500Medium',
+    fontWeight: '500',
   },
   // Motivation styles
   motivationContainer: {
@@ -1511,40 +1412,33 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flex: 1,
+    marginBottom: 100,
   },
   checkboxContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#5B8DFF',
-    borderRadius: 40,
-    padding: 22,
-    marginBottom: 16,
+    backgroundColor: '#1A1A3A',
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 12,
   },
   checkbox: {
     width: 24,
     height: 24,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: '#FFFFFF',
-    backgroundColor: 'transparent',
-    marginRight: 16,
+    borderColor: '#5B8DFF',
+    marginRight: 15,
     alignItems: 'center',
     justifyContent: 'center',
   },
   checkboxSelected: {
-    borderColor: '#FFFFFF',
-  },
-  radioInner: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#5B8DFF',
   },
   checkboxText: {
-    fontSize: 18,
+    fontSize: 16,
     color: '#FFFFFF',
     flex: 1,
-    fontFamily: 'DMSans_500Medium',
   },
   continueButtonDisabled: {
     opacity: 0.5,
@@ -1571,7 +1465,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   blockersCard: {
-    backgroundColor: '#1A1A2E',
+    backgroundColor: '#1A1A3A',
     borderRadius: 20,
     padding: 30,
     alignItems: 'center',
@@ -1595,9 +1489,9 @@ const styles = StyleSheet.create({
   },
   installButton: {
     backgroundColor: '#5B8DFF',
-    paddingVertical: 20,
+    paddingVertical: 16,
     paddingHorizontal: 60,
-    borderRadius: 40,
+    borderRadius: 25,
     marginBottom: 15,
   },
   installButtonText: {
@@ -1637,7 +1531,7 @@ const styles = StyleSheet.create({
   phoneMockup: {
     width: 250,
     height: 500,
-    backgroundColor: '#1A1A2E',
+    backgroundColor: '#1A1A3A',
     borderRadius: 30,
     justifyContent: 'center',
     alignItems: 'center',
@@ -1673,7 +1567,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   scienceItem: {
-    backgroundColor: '#1A1A2E',
+    backgroundColor: '#1A1A3A',
     borderRadius: 20,
     padding: 20,
     marginBottom: 15,
@@ -1719,7 +1613,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#1A1A2E',
+    backgroundColor: '#1A1A3A',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
@@ -1728,7 +1622,7 @@ const styles = StyleSheet.create({
   },
   milestoneCircleHighlight: {
     borderColor: '#5B8DFF',
-    backgroundColor: '#2A2A3E',
+    backgroundColor: '#2A2A4A',
   },
   milestoneNumber: {
     fontSize: 28,
@@ -1749,7 +1643,7 @@ const styles = StyleSheet.create({
   milestoneLine: {
     width: 2,
     height: 40,
-    backgroundColor: '#2A2A3E',
+    backgroundColor: '#2A2A4A',
     marginBottom: 20,
   },
   // Plan styles
@@ -1767,7 +1661,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   planCard: {
-    backgroundColor: '#1A1A2E',
+    backgroundColor: '#1A1A3A',
     borderRadius: 20,
     padding: 30,
     marginBottom: 40,
@@ -1792,12 +1686,12 @@ const styles = StyleSheet.create({
   },
   getStartedButton: {
     backgroundColor: '#5B8DFF',
-    paddingVertical: 20,
-    borderRadius: 40,
+    paddingVertical: 16,
+    borderRadius: 25,
     position: 'absolute',
-    bottom: 50,
-    left: 20,
-    right: 20,
+    bottom: 40,
+    left: 30,
+    right: 30,
   },
   getStartedButtonText: {
     color: '#FFFFFF',
@@ -1819,7 +1713,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   planOption: {
-    backgroundColor: '#1A1A2E',
+    backgroundColor: '#1A1A3A',
     borderRadius: 20,
     padding: 20,
     marginBottom: 15,
@@ -1828,7 +1722,7 @@ const styles = StyleSheet.create({
   },
   planOptionSelected: {
     borderColor: '#5B8DFF',
-    backgroundColor: '#2A2A3E',
+    backgroundColor: '#2A2A4A',
   },
   planOptionHeader: {
     flexDirection: 'row',
@@ -1870,7 +1764,6 @@ const styles = StyleSheet.create({
   },
   termsText: {
     fontSize: 12,
-    fontFamily: 'DMSans_300Light',
     color: '#FFFFFF',
     opacity: 0.5,
     textAlign: 'center',
@@ -1901,117 +1794,32 @@ const styles = StyleSheet.create({
   // Notification styles
   notificationContainer: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 30,
-    paddingTop: 40,
+  },
+  notificationIcon: {
+    marginBottom: 30,
   },
   notificationTitle: {
-    fontSize: 32,
-    fontWeight: '600',
+    fontSize: 28,
+    fontWeight: '700',
     color: '#FFFFFF',
-    textAlign: 'center',
-    lineHeight: 40,
-    marginBottom: 40,
-  },
-  notificationCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 14,
-    padding: 20,
-    marginBottom: 40,
-  },
-  notificationCardTitle: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: '#000000',
     textAlign: 'center',
     marginBottom: 10,
   },
-  notificationCardSubtext: {
-    fontSize: 13,
-    color: '#666666',
-    textAlign: 'center',
-    marginBottom: 20,
-    lineHeight: 18,
-  },
-  notificationButtonsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E5E5',
-    paddingTop: 15,
-  },
-  dontAllowButton: {
-    flex: 1,
-  },
-  dontAllowButtonText: {
-    fontSize: 17,
-    color: '#007AFF',
-    textAlign: 'center',
-  },
-  allowButton: {
-    flex: 1,
-  },
-  allowButtonText: {
-    fontSize: 17,
-    color: '#007AFF',
-    textAlign: 'center',
-    fontWeight: '600',
-  },
-  notificationPreviewCard: {
-    backgroundColor: '#F2F2F7',
-    borderRadius: 14,
-    padding: 16,
-    marginTop: 40,
-  },
-  notificationPreviewHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  notificationPreviewIcon: {
-    width: 30,
-    height: 30,
-    borderRadius: 6,
-    backgroundColor: '#8B85F0',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 8,
-  },
-  notificationPreviewIconText: {
+  notificationSubtitle: {
     fontSize: 16,
-  },
-  notificationPreviewDetails: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  notificationPreviewApp: {
-    fontSize: 13,
-    color: '#666666',
-  },
-  notificationPreviewTime: {
-    fontSize: 13,
-    color: '#999999',
-  },
-  notificationPreviewTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#000000',
-    marginBottom: 4,
-  },
-  notificationPreviewBody: {
-    fontSize: 15,
-    color: '#666666',
-    marginBottom: 8,
-  },
-  notificationPreviewMore: {
-    fontSize: 13,
-    color: '#999999',
+    color: '#FFFFFF',
+    opacity: 0.8,
+    textAlign: 'center',
+    marginBottom: 40,
   },
   enableButton: {
     backgroundColor: '#5B8DFF',
-    paddingVertical: 20,
+    paddingVertical: 16,
     paddingHorizontal: 60,
-    borderRadius: 40,
+    borderRadius: 25,
     marginBottom: 15,
   },
   enableButtonText: {
@@ -2036,7 +1844,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   timeOption: {
-    backgroundColor: '#1A1A2E',
+    backgroundColor: '#1A1A3A',
     borderRadius: 20,
     padding: 20,
     marginBottom: 15,
@@ -2045,7 +1853,7 @@ const styles = StyleSheet.create({
   },
   timeOptionSelected: {
     borderColor: '#5B8DFF',
-    backgroundColor: '#2A2A3E',
+    backgroundColor: '#2A2A4A',
   },
   timeOptionText: {
     fontSize: 18,
@@ -2071,7 +1879,7 @@ const styles = StyleSheet.create({
   timePickerButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1A1A2E',
+    backgroundColor: '#1A1A3A',
     borderRadius: 20,
     padding: 20,
     marginBottom: 40,
@@ -2120,7 +1928,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   timeSlot: {
-    backgroundColor: '#1A1A2E',
+    backgroundColor: '#1A1A3A',
     borderRadius: 20,
     padding: 18,
     marginBottom: 12,
@@ -2129,7 +1937,7 @@ const styles = StyleSheet.create({
   },
   timeSlotSelected: {
     borderColor: '#5B8DFF',
-    backgroundColor: '#2A2A3E',
+    backgroundColor: '#2A2A4A',
   },
   timeSlotText: {
     fontSize: 16,
@@ -2169,7 +1977,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   partnerOption: {
-    backgroundColor: '#1A1A2E',
+    backgroundColor: '#1A1A3A',
     borderRadius: 25,
     paddingVertical: 20,
     paddingHorizontal: 30,
@@ -2179,7 +1987,7 @@ const styles = StyleSheet.create({
   },
   partnerOptionSelected: {
     borderColor: '#5B8DFF',
-    backgroundColor: '#2A2A3E',
+    backgroundColor: '#2A2A4A',
   },
   partnerOptionText: {
     fontSize: 18,
@@ -2206,7 +2014,7 @@ const styles = StyleSheet.create({
     marginBottom: 100,
   },
   goalOption: {
-    backgroundColor: '#1A1A2E',
+    backgroundColor: '#1A1A3A',
     borderRadius: 20,
     padding: 20,
     marginBottom: 12,
@@ -2215,7 +2023,7 @@ const styles = StyleSheet.create({
   },
   goalOptionSelected: {
     borderColor: '#5B8DFF',
-    backgroundColor: '#2A2A3E',
+    backgroundColor: '#2A2A4A',
   },
   goalOptionText: {
     fontSize: 16,
@@ -2247,7 +2055,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   frequencyOption: {
-    backgroundColor: '#1A1A2E',
+    backgroundColor: '#1A1A3A',
     borderRadius: 20,
     padding: 18,
     marginBottom: 12,
@@ -2256,7 +2064,7 @@ const styles = StyleSheet.create({
   },
   frequencyOptionSelected: {
     borderColor: '#5B8DFF',
-    backgroundColor: '#2A2A3E',
+    backgroundColor: '#2A2A4A',
   },
   frequencyOptionText: {
     fontSize: 16,
@@ -2311,7 +2119,7 @@ const styles = StyleSheet.create({
   authButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#1A1A2E',
+    backgroundColor: '#1A1A3A',
     borderRadius: 25,
     paddingVertical: 16,
     paddingHorizontal: 30,
@@ -2323,7 +2131,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FFFFFF',
     marginLeft: 10,
-    fontFamily: 'DMSans_500Medium',
+    fontWeight: '500',
   },
   // Complete styles
   completeContainer: {
@@ -2349,159 +2157,13 @@ const styles = StyleSheet.create({
   },
   startJourneyButton: {
     backgroundColor: '#5B8DFF',
-    paddingVertical: 20,
+    paddingVertical: 16,
     paddingHorizontal: 60,
-    borderRadius: 40,
+    borderRadius: 25,
   },
   startJourneyButtonText: {
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '600',
-  },
-  // New screen styles
-  sexuallyActiveContainer: {
-    flex: 1,
-    paddingHorizontal: 30,
-    paddingTop: 40,
-  },
-  pornIncreaseContainer: {
-    flex: 1,
-    paddingHorizontal: 30,
-    paddingTop: 40,
-  },
-  explicitContentContainer: {
-    flex: 1,
-    paddingHorizontal: 30,
-    paddingTop: 40,
-  },
-  religiousContainer: {
-    flex: 1,
-    paddingHorizontal: 30,
-    paddingTop: 40,
-  },
-  lastRelapseContainer: {
-    flex: 1,
-    paddingHorizontal: 30,
-    paddingTop: 40,
-  },
-  symptomsContainer: {
-    flex: 1,
-    paddingHorizontal: 30,
-    paddingTop: 40,
-  },
-  symptomsTitle: {
-    fontSize: 32,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    lineHeight: 40,
-    marginBottom: 32,
-  },
-  graphContainer: {
-    flex: 1,
-    paddingHorizontal: 30,
-    paddingTop: 40,
-  },
-  graphTitle: {
-    fontSize: 32,
-    fontWeight: '600',
-    color: '#FFFFFF',
-    lineHeight: 40,
-    marginBottom: 32,
-  },
-  graphPlaceholder: {
-    width: '100%',
-    height: 200,
-    backgroundColor: '#1A1A2E',
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  graphPlaceholderText: {
-    color: '#5B8DFF',
-    fontSize: 16,
-  },
-  graphSubtitle: {
-    fontSize: 20,
-    color: '#FFFFFF',
-    marginBottom: 20,
-  },
-  graphItems: {
-    marginBottom: 60,
-  },
-  graphItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 16,
-  },
-  graphIcon: {
-    fontSize: 20,
-    marginRight: 12,
-  },
-  graphItemText: {
-    fontSize: 16,
-    color: '#FFFFFF',
-    lineHeight: 22,
-    flex: 1,
-  },
-  commitmentContainer: {
-    flex: 1,
-    paddingHorizontal: 30,
-    paddingTop: 40,
-  },
-  commitmentTitle: {
-    fontSize: 40,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    marginBottom: 8,
-  },
-  commitmentSubtitle: {
-    fontSize: 20,
-    color: '#FFFFFF',
-    marginBottom: 32,
-  },
-  commitmentItems: {
-    marginBottom: 40,
-  },
-  commitmentItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
-  },
-  commitmentItemText: {
-    fontSize: 18,
-    color: '#FFFFFF',
-    marginLeft: 12,
-  },
-  signatureBox: {
-    backgroundColor: '#1A1A2E',
-    borderRadius: 20,
-    height: 150,
-    marginBottom: 32,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-    paddingBottom: 20,
-    borderWidth: 1,
-    borderColor: '#5B8DFF',
-  },
-  signatureText: {
-    fontSize: 14,
-    color: '#FFFFFF',
-    opacity: 0.5,
-  },
-  commitButton: {
-    backgroundColor: '#5B8DFF',
-    paddingVertical: 20,
-    borderRadius: 40,
-    position: 'absolute',
-    bottom: 50,
-    left: 30,
-    right: 30,
-  },
-  commitButtonText: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontWeight: '600',
-    textAlign: 'center',
   },
 });

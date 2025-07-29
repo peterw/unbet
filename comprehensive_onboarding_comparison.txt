@@ -1,0 +1,1262 @@
+=== Comprehensive Onboarding Comparison Report ===
+Generated on: Tue Jul 29 14:57:41 +08 2025
+
+=== Current App Onboarding Flow Mapping ===
+
+Based on app/onboarding.tsx analysis:
+1. Welcome Screen (intro)
+2. Gender Selection
+3. Age Input
+4. Height & Weight
+5. Training Frequency
+6. Training Type
+7. Goals Selection
+8. Diet Selection
+9. Referral Code
+10. Rating Request
+11. Calculate Protein
+12. Results Display
+13. Sign Up
+
+---
+
+=== Page 1 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be the welcome/intro screen. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 2 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be a user input/selection screen. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 3 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be a user input/selection screen. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 4 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be a user input/selection screen. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 5 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be a user input/selection screen. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 6 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be a user input/selection screen. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 7 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be a user input/selection screen. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 8 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be part of the main onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 9 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be part of the main onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 10 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be part of the main onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 11 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be part of the main onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 12 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be part of the main onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 13 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be part of the main onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 14 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be part of the main onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 15 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be part of the main onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 16 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be part of the main onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 17 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be part of the main onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 18 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be part of the main onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 19 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be part of the main onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 20 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be part of the main onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 21 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be near the end of the onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 22 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be near the end of the onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 23 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be near the end of the onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 24 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be near the end of the onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 25 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be near the end of the onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 26 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be near the end of the onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== Page 27 Analysis ===
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown arguments: i, Analyze this onboarding screenshot. This appears to be near the end of the onboarding flow. 
+
+Please provide:
+1. **Screen Description**: What is shown on this screen?
+2. **Current State Assessment**: What works well and what doesn't?
+3. **Specific Improvements Needed**:
+   - Visual Design: Colors, typography, spacing, visual hierarchy
+   - Copy/Messaging: Is the text clear, engaging, and actionable?
+   - User Experience: Is it intuitive? Any friction points?
+   - Call-to-Action: Is the next step clear?
+4. **Implementation Suggestions**: Specific changes to make in the code
+5. **Priority**: High/Medium/Low for this improvement
+
+Be specific and actionable. Consider this is an anti-porn/gambling app called 'Seed' with the tagline 'Unleash your Potential. Leave Porn Behind.'
+
+---
+
+=== IMPLEMENTATION SUMMARY ===
+
+gemini [options]
+
+Gemini CLI - Launch an interactive CLI, use -p/--prompt for non-interactive mode
+
+Options:
+  -m, --model                     Model  [string] [default: "gemini-2.5-pro"]
+  -p, --prompt                    Prompt. Appended to input on stdin (if any).  [string]
+  -s, --sandbox                   Run in sandbox?  [boolean]
+      --sandbox-image             Sandbox image URI.  [string]
+  -d, --debug                     Run in debug mode?  [boolean] [default: false]
+  -a, --all-files                 Include ALL files in context?  [boolean] [default: false]
+      --all_files                 Include ALL files in context?  [deprecated: Use --all-files instead. We will be removing --all_files in the coming weeks.] [boolean] [default: false]
+      --show-memory-usage         Show memory usage in status bar  [boolean] [default: false]
+      --show_memory_usage         Show memory usage in status bar  [deprecated: Use --show-memory-usage instead. We will be removing --show_memory_usage in the coming weeks.] [boolean] [default: false]
+  -y, --yolo                      Automatically accept all actions (aka YOLO mode, see https://www.youtube.com/watch?v=xvFZjo5PgG0 for more details)?  [boolean] [default: false]
+      --telemetry                 Enable telemetry? This flag specifically controls if telemetry is sent. Other --telemetry-* flags set specific values but do not enable telemetry on their own.  [boolean]
+      --telemetry-target          Set the telemetry target (local or gcp). Overrides settings files.  [string] [choices: "local", "gcp"]
+      --telemetry-otlp-endpoint   Set the OTLP endpoint for telemetry. Overrides environment variables and settings files.  [string]
+      --telemetry-log-prompts     Enable or disable logging of user prompts for telemetry. Overrides settings files.  [boolean]
+  -c, --checkpointing             Enables checkpointing of file edits  [boolean] [default: false]
+      --allowed-mcp-server-names  Allowed MCP server names  [array]
+  -e, --extensions                A list of extensions to use. If not provided, all extensions are used.  [array]
+  -l, --list-extensions           List all available extensions and exit.  [boolean]
+  -v, --version                   Show version number  [boolean]
+  -h, --help                      Show help  [boolean]
+
+Unknown argument: Based on the analysis of 27 onboarding screens for an anti-porn app called 'Seed', create a prioritized implementation plan with:
+
+1. **Critical Changes** (implement immediately):
+   - List the most important UI/UX improvements
+   - Focus on conversion killers
+
+2. **High Priority Changes** (implement this week):
+   - Important improvements for user engagement
+   - Quick wins that significantly improve experience
+
+3. **Medium Priority Changes** (implement within 2 weeks):
+   - Nice-to-have improvements
+   - Polish and refinements
+
+4. **Design System Recommendations**:
+   - Color palette suggestions
+   - Typography guidelines
+   - Component standardization
+
+5. **Copy/Messaging Guidelines**:
+   - Tone of voice recommendations
+   - Key messaging points to emphasize
+
+Please be specific and actionable for a React Native app implementation.

@@ -144,6 +144,26 @@ export default function SettingsScreen() {
             <Ionicons name="person-outline" size={24} color={Colors.light.text} />
           </View>
         </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.section}
+          onPress={() => router.push('/onboarding-2')}
+        >
+          <View style={styles.sectionContent}>
+            <Text style={styles.optionText}>Test New Onboarding</Text>
+            <Ionicons name="flask-outline" size={24} color={Colors.light.text} />
+          </View>
+        </TouchableOpacity>
+        
+        <TouchableOpacity
+          style={styles.section}
+          onPress={handlePrivacyPolicy}
+        >
+          <View style={styles.sectionContent}>
+            <Text style={styles.optionText}>Privacy Policy</Text>
+            <Ionicons name="lock-closed-outline" size={24} color={Colors.light.text} />
+          </View>
+        </TouchableOpacity>
       </View>
 
       <View style={styles.sectionGroup}>
