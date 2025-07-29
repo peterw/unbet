@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { isExpoGo } from '@/utils/isExpoGo';
 
 // Only import Adjust on native platforms
 let Adjust: any = {};
@@ -16,7 +17,7 @@ let AdjustEvent: any = class {
   setCurrency() {}
 };
 
-if (Platform.OS !== 'web') {
+if (Platform.OS !== 'web' && !isExpoGo()) {
   try {
     const adjustLib = require('react-native-adjust');
     Adjust = adjustLib.Adjust || adjustLib.default?.Adjust || {};

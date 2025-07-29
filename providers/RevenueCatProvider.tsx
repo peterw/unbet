@@ -4,6 +4,7 @@ import RevenueCatAdjustIntegration from '@/utils/revenueCatAdjustIntegration';
 import FacebookSDK from '@/utils/facebook';
 import * as SecureStore from 'expo-secure-store';
 import { useRef } from 'react';
+import { isExpoGo } from '@/utils/isExpoGo';
 
 // Only import RevenueCat on native platforms
 let Purchases: any = {
@@ -20,12 +21,17 @@ let PurchasesPackage: any;
 let CustomerInfo: any;
 let Adjust: any = {};
 
-if (Platform.OS !== 'web') {
-  const rcLib = require('react-native-purchases');
-  Purchases = rcLib.default;
-  LOG_LEVEL = rcLib.LOG_LEVEL;
-  PurchasesPackage = rcLib.PurchasesPackage;
-  CustomerInfo = rcLib.CustomerInfo;
+// Only load native modules in production/development builds, not in Expo Go
+if (Platform.OS !== 'web' && !isExpoGo()) {
+  try {
+    const rcLib = require('react-native-purchases');
+    Purchases = rcLib.default;
+    LOG_LEVEL = rcLib.LOG_LEVEL;
+    PurchasesPackage = rcLib.PurchasesPackage;
+    CustomerInfo = rcLib.CustomerInfo;
+  } catch (error) {
+    console.warn('Failed to load react-native-purchases:', error);
+  }
   
   try {
     const adjustLib = require('react-native-adjust');

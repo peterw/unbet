@@ -10,13 +10,29 @@ import { useMutation, useQuery, useConvex } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRevenueCat } from '../providers/RevenueCatProvider';
+import { isExpoGo } from '@/utils/isExpoGo';
+
 // Only import RevenueCat UI on native platforms
-let RevenueCatUI: any = {};
-let PAYWALL_RESULT: any = {};
-if (Platform.OS !== 'web') {
-  const rcUI = require("react-native-purchases-ui");
-  RevenueCatUI = rcUI.default;
-  PAYWALL_RESULT = rcUI.PAYWALL_RESULT;
+let RevenueCatUI: any = {
+  presentPaywall: async () => ({ result: 'CANCELLED' }),
+  presentPaywallIfNeeded: async () => ({ result: 'NOT_PRESENTED' }),
+};
+let PAYWALL_RESULT: any = {
+  PURCHASED: 'PURCHASED',
+  CANCELLED: 'CANCELLED',
+  NOT_PRESENTED: 'NOT_PRESENTED',
+  ERROR: 'ERROR',
+  RESTORED: 'RESTORED',
+};
+
+if (Platform.OS !== 'web' && !isExpoGo()) {
+  try {
+    const rcUI = require("react-native-purchases-ui");
+    RevenueCatUI = rcUI.default;
+    PAYWALL_RESULT = rcUI.PAYWALL_RESULT;
+  } catch (error) {
+    console.warn('Failed to load react-native-purchases-ui:', error);
+  }
 }
 import { Haptics } from '../utils/haptics';
 import { ExternalLink } from '../components/ExternalLink';

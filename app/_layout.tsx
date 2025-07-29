@@ -11,9 +11,35 @@ import { AnalyticsProviderComponent } from '@/providers/AnalyticsProvider';
 import AdjustSDK from '@/utils/adjust';
 import AdjustEvents from '@/utils/adjustEvents';
 import AppTrackingTransparency, { ATTStatus } from '@/utils/appTrackingTransparency';
-import { Adjust } from 'react-native-adjust';
+import { isExpoGo } from '@/utils/isExpoGo';
+
+// Conditionally import Adjust
+let Adjust: any = {
+  getIdfv: (callback: Function) => callback('unknown'),
+};
+
+if (!isExpoGo()) {
+  try {
+    Adjust = require('react-native-adjust').Adjust;
+  } catch (error) {
+    console.warn('Failed to load react-native-adjust:', error);
+  }
+}
 import FacebookSDK from '@/utils/facebook';
-import Purchases from 'react-native-purchases';
+
+// Conditionally import Purchases
+let Purchases: any = {
+  setAttributes: async () => {},
+};
+
+if (!isExpoGo()) {
+  try {
+    Purchases = require('react-native-purchases').default;
+  } catch (error) {
+    console.warn('Failed to load react-native-purchases:', error);
+  }
+}
+
 import { Platform } from 'react-native';
 import { useFonts } from 'expo-font';
 import {
