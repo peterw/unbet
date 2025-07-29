@@ -37,6 +37,10 @@ function StarfieldBackground() {
   const [, forceUpdate] = useState({});
 
   useEffect(() => {
+    // Disable animation for now to prevent constant refreshing
+    // TODO: Implement with Reanimated 2 for better performance
+    return;
+    
     const animate = () => {
       stars.forEach(star => {
         star.y += star.speed;
@@ -208,17 +212,9 @@ export default function JournalScreen() {
               </View>
             ) : (
               journalEntries.map((entry) => (
-              <TouchableOpacity
+              <View
                 key={entry.id}
                 style={styles.entryCard}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  router.push({
-                    pathname: '/(main)/(tabs)/journal-entry-[id]',
-                    params: { id: entry.id }
-                  });
-                }}
-                activeOpacity={0.7}
               >
                 <View style={styles.entryHeader}>
                   <Text style={styles.entryDate}>{formatDate(entry.date)}</Text>
@@ -226,10 +222,10 @@ export default function JournalScreen() {
                     <Text style={styles.categoryText}>{entry.category}</Text>
                   </View>
                 </View>
-                <Text style={styles.entryContent} numberOfLines={2}>
-                  {entry.preview}
+                <Text style={styles.entryContent} numberOfLines={3}>
+                  {entry.content}
                 </Text>
-              </TouchableOpacity>
+              </View>
               ))
             )}
             
@@ -422,13 +418,13 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   entryCard: {
-    backgroundColor: 'rgba(40, 40, 40, 0.8)',
-    borderRadius: 20,
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    marginBottom: 12,
+    backgroundColor: 'rgba(25, 25, 25, 0.95)',
+    borderRadius: 24,
+    paddingVertical: 20,
+    paddingHorizontal: 24,
+    marginBottom: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(255, 255, 255, 0.06)',
   },
   entryHeader: {
     flexDirection: 'row',
@@ -437,25 +433,26 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   entryDate: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.5)',
-    fontWeight: '400',
+    fontSize: 18,
+    color: '#5B7FDE',
+    fontWeight: '500',
   },
   categoryBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 12,
   },
   categoryText: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 15,
+    fontWeight: '600',
     color: '#FFF',
   },
   entryContent: {
-    fontSize: 18,
+    fontSize: 20,
     color: '#FFF',
-    lineHeight: 24,
+    lineHeight: 28,
     fontWeight: '400',
+    marginTop: 4,
   },
   addButton: {
     alignSelf: 'center',
