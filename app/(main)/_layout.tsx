@@ -1,28 +1,34 @@
 import { Redirect, SplashScreen, Stack, Tabs } from 'expo-router';
 import { useSession } from "@clerk/clerk-expo";
 import { Ionicons } from '@expo/vector-icons';
-import { View } from 'react-native';
+import { View, Text, ActivityIndicator } from 'react-native';
 
 export default function MainLayout() {
   const { isSignedIn, session, isLoaded } = useSession();
 
-  console.log('MainLayout - Auth state:', { isSignedIn, isLoaded, hasSession: !!session });
+  // Add timestamp to logs to track timing issues
+  const logWithTime = (message: string) => {
+    console.log(`[${new Date().toISOString()}] MainLayout - ${message}`);
+  };
+
+  logWithTime(`Auth state: isSignedIn=${isSignedIn}, isLoaded=${isLoaded}, hasSession=${!!session}`);
 
   if (!isLoaded) {
-    console.log('MainLayout - Clerk not loaded yet, returning null');
-    return null;
+    logWithTime('Clerk not loaded yet, showing loading screen');
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
+        <ActivityIndicator size="large" color="#fff" />
+        <Text style={{ marginTop: 10, color: '#fff' }}>Loading authentication...</Text>
+      </View>
+    );
   }
-  
-  // Hide splash screen once Clerk is loaded
-  console.log('MainLayout - Hiding splash screen');
-  SplashScreen.hideAsync();
 
   if (!isSignedIn) {
-    console.log('MainLayout - Not signed in, redirecting to onboarding');
+    logWithTime('Not signed in, redirecting to onboarding');
     return <Redirect href="/onboarding" />;
   }
 
-  console.log('MainLayout - User is signed in, rendering main content');
+  logWithTime('User is signed in, rendering main content - tabs layout');
 
   return (
     <Stack>

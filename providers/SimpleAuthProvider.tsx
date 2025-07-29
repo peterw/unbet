@@ -33,12 +33,16 @@ export function SimpleAuthProvider({ children }: SimpleAuthProviderProps) {
   // Create user in Convex if signed in but user doesn't exist
   useEffect(() => {
     const createUserIfNeeded = async () => {
+      console.log('[SimpleAuth] Auth state:', { isSignedIn, userStatus: user === undefined ? 'loading' : user === null ? 'not exists' : 'exists' });
+      
       if (isSignedIn && user === null) {
         try {
-          console.log('[Auth] Creating user in Convex...');
-          await storeUser();
+          console.log('[SimpleAuth] User signed in but not in Convex, creating user...');
+          const userId = await storeUser();
+          console.log('[SimpleAuth] User created successfully:', userId);
         } catch (error) {
-          console.error('[Auth] Error creating user:', error);
+          console.error('[SimpleAuth] Error creating user:', error);
+          // Don't throw - let the app continue
         }
       }
     };

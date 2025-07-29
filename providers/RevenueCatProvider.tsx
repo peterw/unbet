@@ -313,15 +313,24 @@ export const RevenueCatProvider = ({ children }: any) => {
     updateDeviceIdentifiers,
   };
 
-  // Return empty fragment if provider is not ready (Purchase not yet initialised)
+  // Don't block the entire app while RevenueCat initializes
+  // This allows the app to continue loading and create the user in Convex
   if (!isReady) {
-    console.log('RevenueCatProvider - Not ready yet, showing loading...');
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-        <Text style={{ marginTop: 10 }}>Loading RevenueCat...</Text>
-      </View>
-    );
+    console.log('RevenueCatProvider - Initializing in background...');
+    // Return children immediately with limited functionality
+    // RevenueCat functions will be no-ops until ready
+    const limitedValue = {
+      restorePermissions: async () => ({ entitlements: { active: {} } } as any),
+      user: { items: [], pro: false },
+      packages: [],
+      purchasePackage: async () => {
+        console.warn('RevenueCat not ready yet');
+      },
+      updateDeviceIdentifiers: async () => {
+        console.warn('RevenueCat not ready yet');
+      },
+    };
+    return <RevenueCatContext.Provider value={limitedValue}>{children}</RevenueCatContext.Provider>;
   }
 
   console.log('RevenueCatProvider - Ready, rendering children');

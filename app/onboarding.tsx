@@ -169,6 +169,15 @@ export default function Onboarding() {
       console.log('Moving to next step:', currentStep + 1);
       setCurrentStep(prev => prev + 1);
     } else {
+      // Mark user as onboarded when completing onboarding
+      console.log('Onboarding complete, marking user as onboarded');
+      try {
+        if (updateUser) {
+          await updateUser({});  // This will set onboarded: true
+        }
+      } catch (error) {
+        console.error('Error updating user onboarded status:', error);
+      }
       router.replace('/(main)');
     }
   };
@@ -181,15 +190,28 @@ export default function Onboarding() {
       const { createdSessionId, setActive } = await startOAuthFlow();
 
       if (createdSessionId && setActive) {
+        console.log('[Onboarding] Setting active session...');
         await setActive({ session: createdSessionId });
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        await store();
+        
+        // Give Clerk time to propagate the session
+        console.log('[Onboarding] Waiting for session to propagate...');
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        try {
+          console.log('[Onboarding] Creating user in Convex...');
+          await store();
+          console.log('[Onboarding] User created successfully');
+        } catch (storeError) {
+          console.error('[Onboarding] Error creating user in Convex:', storeError);
+          // Continue anyway - the SimpleAuthProvider will retry
+        }
         
         analytics.track({ name: 'Signup Success', properties: { strategy } });
         if (createdSessionId) {
           analytics.identify(createdSessionId);
         }
         
+        console.log('[Onboarding] Moving to next step...');
         handleNext();
       }
     } catch (err) {
@@ -278,7 +300,7 @@ export default function Onboarding() {
       
       case 'stats':
         return (
-          <View style={styles.statsContainer}>
+          <ScrollView style={styles.statsContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <View style={styles.starsContainer}>
               <View style={[styles.star, { top: '5%', left: '8%', width: 3, height: 3 }]} />
               <View style={[styles.star, { top: '15%', left: '90%', width: 4, height: 4 }]} />
@@ -311,7 +333,7 @@ export default function Onboarding() {
             <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         );
 
       case 'community':
@@ -348,7 +370,7 @@ export default function Onboarding() {
 
       case 'life':
         return (
-          <View style={styles.lifeContainer}>
+          <ScrollView style={styles.lifeContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <Text style={styles.lifeTitle}>This journey{'\n'}can save your life.</Text>
             <View style={styles.lifeGrid}>
               <View style={styles.lifeItem}>
@@ -375,12 +397,12 @@ export default function Onboarding() {
             <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         );
 
       case 'transform':
         return (
-          <View style={styles.transformContainer}>
+          <ScrollView style={styles.transformContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <Text style={styles.transformTitle}>10,653 people transformed their lives this year.</Text>
             <View style={styles.transformTestimonials}>
               <View style={styles.testimonial}>
@@ -399,7 +421,7 @@ export default function Onboarding() {
             <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         );
 
       case 'session_duration':
@@ -717,7 +739,7 @@ export default function Onboarding() {
 
       case 'science':
         return (
-          <View style={styles.scienceContainer}>
+          <ScrollView style={styles.scienceContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <Text style={styles.scienceTitle}>Backed by brain science.</Text>
             <Text style={styles.scienceSubtitle}>Your recovery is designed by neuroscientists and addiction experts</Text>
             <View style={styles.scienceItems}>
@@ -740,12 +762,12 @@ export default function Onboarding() {
             <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         );
 
       case 'days':
         return (
-          <View style={styles.daysContainer}>
+          <ScrollView style={styles.daysContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <Text style={styles.daysTitle}>90 days to transform your life.</Text>
             <View style={styles.milestonesContainer}>
               <View style={styles.milestone}>
@@ -775,12 +797,12 @@ export default function Onboarding() {
             <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         );
 
       case 'plan':
         return (
-          <View style={styles.planContainer}>
+          <ScrollView style={styles.planContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <Text style={styles.planTitle}>Your personalized recovery plan is ready</Text>
             <View style={styles.planCard}>
               <Text style={styles.planCardTitle}>Custom Recovery Plan</Text>
@@ -804,13 +826,13 @@ export default function Onboarding() {
             <TouchableOpacity style={styles.getStartedButton} onPress={handleNext}>
               <Text style={styles.getStartedButtonText}>Get Started</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         );
 
 
       case 'notification':
         return (
-          <View style={styles.notificationContainer}>
+          <ScrollView style={styles.notificationContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <Text style={styles.notificationTitle}>Increase your willpower with some notification buffs</Text>
             <View style={styles.notificationCard}>
               <Text style={styles.notificationCardTitle}>Seed Would Like to Send You Notifications</Text>
@@ -838,7 +860,7 @@ export default function Onboarding() {
               <Text style={styles.notificationPreviewBody}>Small steps compound to big results.</Text>
               <Text style={styles.notificationPreviewMore}>3 more notifications</Text>
             </View>
-          </View>
+          </ScrollView>
         );
 
 
@@ -1035,7 +1057,7 @@ export default function Onboarding() {
 
       case 'graph':
         return (
-          <View style={styles.graphContainer}>
+          <ScrollView style={styles.graphContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <Text style={styles.graphTitle}>Quit porn forever in as little as 34 days.</Text>
             <View style={styles.graphPlaceholder}>
               <Text style={styles.graphPlaceholderText}>Graph visualization</Text>
@@ -1058,7 +1080,7 @@ export default function Onboarding() {
             <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         );
 
       case 'commitment':
@@ -1527,6 +1549,10 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 40,
   },
   checkboxContainer: {
     flexDirection: 'row',

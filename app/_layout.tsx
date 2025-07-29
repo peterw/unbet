@@ -122,10 +122,28 @@ const RootLayoutNav = () => {
 
   useEffect(() => {
     if (fontsLoaded) {
-      console.log('Fonts loaded, hiding splash screen');
-      SplashScreen.hideAsync();
+      console.log('[RootLayout] Fonts loaded, will hide splash screen');
+      // Add a small delay to ensure all components are mounted
+      setTimeout(() => {
+        console.log('[RootLayout] Hiding splash screen now');
+        SplashScreen.hideAsync().catch(err => {
+          console.error('[RootLayout] Error hiding splash screen:', err);
+        });
+      }, 100);
     }
   }, [fontsLoaded]);
+
+  // Failsafe: Force hide splash screen after 5 seconds to prevent being stuck
+  useEffect(() => {
+    const failsafeTimer = setTimeout(() => {
+      console.warn('[RootLayout] Failsafe: Force hiding splash screen after 5 seconds');
+      SplashScreen.hideAsync().catch(err => {
+        console.error('[RootLayout] Failsafe error hiding splash screen:', err);
+      });
+    }, 5000);
+
+    return () => clearTimeout(failsafeTimer);
+  }, []);
 
   useEffect(() => {
     // Check environment variables on app initialization
@@ -215,10 +233,11 @@ const RootLayoutNav = () => {
   }, []);
 
   if (!fontsLoaded) {
+    console.log('Fonts not loaded yet, showing loading screen');
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-        <Text style={{ marginTop: 10 }}>Loading fonts...</Text>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
+        <ActivityIndicator size="large" color="#fff" />
+        <Text style={{ marginTop: 10, color: '#fff' }}>Loading fonts...</Text>
       </View>
     );
   }
