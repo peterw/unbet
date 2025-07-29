@@ -11,6 +11,7 @@ import { Colors } from '@/constants/Colors';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
 import { Haptics } from '../../utils/haptics';
 import { useRevenueCat } from '@/providers/RevenueCatProvider';
+import { useSimpleAuth } from '@/providers/SimpleAuthProvider';
 // Only import RevenueCat UI on native platforms
 let RevenueCatUI: any = {};
 let PAYWALL_RESULT: any = {};
@@ -90,34 +91,12 @@ const PROTEIN_PRESETS: ProteinPreset[] = [
 ];
 
 export default function HomeScreen() {
-  // Add error handling for user query
-  const user = useQuery(api.users.getCurrentUser);
+  // Use simple auth
+  const { user } = useSimpleAuth();
   const recentJobs = useQuery(api.analyse.getRecentAnalysisJobs);
   const deleteEntry = useMutation(api.protein.deleteProteinEntry);
-  const store = useMutation(api.users.store);
   const today = format(new Date(), 'yyyy-MM-dd');
   const router = useRouter();
-  
-  // Log authentication state for debugging and ensure user creation
-  useEffect(() => {
-    const ensureUserExists = async () => {
-      if (user === undefined) {
-        console.log('User query is loading...');
-      } else if (user === null) {
-        console.log('User is not authenticated in Convex, attempting to create...');
-        try {
-          await store();
-          console.log('User created successfully in Convex');
-        } catch (error) {
-          console.error('Failed to create user in Convex:', error);
-        }
-      } else {
-        console.log('User authenticated:', user._id);
-      }
-    };
-    
-    ensureUserExists();
-  }, [user, store]);
   const [selectedDate, setSelectedDate] = useState(today);
   const multiWeekData = useQuery(api.protein.getMultiWeekProteinData, { date: today });
   const proteinEntries = multiWeekData?.dailyTotals[selectedDate];

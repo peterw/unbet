@@ -13,30 +13,14 @@ import { useRevenueCat } from '@/providers/RevenueCatProvider';
 import { NumericInput } from '@/components/home/NumericInput';
 import { ExternalLink } from '@/components/ExternalLink';
 import { getReferralDetails } from '../utils/referralCodes';
+import { useSimpleAuth } from '@/providers/SimpleAuthProvider';
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const user = useQuery(api.users.getCurrentUser);
+  const { user, isLoading } = useSimpleAuth();
   const updateUser = useMutation(api.users.updateCurrentUser);
-  const { signOut, isLoaded: clerkLoaded } = useAuth();
+  const { signOut } = useAuth();
   const { user: revenueUser } = useRevenueCat();
-
-  // Debug logging
-  useEffect(() => {
-    console.log('[Settings] Component mounted');
-    console.log('[Settings] Clerk loaded:', clerkLoaded);
-    console.log('[Settings] User query result:', user);
-    console.log('[Settings] Revenue user:', revenueUser);
-  }, [clerkLoaded, user, revenueUser]);
-
-  // Add a timeout to prevent infinite loading
-  const [loadingTimeout, setLoadingTimeout] = useState(false);
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoadingTimeout(true);
-    }, 10000); // 10 second timeout
-    return () => clearTimeout(timer);
-  }, []);
 
   // Determine effective pro status
   const hasFreeReferral = user?.referralCode && getReferralDetails(user.referralCode)?.type === 'free';
@@ -92,37 +76,12 @@ export default function SettingsScreen() {
     }
   };
 
-  // Enhanced loading state with timeout and error handling
-  if (!clerkLoaded || (user === undefined && !loadingTimeout)) {
+  // Simple loading state
+  if (isLoading || !user) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={Colors.light.tint} />
         <Text style={styles.loadingText}>Loading settings...</Text>
-      </View>
-    );
-  }
-
-  // Show error state if loading timed out or user is null (not just undefined)
-  if (loadingTimeout || user === null) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Ionicons name="alert-circle" size={48} color={Colors.light.text} />
-        <Text style={styles.errorText}>Unable to load settings</Text>
-        <TouchableOpacity 
-          style={styles.retryButton}
-          onPress={() => {
-            router.back();
-            setTimeout(() => router.push('/settings'), 100);
-          }}
-        >
-          <Text style={styles.retryButtonText}>Retry</Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          style={[styles.retryButton, styles.signOutButton]}
-          onPress={signOut}
-        >
-          <Text style={styles.retryButtonText}>Sign Out</Text>
-        </TouchableOpacity>
       </View>
     );
   }
@@ -373,5 +332,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
+  },
+  retryingText: {
+    marginTop: 8,
+    fontSize: 14,
+    color: '#666',
+    fontStyle: 'italic',
+  },
+  errorSubtext: {
+    marginTop: 8,
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    paddingHorizontal: 32,
   },
 });

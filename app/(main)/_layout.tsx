@@ -7,6 +7,8 @@ export default function TabLayout() {
   if (!isLoaded) {
     return null;
   }
+  
+  // Hide splash screen once Clerk is loaded
   SplashScreen.hideAsync();
 
   if (!isSignedIn) {

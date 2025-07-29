@@ -1,5 +1,5 @@
 // Web-specific implementation of Dimensions
-export const Dimensions = {
+const Dimensions = {
   get: (dim: string) => {
     if (dim === 'window') {
       return {
@@ -15,4 +15,5 @@ export const Dimensions = {
   removeEventListener: () => {},
 };
 
+export { Dimensions };
 export default Dimensions;
