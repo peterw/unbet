@@ -7,6 +7,8 @@ export default function TabLayout() {
   if (!isLoaded) {
     return null;
   }
+  
+  // Hide splash screen once Clerk is loaded
   SplashScreen.hideAsync();
 
   if (!isSignedIn) {
@@ -43,8 +45,44 @@ export default function TabLayout() {
       }} />
       <Stack.Screen name="entry/[id]" options={{ headerShown: false }} />
       <Stack.Screen name="settings" options={{
-        presentation: 'modal',
-        headerShown: false
+        headerShown: false,
+        animation: 'slide_from_right'
+      }} />
+      <Stack.Screen name="statistics" options={{
+        headerShown: false,
+        animation: 'slide_from_bottom'
+      }} />
+      <Stack.Screen name="journal" options={{
+        headerShown: false,
+        animation: 'slide_from_right'
+      }} />
+      <Stack.Screen name="chat" options={{
+        headerShown: false,
+        presentation: 'modal'
+      }} />
+      <Stack.Screen name="relapse" options={{
+        headerShown: false,
+        presentation: 'modal'
+      }} />
+      <Stack.Screen name="reflect" options={{
+        headerShown: false,
+        presentation: 'modal'
+      }} />
+      <Stack.Screen name="lockdown" options={{
+        headerShown: false,
+        presentation: 'modal'
+      }} />
+      <Stack.Screen name="tape-player" options={{
+        headerShown: false,
+        presentation: 'modal'
+      }} />
+      <Stack.Screen name="entry/journal-[id]" options={{
+        headerShown: false,
+        animation: 'slide_from_right'
+      }} />
+      <Stack.Screen name="settings/lockdown" options={{
+        headerShown: false,
+        animation: 'slide_from_right'
       }} />
     </Stack>
   );

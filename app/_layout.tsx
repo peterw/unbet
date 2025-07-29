@@ -27,6 +27,7 @@ import {
   DMSerifDisplay_400Regular_Italic,
 } from '@expo-google-fonts/dm-serif-display';
 import { initializeApp } from '@/utils/envCheck';
+import { SimpleAuthProvider } from '@/providers/SimpleAuthProvider';
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
 
@@ -181,9 +182,11 @@ const RootLayoutNav = () => {
         <RevenueCatProvider>
           <AnalyticsProviderComponent provider={mixpanelProvider}>
             <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-              <GestureHandlerRootView style={{ flex: 1 }}>
-                <Slot />
-              </GestureHandlerRootView>
+              <SimpleAuthProvider>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <Slot />
+                </GestureHandlerRootView>
+              </SimpleAuthProvider>
             </ConvexProviderWithClerk>
           </AnalyticsProviderComponent>
         </RevenueCatProvider>

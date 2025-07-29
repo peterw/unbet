@@ -31,6 +31,7 @@
     "date-fns": "^4.1.0",
     "expo": "^52.0.39",
     "expo-camera": "~16.0.18",
+    "expo-clipboard": "^7.1.5",
     "expo-constants": "~17.0.8",
     "expo-font": "~13.0.4",
     "expo-haptics": "~14.0.1",
@@ -75,7 +76,9 @@
     "jest-expo": "~52.0.6",
     "puppeteer": "^24.15.0",
     "react-test-renderer": "18.2.0",
-    "typescript": "~5.3.3"
+    "typescript": "~5.3.3",
+    "eslint": "^8.57.0",
+    "eslint-config-expo": "~8.0.1"
   },
   "private": true
 }
