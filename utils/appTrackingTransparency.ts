@@ -1,5 +1,15 @@
 import { Platform } from 'react-native';
-import * as TrackingTransparency from 'expo-tracking-transparency';
+
+// Only import TrackingTransparency on native platforms
+let TrackingTransparency: any = {
+  requestTrackingPermissionsAsync: async () => ({ status: 'granted' }),
+  getTrackingPermissionsAsync: async () => ({ status: 'granted' }),
+  getAdvertisingId: async () => null,
+};
+
+if (Platform.OS !== 'web') {
+  TrackingTransparency = require('expo-tracking-transparency');
+}
 
 /**
  * App Tracking Transparency (ATT) Handler
@@ -23,7 +33,7 @@ export class AppTrackingTransparency {
   static async requestPermission(): Promise<ATTStatus> {
     if (Platform.OS !== 'ios') {
       console.log('ATT: Not iOS, skipping permission request');
-      return ATTStatus.GRANTED; // Android doesn't need ATT
+      return ATTStatus.GRANTED; // Android and web don't need ATT
     }
 
     try {
@@ -52,7 +62,7 @@ export class AppTrackingTransparency {
    */
   static async getStatus(): Promise<ATTStatus> {
     if (Platform.OS !== 'ios') {
-      return ATTStatus.GRANTED; // Android doesn't need ATT
+      return ATTStatus.GRANTED; // Android and web don't need ATT
     }
 
     try {

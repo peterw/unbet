@@ -7,7 +7,7 @@ import { api } from '@/convex/_generated/api';
 import { Colors } from '@/constants/Colors';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
-import * as Haptics from 'expo-haptics';
+import { Haptics } from '@/utils/haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRevenueCat } from '@/providers/RevenueCatProvider';
 import { NumericInput } from '@/components/home/NumericInput';

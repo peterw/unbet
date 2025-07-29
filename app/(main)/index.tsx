@@ -6,12 +6,18 @@ import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { LinearGradient } from 'expo-linear-gradient';
 import { format, subDays, parseISO, addDays } from 'date-fns';
-import PagerView from 'react-native-pager-view';
 import { Colors } from '@/constants/Colors';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
-import * as Haptics from 'expo-haptics';
+import { Haptics } from '../../utils/haptics';
 import { useRevenueCat } from '@/providers/RevenueCatProvider';
-import RevenueCatUI, { PAYWALL_RESULT } from "react-native-purchases-ui";
+// Only import RevenueCat UI on native platforms
+let RevenueCatUI: any = {};
+let PAYWALL_RESULT: any = {};
+if (Platform.OS !== 'web') {
+  const rcUI = require("react-native-purchases-ui");
+  RevenueCatUI = rcUI.default;
+  PAYWALL_RESULT = rcUI.PAYWALL_RESULT;
+}
 import { Swipeable } from 'react-native-gesture-handler';
 import { useAnalytics } from '@/providers/AnalyticsProvider';
 import Animated, {
@@ -94,7 +100,7 @@ export default function HomeScreen() {
   const dailyProtein = proteinEntries?.totalProtein;
   const remainingProtein = (user?.dailyProtein ?? 0) - (dailyProtein ?? 0);
   const [currentPage, setCurrentPage] = useState(1);
-  const pagerRef = useRef<PagerView>(null);
+  const scrollViewRef = useRef<ScrollView>(null);
   const { user: rcUser } = useRevenueCat();
   const [isExpanded, setIsExpanded] = useState(false);
   const rotation = useSharedValue(0);
@@ -203,6 +209,11 @@ export default function HomeScreen() {
     const hasFreeAccess = user?.referralCode && getReferralDetails(user.referralCode)?.type === 'free';
 
     if (!rcUser.pro && !hasFreeAccess) {
+      if (Platform.OS === 'web') {
+        alert('Premium feature. Please use the mobile app to access this feature.');
+        return;
+      }
+      
       try {
         const result = await RevenueCatUI.presentPaywall();
         if (result !== PAYWALL_RESULT.PURCHASED && result !== PAYWALL_RESULT.RESTORED) {
@@ -278,9 +289,11 @@ export default function HomeScreen() {
     return dates;
   };
 
-  // Remove the page-change effect since we're loading all weeks at once
-  const onPageSelected = (e: any) => {
-    const newPage = e.nativeEvent.position;
+  // Handle scroll events to update current page
+  const handleScroll = (event: any) => {
+    const offsetX = event.nativeEvent.contentOffset.x;
+    const pageWidth = event.nativeEvent.layoutMeasurement.width;
+    const newPage = Math.round(offsetX / pageWidth);
     if (newPage !== currentPage) {
       setCurrentPage(newPage);
     }
@@ -543,26 +556,30 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
         </View>
-        {/* Week View with Pager */}
-        <PagerView
-          ref={pagerRef}
+        {/* Week View with ScrollView */}
+        <ScrollView
+          ref={scrollViewRef}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
           style={styles.pagerView}
-          initialPage={3}
-          onPageSelected={onPageSelected}
+          contentOffset={{ x: 3 * Dimensions.get('window').width, y: 0 }}
         >
-          <View key="0">
+          <View style={{ width: Dimensions.get('window').width }}>
             <WeekView dates={getWeekDates(-3)} selectedDate={selectedDate} multiWeekData={multiWeekData} user={user} onDateSelect={handleDateSelect} />
           </View>
-          <View key="1">
+          <View style={{ width: Dimensions.get('window').width }}>
             <WeekView dates={getWeekDates(-2)} selectedDate={selectedDate} multiWeekData={multiWeekData} user={user} onDateSelect={handleDateSelect} />
           </View>
-          <View key="2">
+          <View style={{ width: Dimensions.get('window').width }}>
             <WeekView dates={getWeekDates(-1)} selectedDate={selectedDate} multiWeekData={multiWeekData} user={user} onDateSelect={handleDateSelect} />
           </View>
-          <View key="3">
+          <View style={{ width: Dimensions.get('window').width }}>
             <WeekView dates={getWeekDates(0)} selectedDate={selectedDate} multiWeekData={multiWeekData} user={user} onDateSelect={handleDateSelect} />
           </View>
-        </PagerView>
+        </ScrollView>
         {/* Progress Circle */}
         <View style={styles.progressContainer}>
           <AnimatedCircularProgress

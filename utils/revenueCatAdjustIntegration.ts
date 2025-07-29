@@ -1,4 +1,14 @@
-import { PurchasesPackage, CustomerInfo } from 'react-native-purchases';
+import { Platform } from 'react-native';
+
+// Only import RevenueCat types on native platforms
+let PurchasesPackage: any;
+let CustomerInfo: any;
+
+if (Platform.OS !== 'web') {
+  const rcLib = require('react-native-purchases');
+  PurchasesPackage = rcLib.PurchasesPackage;
+  CustomerInfo = rcLib.CustomerInfo;
+}
 
 /**
  * Revenue Cat + Adjust Integration

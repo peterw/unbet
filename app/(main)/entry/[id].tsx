@@ -10,7 +10,7 @@ import { LayoutAnimation } from 'react-native';
 import { IngredientList } from '@/components/protein/IngredientList';
 import { AminoAcidStatus } from '@/components/protein/AminoAcidStatus';
 import { ProteinEntry, Ingredient } from '@/types/protein';
-import * as Haptics from 'expo-haptics';
+import { Haptics } from '@/utils/haptics';
 import { useAnalytics } from '@/providers/AnalyticsProvider';
 import { FixWithAIModal } from '@/components/protein/FixWithAIModal';
 

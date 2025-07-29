@@ -1,12 +1,35 @@
-import { Adjust, AdjustConfig, AdjustEvent } from 'react-native-adjust';
+import { Platform } from 'react-native';
+
+// Only import Adjust on native platforms
+let Adjust: any = {};
+let AdjustConfig: any = {
+  EnvironmentSandbox: 'sandbox',
+  EnvironmentProduction: 'production',
+  LogLevelVerbose: 'verbose',
+};
+let AdjustEvent: any = class {
+  constructor(token: string) {
+    this.token = token;
+  }
+  setRevenue() {}
+  setTransactionId() {}
+  setCurrency() {}
+};
+
+if (Platform.OS !== 'web') {
+  const adjustLib = require('react-native-adjust');
+  Adjust = adjustLib.Adjust;
+  AdjustConfig = adjustLib.AdjustConfig;
+  AdjustEvent = adjustLib.AdjustEvent;
+}
 
 export class AdjustSDK {
   private static initialized = false;
 
   // Initialize Adjust SDK with your app token
   static initialize(appToken: string, environment: 'sandbox' | 'production' = 'sandbox') {
-    if (this.initialized) {
-      console.log('Adjust SDK already initialized');
+    if (this.initialized || Platform.OS === 'web') {
+      console.log('Adjust SDK already initialized or on web platform');
       return;
     }
 
@@ -16,12 +39,13 @@ export class AdjustSDK {
     );
 
     // Set log level for debugging (remove in production)
-    if (environment === 'sandbox') {
+    if (environment === 'sandbox' && adjustConfig.setLogLevel) {
       adjustConfig.setLogLevel(AdjustConfig.LogLevelVerbose);
     }
 
     // Optional: Set attribution callback
-    adjustConfig.setAttributionCallback((attribution) => {
+    if (adjustConfig.setAttributionCallback) {
+      adjustConfig.setAttributionCallback((attribution) => {
       console.log('Adjust attribution:', attribution);
       
       // RevenueCat expects the *Adjust Device Identifier* (adid) – not the tracker token.
@@ -49,19 +73,26 @@ export class AdjustSDK {
       } else {
         console.warn('⚠️ No valid Adjust adid found in attribution:', JSON.stringify(attribution, null, 2));
       }
-    });
+      });
+    }
 
     // Optional: Set session callback
-    adjustConfig.setSessionTrackingSucceededCallback((sessionSuccess: any) => {
-      console.log('Adjust session success:', sessionSuccess);
-    });
+    if (adjustConfig.setSessionTrackingSucceededCallback) {
+      adjustConfig.setSessionTrackingSucceededCallback((sessionSuccess: any) => {
+        console.log('Adjust session success:', sessionSuccess);
+      });
+    }
 
     // Optional: Set event callback
-    adjustConfig.setEventTrackingSucceededCallback((eventSuccess: any) => {
-      console.log('Adjust event success:', eventSuccess);
-    });
+    if (adjustConfig.setEventTrackingSucceededCallback) {
+      adjustConfig.setEventTrackingSucceededCallback((eventSuccess: any) => {
+        console.log('Adjust event success:', eventSuccess);
+      });
+    }
 
-    Adjust.initSdk(adjustConfig);
+    if (Adjust.initSdk) {
+      Adjust.initSdk(adjustConfig);
+    }
     this.initialized = true;
     console.log('Adjust SDK initialized successfully');
     
@@ -82,26 +113,28 @@ export class AdjustSDK {
 
   // Track custom events
   static trackEvent(eventToken: string, revenue?: number, currency?: string, parameters?: Record<string, string>) {
-    if (!this.initialized) {
-      console.warn('Adjust SDK not initialized. Call initialize() first.');
+    if (!this.initialized || Platform.OS === 'web') {
+      console.warn('Adjust SDK not initialized or on web platform. Skipping event tracking.');
       return;
     }
 
     const adjustEvent = new AdjustEvent(eventToken);
 
     // Add revenue if provided
-    if (revenue && currency) {
+    if (revenue && currency && adjustEvent.setRevenue) {
       adjustEvent.setRevenue(revenue, currency);
     }
 
     // Add custom parameters
-    if (parameters) {
+    if (parameters && adjustEvent.addCallbackParameter) {
       Object.entries(parameters).forEach(([key, value]) => {
         adjustEvent.addCallbackParameter(key, value);
       });
     }
 
-    Adjust.trackEvent(adjustEvent);
+    if (Adjust.trackEvent) {
+      Adjust.trackEvent(adjustEvent);
+    }
   }
 
   // Track app launch

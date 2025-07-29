@@ -5,14 +5,20 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/Colors';
-import PagerView from 'react-native-pager-view';
 import { Picker } from '@react-native-picker/picker';
 import { useMutation, useQuery, useConvex } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRevenueCat } from '../providers/RevenueCatProvider';
-import RevenueCatUI, { PAYWALL_RESULT } from "react-native-purchases-ui";
-import * as Haptics from 'expo-haptics';
+// Only import RevenueCat UI on native platforms
+let RevenueCatUI: any = {};
+let PAYWALL_RESULT: any = {};
+if (Platform.OS !== 'web') {
+  const rcUI = require("react-native-purchases-ui");
+  RevenueCatUI = rcUI.default;
+  PAYWALL_RESULT = rcUI.PAYWALL_RESULT;
+}
+import { Haptics } from '../utils/haptics';
 import { ExternalLink } from '../components/ExternalLink';
 import { requestRating, trackRatingAction, shouldShowRating } from '../utils/ratings';
 import { validateReferralCode, getReferralDetails } from './utils/referralCodes';
@@ -96,7 +102,6 @@ export default function Onboarding() {
   const { startOAuthFlow: startAppleOAuthFlow } = useOAuth({ strategy: "oauth_apple" });
   const store = useMutation(api.users.store);
   const updateUser = useMutation(api.users.updateCurrentUser)
-  const getCurrentUser = useQuery(api.users.getCurrentUser);
   const router = useRouter();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [useMetric, setUseMetric] = useState(false);
@@ -108,10 +113,12 @@ export default function Onboarding() {
   const [mode, setMode] = useState<OnboardingMode>('full');
   const [selectedRating, setSelectedRating] = useState(0);
   const [referralInput, setReferralInput] = useState('');
-  const { signOut } = useClerkAuth();
+  const { signOut, isLoaded, isSignedIn } = useClerkAuth();
   const convex = useConvex();
-  const user = useQuery(api.users.getCurrentUser);
+  // Only query user if we're in user_details mode (authenticated)
+  const user = mode === 'user_details' ? useQuery(api.users.getCurrentUser) : undefined;
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  const scrollRef = useRef<ScrollView>(null);
   // Analytics
   const analytics = useAnalytics();
 
@@ -328,6 +335,11 @@ export default function Onboarding() {
             console.log(referralDetails && referralDetails.type === 'paywall'
               ? `Would show special paywall: ${referralDetails.paywallId}`
               : 'Showing default paywall');
+
+            if (Platform.OS === 'web') {
+              alert('Subscription required. Please use the mobile app to subscribe.');
+              return;
+            }
 
             const result = await RevenueCatUI.presentPaywall();
 
@@ -659,22 +671,34 @@ export default function Onboarding() {
           {(() => {
             switch (step.key) {
               case 'intro':
+                const slideWidth = Dimensions.get('window').width - 40;
+                
+                const handleScroll = (event: any) => {
+                  const offsetX = event.nativeEvent.contentOffset.x;
+                  const newPage = Math.round(offsetX / slideWidth);
+                  if (newPage !== currentSlide) {
+                    setCurrentSlide(newPage);
+                  }
+                };
+
                 return (
                   <View style={styles.introContainer}>
-                    <PagerView
-                      style={[
-                        styles.pagerView,
-                        { height: getCarouselHeight() }
-                      ]}
-                      initialPage={0}
-                      onPageSelected={(e) => setCurrentSlide(e.nativeEvent.position)}
+                    <ScrollView
+                      ref={scrollRef}
+                      horizontal
+                      pagingEnabled
+                      showsHorizontalScrollIndicator={false}
+                      onScroll={handleScroll}
+                      scrollEventThrottle={16}
+                      contentContainerStyle={styles.scrollViewContent}
+                      style={[styles.pagerView, { height: getCarouselHeight() }]}
                     >
                       {introSlides.map((slide, index) => (
-                        <View key={index} style={styles.carouselItem}>
+                        <View key={index} style={[styles.carouselItem, { width: slideWidth }]}>
                           {renderCarouselItem({ item: slide })}
                         </View>
                       ))}
-                    </PagerView>
+                    </ScrollView>
                     <View style={styles.paginationContainer}>
                       <View style={styles.paginationDots}>
                         {introSlides.map((_, index) => (
@@ -1516,5 +1540,8 @@ const styles = StyleSheet.create({
     opacity: 0.7,
     textAlign: 'center',
     marginTop: 5,
+  },
+  scrollViewContent: {
+    alignItems: 'center',
   },
 });

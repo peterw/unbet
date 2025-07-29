@@ -1,11 +1,35 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import Purchases, { LOG_LEVEL, PurchasesPackage } from 'react-native-purchases';
-import { CustomerInfo } from 'react-native-purchases';
+import { Platform } from 'react-native';
 import RevenueCatAdjustIntegration from '@/utils/revenueCatAdjustIntegration';
-import { Adjust } from 'react-native-adjust';
 import FacebookSDK from '@/utils/facebook';
 import * as SecureStore from 'expo-secure-store';
 import { useRef } from 'react';
+
+// Only import RevenueCat on native platforms
+let Purchases: any = {
+  configure: async () => {},
+  setLogLevel: () => {},
+  addCustomerInfoUpdateListener: () => {},
+  getOfferings: async () => ({ current: null }),
+  getCustomerInfo: async () => ({ entitlements: { active: {} } }),
+  purchasePackage: async () => {},
+  restorePurchases: async () => ({ entitlements: { active: {} } }),
+};
+let LOG_LEVEL: any = { DEBUG: 'debug' };
+let PurchasesPackage: any;
+let CustomerInfo: any;
+let Adjust: any = {};
+
+if (Platform.OS !== 'web') {
+  const rcLib = require('react-native-purchases');
+  Purchases = rcLib.default;
+  LOG_LEVEL = rcLib.LOG_LEVEL;
+  PurchasesPackage = rcLib.PurchasesPackage;
+  CustomerInfo = rcLib.CustomerInfo;
+  
+  const adjustLib = require('react-native-adjust');
+  Adjust = adjustLib.Adjust;
+}
 
 // Key used to remember if the "Subscribe" event was already logged for the current active subscription period.
 const SUBSCRIBE_LOGGED_KEY = 'protai_subscribe_logged_v1';
@@ -120,6 +144,12 @@ export const RevenueCatProvider = ({ children }: any) => {
   useEffect(() => {
     const init = async () => {
       console.log('init');
+
+      // Skip initialization on web
+      if (Platform.OS === 'web') {
+        setIsReady(true);
+        return;
+      }
 
       // Load Subscribe flag BEFORE configuring Purchases so listener uses correct state
       try {

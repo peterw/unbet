@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { format, isSameDay, isAfter, parseISO } from 'date-fns';
-import * as Haptics from 'expo-haptics';
+import { Haptics } from '@/utils/haptics';
 
 type WeekViewProps = {
   dates: Date[];

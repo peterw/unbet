@@ -5,7 +5,7 @@ import { useMutation, useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
+import { Haptics } from '@/utils/haptics';
 import { useAnalytics } from '@/providers/AnalyticsProvider';
 import { format, parseISO } from 'date-fns';
 

@@ -16,7 +16,7 @@ import { Colors } from '@/constants/Colors';
 import { useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { Id } from '@/convex/_generated/dataModel';
-import * as Haptics from 'expo-haptics';
+import { Haptics } from '@/utils/haptics';
 
 type Props = {
   entryId: Id<"proteinEntries">;

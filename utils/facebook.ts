@@ -1,4 +1,14 @@
-import { Settings, AppEventsLogger } from 'react-native-fbsdk-next';
+import { Platform } from 'react-native';
+
+// Only import Facebook SDK on native platforms
+let Settings: any = {};
+let AppEventsLogger: any = { AppEvents: {} };
+
+if (Platform.OS !== 'web') {
+  const fbsdk = require('react-native-fbsdk-next');
+  Settings = fbsdk.Settings;
+  AppEventsLogger = fbsdk.AppEventsLogger;
+}
 
 /**
  * Simple wrapper around Meta (Facebook) SDK to handle initialization
@@ -11,7 +21,7 @@ class FacebookSDK {
    * Initialise the SDK once. Safe to call multiple times.
    */
   static init(appId: string) {
-    if (this.initialized) {
+    if (this.initialized || Platform.OS === 'web') {
       return;
     }
 
@@ -27,14 +37,14 @@ class FacebookSDK {
 
   /** Log the standard Completed Tutorial/Onboarding event. */
   static logCompletedOnboarding() {
-    if (!this.initialized) return;
+    if (!this.initialized || Platform.OS === 'web') return;
     // `CompletedTutorial` is the closest standard event to onboarding completion
     AppEventsLogger.logEvent(AppEventsLogger.AppEvents.CompletedTutorial);
   }
 
   /** Log the standard Subscribe event when the user becomes premium. */
   static logSubscribe() {
-    if (!this.initialized) return;
+    if (!this.initialized || Platform.OS === 'web') return;
     // Log the standard "Subscribe" event
     AppEventsLogger.logEvent(AppEventsLogger.AppEvents.Subscribe);
 
@@ -52,7 +62,7 @@ class FacebookSDK {
 
   /** Log a purchase with value & currency for ROAS reporting */
   static logPurchase(amount: number, currency: string) {
-    if (!this.initialized) return;
+    if (!this.initialized || Platform.OS === 'web') return;
     try {
       AppEventsLogger.logPurchase(amount, currency);
       AppEventsLogger.flush();
@@ -63,7 +73,7 @@ class FacebookSDK {
 
   /** Log the standard AddedToWishlist event, useful for testing event tracking on app launch. */
   static logAddedToWishlist() {
-    if (!this.initialized) return;
+    if (!this.initialized || Platform.OS === 'web') return;
     try {
       // Log the standard "AddedToWishlist" event
       AppEventsLogger.logEvent(AppEventsLogger.AppEvents.AddedToWishlist);

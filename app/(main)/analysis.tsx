@@ -7,7 +7,7 @@ import { format, eachDayOfInterval } from 'date-fns';
 import { Colors } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import * as Haptics from 'expo-haptics';
+import { Haptics } from '@/utils/haptics';
 import { useAnalytics } from '@/providers/AnalyticsProvider';
 
 const screenWidth = Dimensions.get('window').width;
