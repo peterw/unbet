@@ -54,7 +54,8 @@ export default function HomeScreen() {
 
   // Update timer every second
   useEffect(() => {
-    const interval = setInterval(() => {
+    // Calculate initial timer value
+    const calculateTimer = () => {
       const now = new Date();
       const diff = now.getTime() - startTime.getTime();
       
@@ -63,7 +64,14 @@ export default function HomeScreen() {
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
       
-      setTimer({ days, hours, minutes, seconds });
+      return { days, hours, minutes, seconds };
+    };
+    
+    // Set initial value
+    setTimer(calculateTimer());
+    
+    const interval = setInterval(() => {
+      setTimer(calculateTimer());
     }, 1000);
     
     return () => clearInterval(interval);

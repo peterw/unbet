@@ -51,6 +51,13 @@
       "expo-font",
       "expo-tracking-transparency",
       [
+        "expo-notifications",
+        {
+          "icon": "./app_logo.png",
+          "color": "#5B8DFF"
+        }
+      ],
+      [
         "react-native-fbsdk-next",
         {
           "appID": "2189816538127814",

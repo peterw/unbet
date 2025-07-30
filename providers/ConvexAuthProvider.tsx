@@ -36,6 +36,7 @@ export function ConvexAuthProvider({ children }: ConvexAuthProviderProps) {
   const { isSignedIn, isLoaded } = useAuth();
   const [authAttempts, setAuthAttempts] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [isCreatingUser, setIsCreatingUser] = useState(false);
   
   // Query user with retry logic
   const user = useQuery(
@@ -62,19 +63,29 @@ export function ConvexAuthProvider({ children }: ConvexAuthProviderProps) {
     if (user !== null) {
       console.log('[ConvexAuth] User exists:', user._id);
       setError(null);
+      setIsCreatingUser(false);
+      return;
+    }
+
+    // Already creating user, don't try again
+    if (isCreatingUser) {
+      console.log('[ConvexAuth] Already creating user, skipping...');
       return;
     }
 
     // User doesn't exist, try to create
     try {
+      setIsCreatingUser(true);
       console.log('[ConvexAuth] Creating user in Convex...');
       const userId = await storeUser();
       console.log('[ConvexAuth] User created:', userId);
       setError(null);
       setAuthAttempts(0);
+      setIsCreatingUser(false);
     } catch (err) {
       console.error('[ConvexAuth] Failed to create user:', err);
       setError('Failed to authenticate. Please try signing out and back in.');
+      setIsCreatingUser(false);
       
       // Retry a few times
       if (authAttempts < 3) {

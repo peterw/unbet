@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TextInput, Image, Dimensions, ActivityIndicator, Animated } from 'react-native';
+
+// Conditionally import notifications - will fail in Expo Go
+let Notifications: any;
+try {
+  Notifications = require('expo-notifications');
+} catch (error) {
+  console.log('expo-notifications not available in Expo Go. Use development build for notifications.');
+}
 import { useSignUp, useOAuth, useAuth as useClerkAuth } from '@clerk/clerk-expo';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -449,19 +457,15 @@ export default function Onboarding() {
                   <TouchableOpacity
                     key={option}
                     style={[styles.optionButton, sessionDuration === option && styles.optionButtonSelected]}
-                    onPress={() => setSessionDuration(option)}
+                    onPress={() => {
+                      setSessionDuration(option);
+                      handleNext();
+                    }}
                   >
                     <Text style={styles.optionButtonText}>{option}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
-              <TouchableOpacity 
-                style={[styles.continueButton, !sessionDuration && styles.continueButtonDisabled]} 
-                onPress={handleNext}
-                disabled={!sessionDuration}
-              >
-                <Text style={styles.continueButtonText}>Continue</Text>
-              </TouchableOpacity>
             </ScrollView>
           </View>
         );
@@ -565,19 +569,15 @@ export default function Onboarding() {
                 <TouchableOpacity
                   key={option}
                   style={[styles.optionButton, userAge === option && styles.optionButtonSelected]}
-                  onPress={() => setUserAge(option)}
+                  onPress={() => {
+                    setUserAge(option);
+                    handleNext();
+                  }}
                 >
                   <Text style={styles.optionButtonText}>{option}</Text>
                 </TouchableOpacity>
               ))}
             </View>
-            <TouchableOpacity 
-              style={[styles.continueButton, !userAge && styles.continueButtonDisabled]} 
-              onPress={handleNext}
-              disabled={!userAge}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
           </View>
         );
 
@@ -596,31 +596,27 @@ export default function Onboarding() {
                 <TouchableOpacity
                   key={option}
                   style={[styles.optionButton, startAge === option && styles.optionButtonSelected]}
-                  onPress={() => setStartAge(option)}
+                  onPress={() => {
+                    setStartAge(option);
+                    handleNext();
+                  }}
                 >
                   <Text style={styles.optionButtonText}>{option}</Text>
                 </TouchableOpacity>
               ))}
             </View>
-            <TouchableOpacity 
-              style={[styles.continueButton, !startAge && styles.continueButtonDisabled]} 
-              onPress={handleNext}
-              disabled={!startAge}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
           </View>
         );
 
       case 'sexually_active_age':
         return (
           <View style={styles.sexuallyActiveContainer}>
-            <Text style={styles.questionTitle}>How old were you when your first became sexually active ?</Text>
+            <Text style={styles.questionTitle}>How old were you when you first became sexually active ?</Text>
             <View style={styles.optionsContainer}>
               {[
                 'Never',
                 '14 - 17',
-                '18 -24',
+                '18 - 24',
                 '25 - 30',
                 '30 - 40',
                 '40+'
@@ -628,19 +624,15 @@ export default function Onboarding() {
                 <TouchableOpacity
                   key={option}
                   style={[styles.optionButton, sexuallyActiveAge === option && styles.optionButtonSelected]}
-                  onPress={() => setSexuallyActiveAge(option)}
+                  onPress={() => {
+                    setSexuallyActiveAge(option);
+                    handleNext();
+                  }}
                 >
                   <Text style={styles.optionButtonText}>{option}</Text>
                 </TouchableOpacity>
               ))}
             </View>
-            <TouchableOpacity 
-              style={[styles.continueButton, !sexuallyActiveAge && styles.continueButtonDisabled]} 
-              onPress={handleNext}
-              disabled={!sexuallyActiveAge}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
           </View>
         );
 
@@ -656,19 +648,15 @@ export default function Onboarding() {
                 <TouchableOpacity
                   key={option}
                   style={[styles.optionButton, pornIncrease === option && styles.optionButtonSelected]}
-                  onPress={() => setPornIncrease(option)}
+                  onPress={() => {
+                    setPornIncrease(option);
+                    handleNext();
+                  }}
                 >
                   <Text style={styles.optionButtonText}>{option}</Text>
                 </TouchableOpacity>
               ))}
             </View>
-            <TouchableOpacity 
-              style={[styles.continueButton, !pornIncrease && styles.continueButtonDisabled]} 
-              onPress={handleNext}
-              disabled={!pornIncrease}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
           </View>
         );
 
@@ -684,19 +672,15 @@ export default function Onboarding() {
                 <TouchableOpacity
                   key={option}
                   style={[styles.optionButton, explicitContent === option && styles.optionButtonSelected]}
-                  onPress={() => setExplicitContent(option)}
+                  onPress={() => {
+                    setExplicitContent(option);
+                    handleNext();
+                  }}
                 >
                   <Text style={styles.optionButtonText}>{option}</Text>
                 </TouchableOpacity>
               ))}
             </View>
-            <TouchableOpacity 
-              style={[styles.continueButton, !explicitContent && styles.continueButtonDisabled]} 
-              onPress={handleNext}
-              disabled={!explicitContent}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
           </View>
         );
 
@@ -736,7 +720,7 @@ export default function Onboarding() {
 
       case 'science':
         return (
-          <ScrollView style={styles.scienceContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          <View style={styles.scienceContainer}>
             <Text style={styles.scienceTitle}>Backed by brain science.</Text>
             <Text style={styles.scienceSubtitle}>Your recovery is designed by neuroscientists and addiction experts</Text>
             <View style={styles.scienceItems}>
@@ -759,7 +743,7 @@ export default function Onboarding() {
             <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
-          </ScrollView>
+          </View>
         );
 
       case 'days':
@@ -838,7 +822,30 @@ export default function Onboarding() {
                 <TouchableOpacity style={styles.dontAllowButton} onPress={handleNext}>
                   <Text style={styles.dontAllowButtonText}>Don't Allow</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.allowButton} onPress={handleNext}>
+                <TouchableOpacity style={styles.allowButton} onPress={async () => {
+                  if (Platform.OS !== 'web') {
+                    try {
+                      // Check if Notifications module is available (won't be in Expo Go)
+                      if (Notifications && Notifications.getPermissionsAsync) {
+                        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+                        let finalStatus = existingStatus;
+                        if (existingStatus !== 'granted') {
+                          const { status } = await Notifications.requestPermissionsAsync();
+                          finalStatus = status;
+                        }
+                        if (finalStatus === 'granted') {
+                          console.log('Notification permissions granted!');
+                        }
+                      } else {
+                        console.log('Notifications module not available in Expo Go. Run with development build.');
+                      }
+                    } catch (error) {
+                      console.log('Error requesting notification permissions:', error);
+                      console.log('Note: Notifications require a development build. Run: npx expo run:ios');
+                    }
+                  }
+                  handleNext();
+                }}>
                   <Text style={styles.allowButtonText}>Allow</Text>
                 </TouchableOpacity>
               </View>
@@ -962,19 +969,15 @@ export default function Onboarding() {
                 <TouchableOpacity
                   key={option}
                   style={[styles.optionButton, religious === option && styles.optionButtonSelected]}
-                  onPress={() => setReligious(option)}
+                  onPress={() => {
+                    setReligious(option);
+                    handleNext();
+                  }}
                 >
                   <Text style={styles.optionButtonText}>{option}</Text>
                 </TouchableOpacity>
               ))}
             </View>
-            <TouchableOpacity 
-              style={[styles.continueButton, !religious && styles.continueButtonDisabled]} 
-              onPress={handleNext}
-              disabled={!religious}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
           </View>
         );
 
@@ -995,19 +998,15 @@ export default function Onboarding() {
                 <TouchableOpacity
                   key={option}
                   style={[styles.optionButton, lastRelapse === option && styles.optionButtonSelected]}
-                  onPress={() => setLastRelapse(option)}
+                  onPress={() => {
+                    setLastRelapse(option);
+                    handleNext();
+                  }}
                 >
                   <Text style={styles.optionButtonText}>{option}</Text>
                 </TouchableOpacity>
               ))}
             </View>
-            <TouchableOpacity 
-              style={[styles.continueButton, !lastRelapse && styles.continueButtonDisabled]} 
-              onPress={handleNext}
-              disabled={!lastRelapse}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
           </View>
         );
 
@@ -1088,7 +1087,7 @@ export default function Onboarding() {
             <View style={styles.commitmentItems}>
               <View style={styles.commitmentItem}>
                 <Ionicons name="checkmark-circle" size={24} color="#5B8DFF" />
-                <Text style={styles.commitmentItemText}>Prioritizing my mental and physical</Text>
+                <Text style={styles.commitmentItemText}>Prioritizing my mental and physical health</Text>
               </View>
               <View style={styles.commitmentItem}>
                 <Ionicons name="checkmark-circle" size={24} color="#5B8DFF" />
@@ -1338,7 +1337,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
     marginHorizontal: 30,
-    marginBottom: 40,
+    marginBottom: 30,
   },
   continueButtonText: {
     color: '#FFFFFF',
@@ -1692,6 +1691,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 30,
     paddingTop: 40,
+    justifyContent: 'space-between',
   },
   scienceTitle: {
     fontSize: 36,
@@ -1710,6 +1710,7 @@ const styles = StyleSheet.create({
   scienceItems: {
     flex: 1,
     justifyContent: 'center',
+    marginVertical: 20,
   },
   scienceItem: {
     backgroundColor: '#1A1A2E',
