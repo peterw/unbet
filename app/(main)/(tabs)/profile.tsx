@@ -104,7 +104,7 @@ export default function ProfileScreen() {
     try {
       await Share.share({
         message: `Join me on the recovery journey! Use my referral code: ${referralCode}`,
-        url: 'https://app.seed.com',
+        url: 'https://app.unbet.com',
       });
     } catch (error) {
       console.error('Error sharing:', error);

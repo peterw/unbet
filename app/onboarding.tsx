@@ -183,8 +183,8 @@ export default function Onboarding() {
     { id: 10, type: 'age_range' },
     { id: 11, type: 'start_age' },
     { id: 12, type: 'sexually_active_age' },
-    { id: 13, type: 'porn_increase' },
-    { id: 14, type: 'explicit_content' },
+    { id: 13, type: 'gambling_increase' },
+    { id: 14, type: 'risk_escalation' },
     // { id: 15, type: 'blockers' },
     // { id: 16, type: 'track' },
     { id: 17, type: 'religious' },
@@ -216,8 +216,8 @@ export default function Onboarding() {
   const [frequency, setFrequency] = useState('');
   const [triggers, setTriggers] = useState<string[]>([]);
   const [sexuallyActiveAge, setSexuallyActiveAge] = useState('');
-  const [pornIncrease, setPornIncrease] = useState('');
-  const [explicitContent, setExplicitContent] = useState('');
+  const [gamblingIncrease, setGamblingIncrease] = useState('');
+  const [riskEscalation, setRiskEscalation] = useState('');
   const [religious, setReligious] = useState('');
   const [lastRelapse, setLastRelapse] = useState('');
   const [symptoms, setSymptoms] = useState<string[]>([]);
@@ -343,7 +343,7 @@ export default function Onboarding() {
             </View>
             <View style={styles.welcomeContent}>
               <Text style={styles.welcomeTitle}>Welcome{'\n'}to Unbet</Text>
-              <Text style={styles.welcomeSubtitle}>Unleash your Potential.{'\n'}Leave Porn Behind.</Text>
+              <Text style={styles.welcomeSubtitle}>Unleash your Potential.{'\n'}Leave Gambling Behind.</Text>
             </View>
             <TouchableOpacity 
               style={styles.welcomeButton} 
@@ -387,24 +387,24 @@ export default function Onboarding() {
               <View style={[styles.star, { top: '85%', left: '15%', width: 2, height: 2 }]} />
             </View>
             <ScrollView style={styles.statsScrollView} contentContainerStyle={styles.statsScrollContent} showsVerticalScrollIndicator={false}>
-              <Text style={styles.statsTitle}>A science-based approach to defeat porn addiction for good.</Text>
+              <Text style={styles.statsTitle}>A science-based approach to overcome gambling addiction for good.</Text>
               <View style={styles.statsBig}>
-                <Text style={styles.statsBigNumber}>41</Text>
-                <Text style={styles.statsBigUnit}>billion hours</Text>
+                <Text style={styles.statsBigNumber}>$400</Text>
+                <Text style={styles.statsBigUnit}>billion</Text>
               </View>
-              <Text style={styles.statsDescription}>are wasted every year watching porn around the world.</Text>
+              <Text style={styles.statsDescription}>are lost every year to gambling around the world.</Text>
               <View style={styles.statsItems}>
                 <View style={styles.statsItem}>
                   <Text style={styles.statsIcon}>🚀</Text>
-                  <Text style={styles.statsItemText}>Enough time to build 41,000 spaceX starships</Text>
+                  <Text style={styles.statsItemText}>More than 10 countries' annual GDP combined</Text>
                 </View>
                 <View style={styles.statsItem}>
                   <Text style={styles.statsIcon}>🏛</Text>
-                  <Text style={styles.statsItemText}>Enough time to build the Great Pyramid over 100 times</Text>
+                  <Text style={styles.statsItemText}>Could fund 200,000 schools worldwide</Text>
                 </View>
                 <View style={styles.statsItem}>
                   <Text style={styles.statsIcon}>🔬</Text>
-                  <Text style={styles.statsItemText}>2.5x spent on scientific global research globally</Text>
+                  <Text style={styles.statsItemText}>4x all global scientific research funding</Text>
                 </View>
               </View>
             </ScrollView>
@@ -484,7 +484,7 @@ export default function Onboarding() {
             <Text style={styles.transformTitle}>10,653 people transformed their lives this year.</Text>
             <View style={styles.transformTestimonials}>
               <View style={styles.testimonial}>
-                <Text style={styles.testimonialQuote}>"Finally free after 10 years of addiction. Unbet saved my marriage."</Text>
+                <Text style={styles.testimonialQuote}>"Finally free after 8 years of gambling addiction. Unbet saved my marriage and finances."</Text>
                 <Text style={styles.testimonialAuthor}>- Mark, 34</Text>
               </View>
               <View style={styles.testimonial}>
@@ -543,16 +543,16 @@ export default function Onboarding() {
       case 'motivation_1':
         return (
           <View style={styles.motivationContainer}>
-            <Text style={styles.questionTitle}>What's your motivations behind quitting porn ?</Text>
+            <Text style={styles.questionTitle}>What's your motivations behind quitting gambling ?</Text>
             <ScrollView style={styles.scrollContainer}>
               {[
                 'Reclaim control of my life',
-                'Improve Relationships',
-                'Increase Energy',
-                'Increase Libido',
-                'Increase Mental Clarity',
-                'Improve Mental Strength',
-                'Save Time'
+                'Improve relationships',
+                'Financial freedom',
+                'Reduce anxiety and stress',
+                'Stop lying to loved ones',
+                'Build a secure future',
+                'End the shame and secrecy'
               ].map((option) => (
                 <TouchableOpacity
                   key={option}
@@ -585,16 +585,16 @@ export default function Onboarding() {
       case 'motivation_2':
         return (
           <View style={styles.motivationContainer}>
-            <Text style={styles.questionTitle}>What's your motivations behind quitting porn ?</Text>
+            <Text style={styles.questionTitle}>What's your motivations behind quitting gambling ?</Text>
             <ScrollView style={styles.scrollContainer}>
               {[
-                'Increase Energy',
-                'Increase Libido',
-                'Increase Mental Clarity',
-                'Improve Mental Strength',
-                'Save Time',
-                'Improve Confidence',
-                'Religious Reasons'
+                'Regain self-respect',
+                'Save money',
+                'Focus on family',
+                'Improve sleep quality',
+                'Reduce mood swings',
+                'Stop chasing losses',
+                'Religious reasons'
               ].map((option) => (
                 <TouchableOpacity
                   key={option}
@@ -654,7 +654,7 @@ export default function Onboarding() {
       case 'start_age':
         return (
           <View style={styles.startAgeContainer}>
-            <Text style={styles.questionTitle}>When did you start watching porn ?</Text>
+            <Text style={styles.questionTitle}>When did you start gambling ?</Text>
             <View style={styles.optionsContainer}>
               {[
                 '14 - 17',
@@ -706,10 +706,10 @@ export default function Onboarding() {
           </View>
         );
 
-      case 'porn_increase':
+      case 'gambling_increase':
         return (
-          <View style={styles.pornIncreaseContainer}>
-            <Text style={styles.questionTitle}>Has the amount of porn you watch increased over time ?</Text>
+          <View style={styles.gamblingIncreaseContainer}>
+            <Text style={styles.questionTitle}>Has the amount of money you gamble increased over time ?</Text>
             <View style={styles.optionsContainer}>
               {[
                 'Yes',
@@ -717,9 +717,9 @@ export default function Onboarding() {
               ].map((option) => (
                 <TouchableOpacity
                   key={option}
-                  style={[styles.optionButton, pornIncrease === option && styles.optionButtonSelected]}
+                  style={[styles.optionButton, gamblingIncrease === option && styles.optionButtonSelected]}
                   onPress={() => {
-                    setPornIncrease(option);
+                    setGamblingIncrease(option);
                     handleNext();
                   }}
                 >
@@ -730,10 +730,10 @@ export default function Onboarding() {
           </View>
         );
 
-      case 'explicit_content':
+      case 'risk_escalation':
         return (
-          <View style={styles.explicitContentContainer}>
-            <Text style={styles.questionTitle}>Have you started to watch content that is more explicit or extreme over time ?</Text>
+          <View style={styles.riskEscalationContainer}>
+            <Text style={styles.questionTitle}>Have you started to bet larger amounts or take bigger risks over time ?</Text>
             <View style={styles.optionsContainer}>
               {[
                 'Yes',
@@ -741,9 +741,9 @@ export default function Onboarding() {
               ].map((option) => (
                 <TouchableOpacity
                   key={option}
-                  style={[styles.optionButton, explicitContent === option && styles.optionButtonSelected]}
+                  style={[styles.optionButton, riskEscalation === option && styles.optionButtonSelected]}
                   onPress={() => {
-                    setExplicitContent(option);
+                    setRiskEscalation(option);
                     handleNext();
                   }}
                 >
@@ -792,7 +792,7 @@ export default function Onboarding() {
         return (
           <View style={styles.scienceContainer}>
             <Text style={styles.scienceTitle}>Backed by brain science.</Text>
-            <Text style={styles.scienceSubtitle}>Your recovery is designed by neuroscientists and addiction experts</Text>
+            <Text style={styles.scienceSubtitle}>Your recovery is designed by neuroscientists and gambling addiction experts</Text>
             <View style={styles.scienceItems}>
               <View style={styles.scienceItem}>
                 <Ionicons name="fitness" size={32} color="#5B8DFF" />
@@ -828,7 +828,7 @@ export default function Onboarding() {
                 <View style={styles.milestoneContent}>
                   <Text style={styles.milestoneDay}>7 days</Text>
                   <Text style={styles.milestoneTitle}>First Week</Text>
-                  <Text style={styles.milestoneText}>Break the habit loop</Text>
+                  <Text style={styles.milestoneText}>Break the betting cycle</Text>
                 </View>
               </View>
               
@@ -839,7 +839,7 @@ export default function Onboarding() {
                 <View style={styles.milestoneContent}>
                   <Text style={styles.milestoneDay}>30 days</Text>
                   <Text style={styles.milestoneTitle}>One Month</Text>
-                  <Text style={styles.milestoneText}>Brain fog clears</Text>
+                  <Text style={styles.milestoneText}>Financial awareness returns</Text>
                 </View>
               </View>
               
@@ -850,7 +850,7 @@ export default function Onboarding() {
                 <View style={styles.milestoneContent}>
                   <Text style={styles.milestoneDay}>90 days</Text>
                   <Text style={styles.milestoneTitle}>Full Reboot</Text>
-                  <Text style={styles.milestoneText}>Complete transformation</Text>
+                  <Text style={styles.milestoneText}>Healthy relationship with money</Text>
                 </View>
               </View>
             </View>
@@ -1092,16 +1092,16 @@ export default function Onboarding() {
       case 'symptoms':
         return (
           <View style={styles.symptomsContainer}>
-            <Text style={styles.symptomsTitle}>High reliance on porn may lead to these common symptoms</Text>
+            <Text style={styles.symptomsTitle}>Gambling addiction may lead to these common symptoms</Text>
             <ScrollView style={styles.scrollContainer}>
               {[
-                'Fatigue and low energy',
-                'Weakened erection',
-                'Decreased libido',
-                'Anxiety and stress',
-                'Low motivation',
-                'Social isolation',
-                'Low focus and concentration'
+                'Financial problems',
+                'Relationship issues',
+                'Loss of interest in hobbies',
+                'Anxiety about money',
+                'Lying about spending',
+                'Chasing losses',
+                'Mood swings'
               ].map((option) => (
                 <TouchableOpacity
                   key={option}
@@ -1134,7 +1134,7 @@ export default function Onboarding() {
         return (
           <View style={styles.graphContainer}>
             <ScrollView style={styles.graphScrollView} contentContainerStyle={styles.graphScrollContent} showsVerticalScrollIndicator={false}>
-              <Text style={styles.graphTitle}>Quit porn forever in as little as 34 days.</Text>
+              <Text style={styles.graphTitle}>Overcome gambling addiction in as little as 90 days.</Text>
               <View style={styles.graphPlaceholder}>
                 <Text style={styles.graphPlaceholderText}>Graph visualization</Text>
               </View>
@@ -2567,12 +2567,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingTop: 15,
   },
-  pornIncreaseContainer: {
+  gamblingIncreaseContainer: {
     flex: 1,
     paddingHorizontal: 30,
     paddingTop: 15,
   },
-  explicitContentContainer: {
+  riskEscalationContainer: {
     flex: 1,
     paddingHorizontal: 30,
     paddingTop: 15,
