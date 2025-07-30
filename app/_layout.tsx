@@ -95,7 +95,7 @@ const convex = new ConvexReactClient(convexUrl!, {
 
 const RootLayoutNav = () => {
   // Load fonts locally - these load instantly since they're bundled
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     'DMSans_300Light': require('../assets/fonts/DM_Sans/static/DMSans-Light.ttf'),
     'DMSans_400Regular': require('../assets/fonts/DM_Sans/static/DMSans-Regular.ttf'),
     'DMSans_500Medium': require('../assets/fonts/DM_Sans/static/DMSans-Medium.ttf'),
@@ -104,22 +104,49 @@ const RootLayoutNav = () => {
     'DMSerifDisplay_400Regular_Italic': require('../assets/fonts/DM_Serif_Display/DMSerifDisplay-Italic.ttf'),
   });
 
+  // Handle font loading errors gracefully
+  useEffect(() => {
+    if (fontError) {
+      console.error('[RootLayout] Font loading error:', fontError);
+      // Continue anyway - use system fonts as fallback
+      SplashScreen.hideAsync();
+    }
+  }, [fontError]);
+
   // Initialise the Mixpanel analytics provider once. The token should be
   // provided via your app configuration (e.g. app.config.ts or .env files)
   // and exposed to the client through the Expo "EXPO_PUBLIC_" prefix.
   const mixpanelProvider = useMemo(() => {
-    const token = process.env.EXPO_PUBLIC_MIXPANEL_TOKEN!;
-
-    return new MixpanelProvider(token);
+    try {
+      const token = process.env.EXPO_PUBLIC_MIXPANEL_TOKEN;
+      if (!token || token.includes('your_mixpanel_project_token_here')) {
+        console.warn('[RootLayout] Mixpanel token not configured, using fallback');
+        return new MixpanelProvider('fallback_token');
+      }
+      return new MixpanelProvider(token);
+    } catch (error) {
+      console.error('[RootLayout] Error initializing Mixpanel:', error);
+      return new MixpanelProvider('fallback_token');
+    }
   }, []);
 
-  // Hide splash screen when fonts are loaded
+  // Hide splash screen when fonts are loaded OR after timeout
   useEffect(() => {
     if (fontsLoaded) {
       console.log('[RootLayout] Fonts loaded, hiding splash screen');
       SplashScreen.hideAsync().catch(err => {
         console.error('[RootLayout] Error hiding splash screen:', err);
       });
+    } else {
+      // Failsafe: Hide splash screen after 5 seconds even if fonts fail
+      const timeout = setTimeout(() => {
+        console.warn('[RootLayout] Timeout waiting for fonts, hiding splash screen anyway');
+        SplashScreen.hideAsync().catch(err => {
+          console.error('[RootLayout] Error hiding splash screen in timeout:', err);
+        });
+      }, 5000);
+      
+      return () => clearTimeout(timeout);
     }
   }, [fontsLoaded]);
 
@@ -208,15 +235,20 @@ const RootLayoutNav = () => {
     };
   }, []);
 
-  // Show loading screen until fonts are loaded
-  if (!fontsLoaded) {
-    console.log('[RootLayout] Fonts not loaded yet, fontsLoaded =', fontsLoaded);
+  // Show loading screen until fonts are loaded (with error fallback)
+  if (!fontsLoaded && !fontError) {
+    console.log('[RootLayout] Fonts not loaded yet, fontsLoaded =', fontsLoaded, 'fontError =', fontError);
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
         <ActivityIndicator size="large" color="#fff" />
         <Text style={{ marginTop: 10, color: '#fff', fontSize: 16 }}>Loading fonts...</Text>
       </View>
     );
+  }
+
+  // If there's a font error, proceed anyway with system fonts
+  if (fontError) {
+    console.warn('[RootLayout] Font loading failed, using system fonts:', fontError);
   }
 
   console.log('[RootLayout] Fonts loaded successfully! fontsLoaded =', fontsLoaded);
