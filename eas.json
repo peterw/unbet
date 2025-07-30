@@ -20,7 +20,7 @@
       }
     },
     "production": {
-      "autoIncrement": "version",
+      "autoIncrement": true,
       "channel": "production",
       "ios": {
         "autoIncrement": "buildNumber",
