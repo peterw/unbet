@@ -57,15 +57,26 @@ export const getCurrentUser = query({
     // Auto-create user if doesn't exist (eliminates need for separate store mutation)
     if (!user) {
       console.log("Auto-creating user for:", identity.tokenIdentifier);
-      const userId = await ctx.db.insert("users", {
-        name: identity.name ?? identity.email ?? identity.tokenIdentifier,
-        tokenIdentifier: identity.tokenIdentifier,
-        onboarded: false,
-        recoveryStartDate: new Date().toISOString(),
-      });
-      
-      // Fetch the newly created user
-      user = await ctx.db.get(userId);
+      try {
+        const userId = await ctx.db.insert("users", {
+          name: identity.name ?? identity.email ?? identity.tokenIdentifier,
+          tokenIdentifier: identity.tokenIdentifier,
+          onboarded: false,
+          recoveryStartDate: new Date().toISOString(),
+        });
+        
+        // Fetch the newly created user
+        user = await ctx.db.get(userId);
+      } catch (error) {
+        // Handle race condition where user was created by another call
+        console.log("User creation race condition, refetching:", error);
+        user = await ctx.db
+          .query("users")
+          .withIndex("by_token", (q) =>
+            q.eq("tokenIdentifier", identity.tokenIdentifier)
+          )
+          .unique();
+      }
     }
     
     return user;
