@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Haptics } from '@/utils/haptics';
 // import Slider from '@react-native-community/slider';
 // Using a simple progress bar instead of slider for now
@@ -80,34 +81,64 @@ export default function TapePlayerScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Album Art */}
-      <View style={styles.albumArtContainer}>
-        <Image 
-          source={{ uri: tape.imageUrl }}
-          style={styles.albumArt}
-        />
+      {/* Content Container */}
+      <View style={styles.contentContainer}>
+        {/* Album Art */}
+        <View style={styles.albumArtContainer}>
+          <View style={styles.albumArt}>
+            <LinearGradient
+              colors={[
+                '#1a1a2e',
+                '#16213e', 
+                '#0f3460',
+                '#1a1a2e'
+              ]}
+              style={styles.albumArtGradient}
+              start={{ x: 0.1, y: 0.1 }}
+              end={{ x: 0.9, y: 0.9 }}
+            >
+              {/* Noise texture overlay */}
+              <View style={styles.noiseContainer}>
+                {[...Array(40)].map((_, i) => (
+                  <View
+                    key={i}
+                    style={[
+                      styles.noiseDot,
+                      {
+                        left: `${Math.random() * 100}%`,
+                        top: `${Math.random() * 100}%`,
+                        opacity: 0.1 + Math.random() * 0.2,
+                        transform: [{ scale: 0.5 + Math.random() * 0.8 }],
+                      },
+                    ]}
+                  />
+                ))}
+              </View>
+            </LinearGradient>
+          </View>
+        </View>
+
+        {/* Title */}
+        <Text style={styles.title}>{tape.title}</Text>
+
+        {/* Instructions */}
+        <View style={styles.instructions}>
+          <View style={styles.instructionItem}>
+            <Ionicons name="headset" size={24} color="#FFF" />
+            <Text style={styles.instructionText}>Listen with headphones</Text>
+          </View>
+          <View style={styles.instructionItem}>
+            <Text style={styles.meditationIcon}>🧘</Text>
+            <Text style={styles.instructionText}>Find a silent, relaxing environment.</Text>
+          </View>
+          <View style={styles.instructionItem}>
+            <Text style={styles.targetIcon}>🎯</Text>
+            <Text style={styles.instructionText}>Lock in.</Text>
+          </View>
+        </View>
       </View>
 
-      {/* Title */}
-      <Text style={styles.title}>{tape.title}</Text>
-
-      {/* Instructions */}
-      <View style={styles.instructions}>
-        <View style={styles.instructionItem}>
-          <Ionicons name="headset" size={24} color="#FFF" />
-          <Text style={styles.instructionText}>Listen with headphones</Text>
-        </View>
-        <View style={styles.instructionItem}>
-          <Text style={styles.meditationIcon}>🧘</Text>
-          <Text style={styles.instructionText}>Find a silent, relaxing environment.</Text>
-        </View>
-        <View style={styles.instructionItem}>
-          <Text style={styles.targetIcon}>🎯</Text>
-          <Text style={styles.instructionText}>Lock in.</Text>
-        </View>
-      </View>
-
-      {/* Player Controls */}
+      {/* Player Controls - Fixed at bottom */}
       <View style={styles.playerContainer}>
         {/* Progress Bar */}
         <View style={styles.progressContainer}>
@@ -184,29 +215,59 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  contentContainer: {
+    flex: 1,
+    paddingBottom: 220, // Space for player controls
+  },
   albumArtContainer: {
     alignItems: 'center',
     marginTop: 20,
-    marginBottom: 40,
+    marginBottom: 30,
   },
   albumArt: {
-    width: SCREEN_WIDTH * 0.75,
-    height: SCREEN_WIDTH * 0.75,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    width: SCREEN_WIDTH * 0.6,
+    height: SCREEN_WIDTH * 0.6,
+    borderRadius: 24,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  albumArtGradient: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  noiseContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  noiseDot: {
+    position: 'absolute',
+    width: 2,
+    height: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+    borderRadius: 1,
   },
   title: {
-    fontSize: 36,
-    fontWeight: '600',
+    fontSize: 28,
+    fontFamily: 'DMSans_500Medium',
     color: '#FFF',
     textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: 30,
     paddingHorizontal: 20,
   },
   instructions: {
     paddingHorizontal: 40,
-    gap: 20,
-    marginBottom: 60,
+    gap: 16,
+    flex: 1,
+    justifyContent: 'center',
   },
   instructionItem: {
     flexDirection: 'row',
@@ -233,7 +294,9 @@ const styles = StyleSheet.create({
     bottom: 40,
     left: 0,
     right: 0,
-    paddingHorizontal: 40,
+    paddingHorizontal: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    paddingTop: 20,
   },
   progressContainer: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',

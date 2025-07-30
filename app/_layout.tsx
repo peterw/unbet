@@ -4,7 +4,7 @@ import { Slot, SplashScreen } from 'expo-router';
 import { ConvexReactClient } from 'convex/react';
 import { ConvexProviderWithClerk } from 'convex/react-clerk';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { RevenueCatProvider } from '@/providers/RevenueCatProvider';
+import { RevenueCatProvider } from '@/providers/SafeRevenueCatProvider';
 import { useEffect, useMemo } from 'react';
 import { MixpanelProvider } from '@/providers/MixpanelProvider';
 import { AnalyticsProviderComponent } from '@/providers/AnalyticsProvider';
@@ -40,18 +40,8 @@ if (!isExpoGo()) {
   }
 }
 
-import { Platform } from 'react-native';
+import { Platform, AppState } from 'react-native';
 import { useFonts } from 'expo-font';
-import {
-  DMSans_300Light,
-  DMSans_400Regular,
-  DMSans_500Medium,
-  DMSans_700Bold,
-} from '@expo-google-fonts/dm-sans';
-import {
-  DMSerifDisplay_400Regular,
-  DMSerifDisplay_400Regular_Italic,
-} from '@expo-google-fonts/dm-serif-display';
 import { initializeApp } from '@/utils/envCheck';
 import { ConvexAuthProvider } from '@/providers/ConvexAuthProvider';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -92,7 +82,9 @@ const tokenCache = {
 }
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+SplashScreen.preventAutoHideAsync().catch(() => {
+  // Splash screen might already be hidden, that's ok
+});
 
 const convexUrl = process.env.EXPO_PUBLIC_CONVEX_URL;
 console.log('Convex URL:', convexUrl);
@@ -102,14 +94,14 @@ const convex = new ConvexReactClient(convexUrl!, {
 });
 
 const RootLayoutNav = () => {
-  // Load fonts
+  // Load fonts locally - these load instantly since they're bundled
   const [fontsLoaded] = useFonts({
-    DMSans_300Light,
-    DMSans_400Regular,
-    DMSans_500Medium,
-    DMSans_700Bold,
-    DMSerifDisplay_400Regular,
-    DMSerifDisplay_400Regular_Italic,
+    'DMSans_300Light': require('../assets/fonts/DM_Sans/static/DMSans-Light.ttf'),
+    'DMSans_400Regular': require('../assets/fonts/DM_Sans/static/DMSans-Regular.ttf'),
+    'DMSans_500Medium': require('../assets/fonts/DM_Sans/static/DMSans-Medium.ttf'),
+    'DMSans_700Bold': require('../assets/fonts/DM_Sans/static/DMSans-Bold.ttf'),
+    'DMSerifDisplay_400Regular': require('../assets/fonts/DM_Serif_Display/DMSerifDisplay-Regular.ttf'),
+    'DMSerifDisplay_400Regular_Italic': require('../assets/fonts/DM_Serif_Display/DMSerifDisplay-Italic.ttf'),
   });
 
   // Initialise the Mixpanel analytics provider once. The token should be
@@ -121,30 +113,15 @@ const RootLayoutNav = () => {
     return new MixpanelProvider(token);
   }, []);
 
+  // Hide splash screen when fonts are loaded
   useEffect(() => {
     if (fontsLoaded) {
-      console.log('[RootLayout] Fonts loaded, will hide splash screen');
-      // Add a small delay to ensure all components are mounted
-      setTimeout(() => {
-        console.log('[RootLayout] Hiding splash screen now');
-        SplashScreen.hideAsync().catch(err => {
-          console.error('[RootLayout] Error hiding splash screen:', err);
-        });
-      }, 100);
+      console.log('[RootLayout] Fonts loaded, hiding splash screen');
+      SplashScreen.hideAsync().catch(err => {
+        console.error('[RootLayout] Error hiding splash screen:', err);
+      });
     }
   }, [fontsLoaded]);
-
-  // Failsafe: Force hide splash screen after 5 seconds to prevent being stuck
-  useEffect(() => {
-    const failsafeTimer = setTimeout(() => {
-      console.warn('[RootLayout] Failsafe: Force hiding splash screen after 5 seconds');
-      SplashScreen.hideAsync().catch(err => {
-        console.error('[RootLayout] Failsafe error hiding splash screen:', err);
-      });
-    }, 5000);
-
-    return () => clearTimeout(failsafeTimer);
-  }, []);
 
   useEffect(() => {
     // Check environment variables on app initialization
@@ -170,10 +147,9 @@ const RootLayoutNav = () => {
       console.log('Adjust SDK not initialized - no token provided');
     }
 
-    // 👉 Initialise Facebook / Meta SDK
+    // Initialize Facebook / Meta SDK
     const fbAppId = process.env.EXPO_PUBLIC_FACEBOOK_APP_ID || 'YOUR_FACEBOOK_APP_ID';
     FacebookSDK.init(fbAppId);
-
 
     // Request ATT permission after a delay to let the app settle
     setTimeout(async () => {
@@ -230,18 +206,20 @@ const RootLayoutNav = () => {
         AdjustSDK.cleanup();
       }
     };
-
   }, []);
 
+  // Show loading screen until fonts are loaded
   if (!fontsLoaded) {
-    console.log('Fonts not loaded yet, showing loading screen');
+    console.log('[RootLayout] Fonts not loaded yet, fontsLoaded =', fontsLoaded);
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
         <ActivityIndicator size="large" color="#fff" />
-        <Text style={{ marginTop: 10, color: '#fff' }}>Loading fonts...</Text>
+        <Text style={{ marginTop: 10, color: '#fff', fontSize: 16 }}>Loading fonts...</Text>
       </View>
     );
   }
+
+  console.log('[RootLayout] Fonts loaded successfully! fontsLoaded =', fontsLoaded);
 
   console.log('Rendering app with Clerk key:', publishableKey ? 'Set' : 'Missing');
 
@@ -255,18 +233,18 @@ const RootLayoutNav = () => {
           </View>
         </ClerkLoading>
         <ClerkLoaded>
-          <RevenueCatProvider>
-            <AnalyticsProviderComponent provider={mixpanelProvider}>
-              <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-                <ConvexAuthProvider>
-                  <GestureHandlerRootView style={{ flex: 1 }}>
-                    <Slot />
-                  </GestureHandlerRootView>
-                </ConvexAuthProvider>
-              </ConvexProviderWithClerk>
-            </AnalyticsProviderComponent>
-          </RevenueCatProvider>
-        </ClerkLoaded>
+        <RevenueCatProvider>
+          <AnalyticsProviderComponent provider={mixpanelProvider}>
+            <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+              <ConvexAuthProvider>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                  <Slot />
+                </GestureHandlerRootView>
+              </ConvexAuthProvider>
+            </ConvexProviderWithClerk>
+          </AnalyticsProviderComponent>
+        </RevenueCatProvider>
+      </ClerkLoaded>
       </ClerkProvider>
     </ErrorBoundary>
   );

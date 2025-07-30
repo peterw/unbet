@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Haptics } from '@/utils/haptics';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
@@ -136,14 +137,14 @@ export default function JournalScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.tabContainer}>
-          {/* <TouchableOpacity
+          <TouchableOpacity
             style={[styles.tab, activeTab === 'Tapes' && styles.activeTab]}
             onPress={() => handleTabChange('Tapes')}
           >
             <Text style={[styles.tabText, activeTab === 'Tapes' && styles.activeTabText]}>
               Tapes
             </Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
           <TouchableOpacity
             style={[styles.tab, activeTab === 'Reflections' && styles.activeTab]}
             onPress={() => handleTabChange('Reflections')}
@@ -288,22 +289,43 @@ export default function JournalScreen() {
               
               {/* Tape Cards */}
               <View style={styles.tapeCard}>
-                <Text style={styles.tapeTitle}>The Introduction</Text>
-                <Text style={styles.tapeStatus}>Unlocked</Text>
-                {Platform.OS === 'web' ? (
-                  <View style={styles.tapeImage}>
-                    <img 
-                      src="https://via.placeholder.com/300x200"
-                      alt="Tape cover"
-                      style={{ width: '100%', height: '100%', borderRadius: 12, objectFit: 'cover' }}
-                    />
+                <View style={styles.tapeHeader}>
+                  <Text style={styles.tapeTitle}>The Introduction</Text>
+                  <View style={styles.tapeStatusBadge}>
+                    <Text style={styles.tapeStatusText}>Unlocked</Text>
                   </View>
-                ) : (
-                  <Image 
-                    source={{ uri: 'https://via.placeholder.com/300x200' }}
-                    style={styles.tapeImage}
-                  />
-                )}
+                </View>
+                <View style={styles.tapeImageContainer}>
+                  <LinearGradient
+                    colors={[
+                      '#1a1a2e',
+                      '#16213e', 
+                      '#0f3460',
+                      '#1a1a2e'
+                    ]}
+                    style={styles.tapeImageBackground}
+                    start={{ x: 0.1, y: 0.1 }}
+                    end={{ x: 0.9, y: 0.9 }}
+                  >
+                    {/* Noise texture overlay */}
+                    <View style={styles.noiseContainer}>
+                      {[...Array(35)].map((_, i) => (
+                        <View
+                          key={i}
+                          style={[
+                            styles.noiseDot,
+                            {
+                              left: `${Math.random() * 100}%`,
+                              top: `${Math.random() * 100}%`,
+                              opacity: 0.1 + Math.random() * 0.2,
+                              transform: [{ scale: 0.5 + Math.random() * 0.8 }],
+                            },
+                          ]}
+                        />
+                      ))}
+                    </View>
+                  </LinearGradient>
+                </View>
                 <Text style={styles.tapeDescription}>
                   This introduction equips you with the proper mental frameworks and strategies for using and implementing the SEED rewiring tapes collection. You will understand how the collection has been engineered. And you will learn how to use the tapes in the most effective way.
                 </Text>
@@ -592,30 +614,65 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.08)',
   },
+  tapeHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
   tapeTitle: {
     fontSize: 20,
     fontFamily: 'DMSans_500Medium',
     color: '#5B7FDE',
-    marginBottom: 8,
+    flex: 1,
   },
-  tapeStatus: {
-    position: 'absolute',
-    top: 20,
-    right: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  tapeStatusBadge: {
+    backgroundColor: 'rgba(76, 175, 80, 0.2)',
     paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 12,
-    fontSize: 14,
-    fontFamily: 'DMSans_400Regular',
-    color: 'rgba(255, 255, 255, 0.7)',
+    paddingVertical: 6,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(76, 175, 80, 0.3)',
   },
-  tapeImage: {
+  tapeStatusText: {
+    fontSize: 12,
+    fontFamily: 'DMSans_500Medium',
+    color: '#4CAF50',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  tapeImageContainer: {
     width: '100%',
     height: 180,
-    borderRadius: 12,
+    borderRadius: 20,
     marginVertical: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 12,
+  },
+  tapeImageBackground: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    position: 'relative',
+  },
+  noiseContainer: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  noiseDot: {
+    position: 'absolute',
+    width: 2,
+    height: 2,
+    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+    borderRadius: 1,
   },
   tapeDescription: {
     fontSize: 15,
