@@ -18,7 +18,7 @@ import { Picker } from '@react-native-picker/picker';
 import { useMutation, useQuery, useConvex } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRevenueCat } from '../providers/RevenueCatProvider';
+// import { useRevenueCat } from '../providers/RevenueCatProvider'; // Disabled temporarily
 import { isExpoGo } from '@/utils/isExpoGo';
 
 // Only import RevenueCat UI on native platforms
@@ -81,16 +81,52 @@ export default function Onboarding() {
     dailyProtein: '0',
   });
   const [isLoading, setIsLoading] = useState(false);
-  const { packages, purchasePackage } = useRevenueCat();
+  // Temporary fallback since RevenueCat provider is disabled
+  const packages = null;
+  const purchasePackage = async () => ({ success: false });
   const [mode, setMode] = useState<OnboardingMode>('full');
   const [selectedRating, setSelectedRating] = useState(0);
   const [referralInput, setReferralInput] = useState('');
   const { signOut, isLoaded, isSignedIn } = useClerkAuth();
+  const { startOAuthFlow } = useOAuth({ strategy: 'oauth_apple' });
   const convex = useConvex();
   const user = mode === 'user_details' ? useQuery(api.users.getCurrentUser) : undefined;
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const scrollRef = useRef<ScrollView>(null);
   const analytics = useAnalytics();
+
+  // Apple Sign In function
+  const handleAppleSignIn = async () => {
+    try {
+      console.log('Starting Apple Sign In...');
+      
+      // Check if already signed in
+      if (isSignedIn) {
+        console.log('User already signed in, redirecting to home');
+        router.replace('/(main)/(tabs)/');
+        return;
+      }
+      
+      const { createdSessionId, signIn, signUp, setActive } = await startOAuthFlow();
+      
+      if (createdSessionId) {
+        console.log('Apple Sign In successful, setting active session');
+        await setActive({ session: createdSessionId });
+        console.log('Session activated, redirecting to home');
+        router.replace('/(main)/(tabs)/');
+      } else {
+        console.log('Apple Sign In cancelled or failed');
+      }
+    } catch (error) {
+      console.error('Apple Sign In error:', error);
+      
+      // If error is "already signed in", redirect anyway
+      if (error.message?.includes('already signed in')) {
+        console.log('Already signed in error, redirecting to home');
+        router.replace('/(main)/(tabs)/');
+      }
+    }
+  };
 
   // Signature handling with PanResponder
   const panResponder = useRef(
@@ -306,7 +342,7 @@ export default function Onboarding() {
               <View style={[styles.star, { top: '35%', left: '8%', width: 4, height: 4 }]} />
             </View>
             <View style={styles.welcomeContent}>
-              <Text style={styles.welcomeTitle}>Welcome{'\n'}to Seed</Text>
+              <Text style={styles.welcomeTitle}>Welcome{'\n'}to Unbet</Text>
               <Text style={styles.welcomeSubtitle}>Unleash your Potential.{'\n'}Leave Porn Behind.</Text>
             </View>
             <TouchableOpacity 
@@ -323,14 +359,7 @@ export default function Onboarding() {
             </TouchableOpacity>
             <TouchableOpacity 
               style={styles.loginButton} 
-              onPress={() => {
-                console.log('Login button pressed from onboarding');
-                // Use router.replace to ensure navigation happens
-                router.replace({
-                  pathname: '/onboarding',
-                  params: { mode: 'signin' }
-                });
-              }}
+              onPress={handleAppleSignIn}
             >
               <Text style={styles.loginButtonText}>Login</Text>
             </TouchableOpacity>
@@ -455,7 +484,7 @@ export default function Onboarding() {
             <Text style={styles.transformTitle}>10,653 people transformed their lives this year.</Text>
             <View style={styles.transformTestimonials}>
               <View style={styles.testimonial}>
-                <Text style={styles.testimonialQuote}>"Finally free after 10 years of addiction. Seed saved my marriage."</Text>
+                <Text style={styles.testimonialQuote}>"Finally free after 10 years of addiction. Unbet saved my marriage."</Text>
                 <Text style={styles.testimonialAuthor}>- Mark, 34</Text>
               </View>
               <View style={styles.testimonial}>
@@ -866,7 +895,7 @@ export default function Onboarding() {
           <ScrollView style={styles.notificationContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <Text style={styles.notificationTitle}>Increase your willpower with some notification buffs</Text>
             <View style={styles.notificationCard}>
-              <Text style={styles.notificationCardTitle}>Seed Would Like to Send You Notifications</Text>
+              <Text style={styles.notificationCardTitle}>Unbet Would Like to Send You Notifications</Text>
               <Text style={styles.notificationCardSubtext}>Notifications may include alerts, sounds, and icon badges. These can be configured in Settings.</Text>
               <View style={styles.notificationButtonsRow}>
                 <TouchableOpacity style={styles.dontAllowButton} onPress={handleNext}>
@@ -1347,7 +1376,7 @@ const styles = StyleSheet.create({
   },
   welcomeTitle: {
     fontSize: 48,
-    fontWeight: '700',
+    fontFamily: 'DMSerifDisplay_400Regular',
     color: '#FFFFFF',
     textAlign: 'center',
     lineHeight: 56,
@@ -1476,7 +1505,7 @@ const styles = StyleSheet.create({
   communityContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   communityTitle: {
     fontSize: 40,
@@ -1524,7 +1553,7 @@ const styles = StyleSheet.create({
   healingContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   healingTitle: {
     fontSize: 32,
@@ -1553,7 +1582,7 @@ const styles = StyleSheet.create({
   lifeContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   lifeTitle: {
     fontSize: 40,
@@ -1594,7 +1623,7 @@ const styles = StyleSheet.create({
   transformContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   transformTitle: {
     fontSize: 32,
@@ -1637,7 +1666,7 @@ const styles = StyleSheet.create({
   durationContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   questionTitle: {
     ...typography.headline,
@@ -1667,7 +1696,7 @@ const styles = StyleSheet.create({
   motivationContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   scrollContainer: {
     flex: 1,
@@ -1717,7 +1746,7 @@ const styles = StyleSheet.create({
   blockersContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
     alignItems: 'center',
   },
   blockersTitle: {
@@ -1780,7 +1809,7 @@ const styles = StyleSheet.create({
   trackContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
     alignItems: 'center',
   },
   trackTitle: {
@@ -1860,7 +1889,7 @@ const styles = StyleSheet.create({
   daysContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   daysTitle: {
     fontSize: 32,
@@ -1941,7 +1970,7 @@ const styles = StyleSheet.create({
   planContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   planTitle: {
     ...typography.headline,
@@ -1989,7 +2018,7 @@ const styles = StyleSheet.create({
   choosePlanContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   choosePlanTitle: {
     ...typography.headline,
@@ -2084,7 +2113,7 @@ const styles = StyleSheet.create({
   notificationContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   notificationTitle: {
     fontSize: 32,
@@ -2203,7 +2232,7 @@ const styles = StyleSheet.create({
   notificationTimeContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   notificationTimeTitle: {
     ...typography.headline,
@@ -2237,7 +2266,7 @@ const styles = StyleSheet.create({
   customTimeContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
     alignItems: 'center',
   },
   customTimeTitle: {
@@ -2263,7 +2292,7 @@ const styles = StyleSheet.create({
   wakeupContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   wakeupTitle: {
     ...typography.headline,
@@ -2278,7 +2307,7 @@ const styles = StyleSheet.create({
   bedtimeContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   bedtimeTitle: {
     fontSize: 28,
@@ -2319,18 +2348,18 @@ const styles = StyleSheet.create({
   ageRangeContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   startAgeContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   // Partner styles
   partnerContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   partnerTitle: {
     fontSize: 28,
@@ -2369,7 +2398,7 @@ const styles = StyleSheet.create({
   goalContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   goalTitle: {
     ...typography.headline,
@@ -2403,7 +2432,7 @@ const styles = StyleSheet.create({
   frequencyContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   frequencyTitle: {
     fontSize: 28,
@@ -2444,7 +2473,7 @@ const styles = StyleSheet.create({
   triggerContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   triggerTitle: {
     fontSize: 28,
@@ -2536,32 +2565,32 @@ const styles = StyleSheet.create({
   sexuallyActiveContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   pornIncreaseContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   explicitContentContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   religiousContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   lastRelapseContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   symptomsContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
   },
   symptomsTitle: {
     fontSize: 32,
@@ -2638,7 +2667,7 @@ const styles = StyleSheet.create({
   commitmentContent: {
     flexGrow: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 15,
     paddingBottom: 30,
   },
   commitmentTitle: {

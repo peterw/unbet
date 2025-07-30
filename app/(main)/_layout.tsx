@@ -10,13 +10,13 @@ export default function MainLayout() {
 
   // Add timestamp to logs to track timing issues
   const logWithTime = (message: string) => {
-    // console.log(`[${new Date().toISOString()}] MainLayout - ${message}`);
+    console.log(`[${new Date().toISOString()}] MainLayout - ${message}`);
   };
 
-  // logWithTime(`Auth state: isSignedIn=${isSignedIn}, isLoaded=${isLoaded}, hasSession=${!!session}, isAuthenticated=${isAuthenticated}`);
+  console.log(`[MainLayout] Auth state: isSignedIn=${isSignedIn}, isLoaded=${isLoaded}, hasSession=${!!session}, isAuthenticated=${isAuthenticated}, convexLoading=${convexLoading}`);
 
   if (!isLoaded || convexLoading) {
-    // logWithTime('Auth not fully loaded yet, showing loading screen');
+    console.log('[MainLayout] Auth not fully loaded yet, showing loading screen');
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
         <ActivityIndicator size="large" color="#fff" />
@@ -26,12 +26,12 @@ export default function MainLayout() {
   }
 
   if (!isSignedIn) {
-    // logWithTime('Not signed in, redirecting to onboarding');
+    console.log('[MainLayout] Not signed in, redirecting to onboarding');
     return <Redirect href="/onboarding" />;
   }
 
   if (!isAuthenticated) {
-    // logWithTime('Not authenticated in Convex, showing loading');
+    logWithTime('Not authenticated in Convex, showing loading');
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
         <ActivityIndicator size="large" color="#fff" />
@@ -40,7 +40,7 @@ export default function MainLayout() {
     );
   }
 
-  // logWithTime('User is fully authenticated, rendering main content');
+  logWithTime('User is fully authenticated, rendering main content');
 
   return (
     <Stack>

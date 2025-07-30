@@ -20,16 +20,20 @@ import { Haptics } from '@/utils/haptics';
 import { useUser, useAuth } from '@clerk/clerk-expo';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import { useRevenueCat } from '@/providers/RevenueCatProvider';
+// import { useRevenueCat } from '@/providers/RevenueCatProvider'; // Disabled temporarily
 import { getReferralDetails } from '@/utils/referralCodes';
 import { useConvexAuth } from '@/providers/ConvexAuthProvider';
 import * as Clipboard from 'expo-clipboard';
+import * as Linking from 'expo-linking';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { user: clerkUser } = useUser();
   const { signOut } = useAuth();
-  const { user: revenueUser, packages, purchasePackage } = useRevenueCat();
+  // Temporary fallback since RevenueCat provider is disabled
+  const revenueUser = null;
+  const packages = null;
+  const purchasePackage = async () => ({ success: false });
   const { isAuthenticated } = useConvexAuth();
   
   // Use Convex to get user data - only query if authenticated
@@ -148,9 +152,6 @@ export default function ProfileScreen() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
         <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.headerButton}>
-            <Ionicons name="flag" size={24} color="#999" />
-          </TouchableOpacity>
           <TouchableOpacity 
             style={styles.headerButton}
             onPress={() => setShowSettings(true)}
@@ -201,7 +202,7 @@ export default function ProfileScreen() {
             <Text style={styles.userName}>{clerkUser?.firstName || clerkUser?.emailAddresses[0].emailAddress.split('@')[0] || 'User'}</Text>
             {isEffectivelyPro && (
               <View style={styles.proBadge}>
-                <Text style={styles.proBadgeText}>Seed+ Pro</Text>
+                <Text style={styles.proBadgeText}>Unbet+ Pro</Text>
               </View>
             )}
           </View>
@@ -266,7 +267,6 @@ export default function ProfileScreen() {
 
         {/* Challenges Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Challenges</Text>
           
           {/* Monthly Challenge - Active challenges first */}
           <LinearGradient
@@ -373,7 +373,15 @@ export default function ProfileScreen() {
             <Text style={styles.settingsSectionTitle}>YOUR SETTINGS</Text>
 
             {/* Rate the App */}
-            <TouchableOpacity style={styles.settingItem}>
+            <TouchableOpacity 
+              style={styles.settingItem}
+              onPress={() => {
+                const storeUrl = Platform.OS === 'ios' 
+                  ? 'https://apps.apple.com/app/id6737904397?action=write-review'
+                  : 'https://play.google.com/store/apps/details?id=com.tryunbet.app';
+                Linking.openURL(storeUrl);
+              }}
+            >
               <View style={styles.settingItemContent}>
                 <View style={styles.settingIcon}>
                   <Ionicons name="star" size={24} color="#FFD700" />
@@ -382,15 +390,6 @@ export default function ProfileScreen() {
               </View>
             </TouchableOpacity>
 
-            {/* Religion */}
-            <TouchableOpacity style={styles.settingItem}>
-              <View style={styles.settingItemContent}>
-                <View style={styles.settingIcon}>
-                  <Ionicons name="book" size={24} color="#6366F1" />
-                </View>
-                <Text style={styles.settingText}>Religion: {selectedReligion}</Text>
-              </View>
-            </TouchableOpacity>
 
             {/* Blocked Timer */}
             <TouchableOpacity style={styles.settingItem}>
@@ -402,21 +401,11 @@ export default function ProfileScreen() {
               </View>
             </TouchableOpacity>
 
-            {/* Referral Code */}
-            <TouchableOpacity style={styles.settingItem}>
-              <View style={styles.settingItemContent}>
-                <View style={styles.settingIcon}>
-                  <Ionicons name="ticket" size={24} color="#F59E0B" />
-                </View>
-                <Text style={styles.settingText}>Referral Code</Text>
-              </View>
-            </TouchableOpacity>
-
             {/* Your Referral Code */}
             <TouchableOpacity style={styles.settingItem} onPress={copyReferralCode}>
               <View style={styles.settingItemContent}>
                 <View style={styles.settingIcon}>
-                  <Ionicons name="people" size={24} color="#3B82F6" />
+                  <Ionicons name="ticket" size={24} color="#F59E0B" />
                 </View>
                 <View style={styles.referralCodeContainer}>
                   <Text style={styles.settingText}>Your Referral Code: </Text>
@@ -456,6 +445,19 @@ export default function ProfileScreen() {
             </TouchableOpacity>
 
             <Text style={styles.settingsSectionTitle}>ABOUT</Text>
+
+            {/* Privacy Policy */}
+            <TouchableOpacity 
+              style={styles.settingItem}
+              onPress={() => Linking.openURL('https://tryunbet.com/privacy.html')}
+            >
+              <View style={styles.settingItemContent}>
+                <View style={styles.settingIcon}>
+                  <Ionicons name="shield-checkmark" size={24} color="#6B7280" />
+                </View>
+                <Text style={styles.settingText}>Privacy Policy</Text>
+              </View>
+            </TouchableOpacity>
 
             {/* Reset Progress */}
             <TouchableOpacity style={styles.settingItem}>
