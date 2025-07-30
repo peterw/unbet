@@ -213,6 +213,13 @@ export class AdjustSDK {
     try {
       console.log('🔄 Updating device identifiers after ATT permission...');
 
+      // Check if Adjust is properly initialized before calling getAdid
+      const adjustAppToken = process.env.EXPO_PUBLIC_ADJUST_APP_TOKEN;
+      if (!adjustAppToken || adjustAppToken === 'your_adjust_app_token_here' || !Adjust.getAdid) {
+        console.log('ℹ️ Adjust SDK not initialized or token not set - skipping device identifier update');
+        return;
+      }
+
       // Fetch the Adjust adid again – it might only be available once the user
       // has granted tracking permission – and forward it to RevenueCat.
       Adjust.getAdid(async (adid?: string) => {

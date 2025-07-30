@@ -136,14 +136,14 @@ export default function JournalScreen() {
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.tabContainer}>
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={[styles.tab, activeTab === 'Tapes' && styles.activeTab]}
             onPress={() => handleTabChange('Tapes')}
           >
             <Text style={[styles.tabText, activeTab === 'Tapes' && styles.activeTabText]}>
               Tapes
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
           <TouchableOpacity
             style={[styles.tab, activeTab === 'Reflections' && styles.activeTab]}
             onPress={() => handleTabChange('Reflections')}
@@ -154,7 +154,7 @@ export default function JournalScreen() {
           </TouchableOpacity>
         </View>
         
-        <TouchableOpacity 
+        {/* <TouchableOpacity 
           style={styles.infoButton}
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -163,7 +163,7 @@ export default function JournalScreen() {
           <View style={styles.infoButtonInner}>
             <Ionicons name="information" size={20} color="#FFF" />
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
 
       {/* Content */}
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontSize: 30,
-    fontWeight: '400',
+    fontFamily: 'DMSans_400Regular',
     color: 'rgba(255, 255, 255, 0.3)',
     letterSpacing: -0.5,
   },
@@ -430,7 +430,7 @@ const styles = StyleSheet.create({
   entryDate: {
     fontSize: 18,
     color: '#5B7FDE',
-    fontWeight: '500',
+    fontFamily: 'DMSans_500Medium',
   },
   categoryBadge: {
     paddingHorizontal: 14,
@@ -439,14 +439,14 @@ const styles = StyleSheet.create({
   },
   categoryText: {
     fontSize: 15,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFF',
   },
   entryContent: {
     fontSize: 20,
     color: '#FFF',
     lineHeight: 28,
-    fontWeight: '400',
+    fontFamily: 'DMSans_400Regular',
     marginTop: 4,
   },
   addButton: {
@@ -460,6 +460,7 @@ const styles = StyleSheet.create({
   },
   comingSoonText: {
     fontSize: 18,
+    fontFamily: 'DMSans_400Regular',
     color: '#666',
   },
   // Community styles
@@ -477,13 +478,14 @@ const styles = StyleSheet.create({
   },
   communityTitle: {
     fontSize: 24,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFF',
     textAlign: 'center',
     marginBottom: 8,
   },
   communityDescription: {
     fontSize: 16,
+    fontFamily: 'DMSans_400Regular',
     color: 'rgba(255, 255, 255, 0.7)',
     textAlign: 'center',
     lineHeight: 22,
@@ -516,7 +518,7 @@ const styles = StyleSheet.create({
   avatarText: {
     color: '#FFF',
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
   },
   postInfo: {
     flex: 1,
@@ -528,16 +530,18 @@ const styles = StyleSheet.create({
   },
   postUsername: {
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFF',
   },
   postTime: {
     fontSize: 14,
+    fontFamily: 'DMSans_400Regular',
     color: 'rgba(255, 255, 255, 0.5)',
     marginTop: 2,
   },
   postContent: {
     fontSize: 15,
+    fontFamily: 'DMSans_400Regular',
     color: 'rgba(255, 255, 255, 0.9)',
     lineHeight: 22,
     marginBottom: 12,
@@ -549,6 +553,7 @@ const styles = StyleSheet.create({
   },
   reactionEmoji: {
     fontSize: 16,
+    fontFamily: 'DMSans_400Regular',
     color: 'rgba(255, 255, 255, 0.7)',
   },
   joinButton: {
@@ -559,7 +564,7 @@ const styles = StyleSheet.create({
   },
   joinButtonText: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFF',
   },
   // Tapes styles
@@ -568,12 +573,13 @@ const styles = StyleSheet.create({
   },
   tapesSectionTitle: {
     fontSize: 32,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFF',
     marginBottom: 8,
   },
   tapesSectionSubtitle: {
     fontSize: 16,
+    fontFamily: 'DMSans_400Regular',
     color: 'rgba(255, 255, 255, 0.6)',
     lineHeight: 22,
     marginBottom: 24,
@@ -588,7 +594,7 @@ const styles = StyleSheet.create({
   },
   tapeTitle: {
     fontSize: 20,
-    fontWeight: '500',
+    fontFamily: 'DMSans_500Medium',
     color: '#5B7FDE',
     marginBottom: 8,
   },
@@ -601,6 +607,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     borderRadius: 12,
     fontSize: 14,
+    fontFamily: 'DMSans_400Regular',
     color: 'rgba(255, 255, 255, 0.7)',
   },
   tapeImage: {
@@ -612,6 +619,7 @@ const styles = StyleSheet.create({
   },
   tapeDescription: {
     fontSize: 15,
+    fontFamily: 'DMSans_400Regular',
     color: 'rgba(255, 255, 255, 0.7)',
     lineHeight: 22,
     marginBottom: 20,
@@ -628,11 +636,12 @@ const styles = StyleSheet.create({
   },
   playButtonText: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFF',
   },
   completionText: {
     fontSize: 14,
+    fontFamily: 'DMSans_400Regular',
     color: 'rgba(255, 255, 255, 0.4)',
     textAlign: 'center',
   },
@@ -644,6 +653,7 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
+    fontFamily: 'DMSans_400Regular',
     color: '#666',
     marginTop: 16,
   },
@@ -655,13 +665,14 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFF',
     marginTop: 16,
     marginBottom: 8,
   },
   emptyText: {
     fontSize: 16,
+    fontFamily: 'DMSans_400Regular',
     color: '#666',
     textAlign: 'center',
     maxWidth: 250,
