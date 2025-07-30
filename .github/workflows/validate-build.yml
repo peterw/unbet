@@ -1,0 +1,189 @@
+name: 🔍 Build Validation & Quality Checks
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+
+jobs:
+  validate-config:
+    name: 📋 Validate Configuration
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🔄 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🔍 Lint code
+        run: npm run lint
+
+      - name: ✅ TypeScript check
+        run: npx tsc --noEmit
+
+      - name: 📱 Setup Expo CLI
+        run: npm install -g @expo/cli@latest eas-cli@latest
+
+      - name: 🔧 Validate eas.json
+        run: |
+          echo "Validating EAS configuration..."
+          if ! eas build:configure --check; then
+            echo "❌ eas.json validation failed"
+            exit 1
+          fi
+          echo "✅ eas.json is valid"
+
+  test-production-build:
+    name: 🏗️ Test Production Build
+    runs-on: ubuntu-latest
+    needs: validate-config
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: 🔄 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 📱 Setup Expo CLI
+        run: npm install -g @expo/cli@latest eas-cli@latest
+
+      - name: 🔧 Generate Convex code
+        run: npx convex codegen
+
+      - name: 🏗️ Test iOS production build (dry run)
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          echo "Testing iOS production build configuration..."
+          # This validates the build without actually building
+          eas build --platform ios --profile production --local --no-wait --dry-run || {
+            echo "❌ iOS production build validation failed"
+            exit 1
+          }
+          echo "✅ iOS production build validation passed"
+
+      - name: 🤖 Test Android production build (dry run)
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: |
+          echo "Testing Android production build configuration..."
+          eas build --platform android --profile production --local --no-wait --dry-run || {
+            echo "❌ Android production build validation failed"
+            exit 1
+          }
+          echo "✅ Android production build validation passed"
+
+  security-scan:
+    name: 🔒 Security Scan
+    runs-on: ubuntu-latest
+    needs: validate-config
+    steps:
+      - name: 🔄 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📥 Install dependencies
+        run: npm ci
+
+      - name: 🔒 Run npm audit
+        run: |
+          echo "Running security audit..."
+          npm audit --audit-level=high || {
+            echo "❌ Security vulnerabilities found"
+            exit 1
+          }
+          echo "✅ No high-severity vulnerabilities found"
+
+      - name: 🔍 Check for sensitive files
+        run: |
+          echo "Checking for sensitive files..."
+          if find . -name "*.key" -o -name "*.pem" -o -name "*.p12" -o -name ".env.local" | grep -v node_modules | head -1; then
+            echo "❌ Sensitive files found in repository"
+            exit 1
+          fi
+          echo "✅ No sensitive files found"
+
+  comment-results:
+    name: 💬 Comment Results
+    runs-on: ubuntu-latest
+    needs: [validate-config, test-production-build, security-scan]
+    if: always() && github.event_name == 'pull_request'
+    steps:
+      - name: 💬 Comment PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('🔍 Build Validation Results')
+            );
+            
+            const configStatus = '${{ needs.validate-config.result }}';
+            const buildStatus = '${{ needs.test-production-build.result }}';
+            const securityStatus = '${{ needs.security-scan.result }}';
+            
+            const getStatusEmoji = (status) => {
+              switch(status) {
+                case 'success': return '✅';
+                case 'failure': return '❌';
+                case 'skipped': return '⏭️';
+                default: return '⏳';
+              }
+            };
+            
+            const comment = `## 🔍 Build Validation Results
+            
+            | Check | Status | Result |
+            |-------|--------|---------|
+            | Configuration Validation | ${getStatusEmoji(configStatus)} | ${configStatus} |
+            | Production Build Test | ${getStatusEmoji(buildStatus)} | ${buildStatus} |
+            | Security Scan | ${getStatusEmoji(securityStatus)} | ${securityStatus} |
+            
+            ${buildStatus === 'failure' ? '⚠️ **Production build validation failed** - This may cause issues in TestFlight/App Store builds.' : ''}
+            ${securityStatus === 'failure' ? '🔒 **Security issues detected** - Please review and fix before merging.' : ''}
+            ${configStatus === 'success' && buildStatus === 'success' && securityStatus === 'success' ? '🎉 **All checks passed!** This PR is ready for production deployment.' : ''}
+            
+            ---
+            *Automated by GitHub Actions • [View workflow run](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})*`;
+            
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: comment
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+            }
