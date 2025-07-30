@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ActivityIndicator, Alert, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useOAuth, useAuth } from '@clerk/clerk-expo';
 import { useRouter } from 'expo-router';
@@ -96,7 +96,13 @@ export default function AuthScreen() {
         </View>
 
         <Text style={styles.termsText}>
-          By continuing, you agree to our Terms & Privacy Policy
+          By continuing, you agree to our{' '}
+          <Text 
+            style={styles.termsLink}
+            onPress={() => Linking.openURL('https://tryunbet.com/privacy.html')}
+          >
+            Terms & Privacy Policy
+          </Text>
         </Text>
       </View>
     </SafeAreaView>
@@ -192,5 +198,9 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.4)',
     textAlign: 'center',
     paddingHorizontal: 40,
+  },
+  termsLink: {
+    color: '#5B8DFF',
+    textDecorationLine: 'underline',
   },
 });

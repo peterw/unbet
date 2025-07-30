@@ -454,13 +454,26 @@ export default function SettingsScreen() {
             {/* Customer Support */}
             <TouchableOpacity 
               style={styles.settingItem}
-              onPress={() => Linking.openURL('mailto:support@antigambling.app')}
+              onPress={() => Linking.openURL('https://tryunbet.com/support.html')}
             >
               <View style={styles.settingItemContent}>
                 <View style={styles.settingIcon}>
                   <Ionicons name="help-circle" size={24} color="#6B7280" />
                 </View>
                 <Text style={styles.settingText}>Customer Support Center</Text>
+              </View>
+            </TouchableOpacity>
+
+            {/* Privacy Policy */}
+            <TouchableOpacity 
+              style={styles.settingItem}
+              onPress={() => Linking.openURL('https://tryunbet.com/privacy.html')}
+            >
+              <View style={styles.settingItemContent}>
+                <View style={styles.settingIcon}>
+                  <Ionicons name="shield-checkmark" size={24} color="#6B7280" />
+                </View>
+                <Text style={styles.settingText}>Privacy Policy</Text>
               </View>
             </TouchableOpacity>
 

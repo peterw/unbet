@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TextInput, Image, Dimensions, ActivityIndicator, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TextInput, Image, Dimensions, ActivityIndicator, Animated, Linking } from 'react-native';
 
 // Conditionally import notifications - will fail in Expo Go
 let Notifications: any;
@@ -1125,7 +1125,15 @@ export default function Onboarding() {
               <Ionicons name="logo-apple" size={24} color="#FFFFFF" />
               <Text style={styles.authButtonText}>Continue with Apple</Text>
             </TouchableOpacity>
-            <Text style={styles.termsText}>By continuing, you agree to our Terms & Privacy Policy</Text>
+            <Text style={styles.termsText}>
+              By continuing, you agree to our{' '}
+              <Text 
+                style={styles.termsLink}
+                onPress={() => Linking.openURL('https://tryunbet.com/privacy.html')}
+              >
+                Terms & Privacy Policy
+              </Text>
+            </Text>
           </View>
         );
 
@@ -1932,6 +1940,10 @@ const styles = StyleSheet.create({
     opacity: 0.5,
     textAlign: 'center',
     marginTop: 20,
+  },
+  termsLink: {
+    color: '#5B8DFF',
+    textDecorationLine: 'underline',
   },
   // Success styles
   successContainer: {
