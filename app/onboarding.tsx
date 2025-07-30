@@ -1166,6 +1166,43 @@ export default function Onboarding() {
   );
 }
 
+// Typography constants
+const typography = {
+  headline: {
+    fontSize: 32,
+    fontWeight: '700' as const,
+    color: '#FFFFFF',
+    letterSpacing: -0.5,
+  },
+  subheadline: {
+    fontSize: 24,
+    fontWeight: '600' as const,
+    color: '#FFFFFF',
+  },
+  body: {
+    fontSize: 18,
+    fontWeight: '400' as const,
+    color: '#FFFFFF',
+    lineHeight: 26,
+  },
+  bodySmall: {
+    fontSize: 16,
+    fontWeight: '400' as const,
+    color: '#999999',
+    lineHeight: 24,
+  },
+  button: {
+    fontSize: 18,
+    fontWeight: '600' as const,
+    color: '#FFFFFF',
+  },
+  caption: {
+    fontSize: 14,
+    fontWeight: '400' as const,
+    color: '#999999',
+  },
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -1223,21 +1260,18 @@ const styles = StyleSheet.create({
     marginBottom: 60,
   },
   welcomeTitle: {
-    fontSize: 56,
-    fontFamily: 'DMSerifDisplay_400Regular',
+    fontSize: 48,
+    fontWeight: '700',
     color: '#FFFFFF',
     textAlign: 'center',
-    lineHeight: 64,
+    lineHeight: 56,
     marginBottom: 16,
-    letterSpacing: -2,
+    letterSpacing: -1,
   },
   welcomeSubtitle: {
-    fontSize: 22,
-    color: '#FFFFFF',
+    ...typography.body,
     textAlign: 'center',
-    lineHeight: 32,
     opacity: 0.85,
-    fontFamily: 'DMSans_400Regular',
   },
   welcomeButton: {
     backgroundColor: '#5B8DFF',
@@ -1250,17 +1284,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   welcomeButtonText: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontFamily: 'DMSans_500Medium',
+    ...typography.button,
   },
   loginButton: {
     marginTop: 20,
   },
   loginButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontFamily: 'DMSans_400Regular',
+    ...typography.body,
     textDecorationLine: 'underline',
     opacity: 0.7,
   },
@@ -1340,9 +1370,8 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   continueButtonText: {
-    color: '#FFFFFF',
+    ...typography.button,
     fontSize: 20,
-    fontFamily: 'DMSans_500Medium',
   },
   communityContainer: {
     flex: 1,
@@ -1511,9 +1540,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   questionTitle: {
-    fontSize: 32,
-    fontFamily: 'DMSerifDisplay_400Regular',
-    color: '#FFFFFF',
+    ...typography.headline,
     lineHeight: 40,
     marginBottom: 40,
   },
@@ -1532,10 +1559,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#5B8DFF',
   },
   optionButtonText: {
+    ...typography.button,
     fontSize: 20,
-    color: '#FFFFFF',
     textAlign: 'center',
-    fontFamily: 'DMSans_500Medium',
   },
   // Motivation styles
   motivationContainer: {
@@ -1639,9 +1665,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   installButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '600',
+    ...typography.button,
   },
   skipButton: {
     paddingVertical: 10,
@@ -1799,9 +1823,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   planTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    ...typography.headline,
     lineHeight: 36,
     marginBottom: 30,
     textAlign: 'center',
@@ -1839,9 +1861,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   getStartedButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '600',
+    ...typography.button,
     textAlign: 'center',
   },
   // Choose plan styles
@@ -1851,9 +1871,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   choosePlanTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    ...typography.headline,
     marginBottom: 30,
     textAlign: 'center',
   },
@@ -2054,9 +2072,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   enableButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '600',
+    ...typography.button,
   },
   // Notification time styles
   notificationTimeContainer: {
@@ -2065,9 +2081,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   notificationTimeTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    ...typography.headline,
     lineHeight: 36,
     marginBottom: 40,
   },
@@ -2127,9 +2141,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   wakeupTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    ...typography.headline,
     marginBottom: 10,
   },
   wakeupSubtitle: {
@@ -2235,9 +2247,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   goalTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    ...typography.headline,
     marginBottom: 30,
   },
   goalScroll: {
