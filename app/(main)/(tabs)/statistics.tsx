@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,10 +8,14 @@ import {
   SafeAreaView,
   Modal,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Haptics } from '../../../utils/haptics';
+import { useQuery, useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { useConvexAuth } from '@/providers/ConvexAuthProvider';
 
 const DAYS_SHORT = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 const DAYS_FULL = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
@@ -22,23 +26,109 @@ const MONTHS = [
 
 export default function StatisticsScreen() {
   const router = useRouter();
+  const { isAuthenticated } = useConvexAuth();
   const [showStreakModal, setShowStreakModal] = useState(false);
   const [selectedStreakOption, setSelectedStreakOption] = useState('');
-  const [currentMonth, setCurrentMonth] = useState(6); // July (0-indexed)
-  const [currentYear, setCurrentYear] = useState(2025);
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   
-  // Mock data - matches reference screenshots
-  const weekDays = [
-    { day: 'M', color: '#4CAF50', active: true },  // Green
-    { day: 'T', color: '#5B7FDE', active: true },  // Blue
-    { day: 'W', color: null, active: false },
-    { day: 'T', color: null, active: false },
-    { day: 'F', color: null, active: false },
-    { day: 'S', color: null, active: false },
-    { day: 'S', color: null, active: false },
-  ];
+  // Get user data from Convex
+  const user = useQuery(api.users.getCurrentUser, isAuthenticated ? {} : 'skip');
+  const updateUser = useMutation(api.users.updateCurrentUser);
+  const isLoading = isAuthenticated && user === undefined;
   
-  const calendarDaysWithCircles = [1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 15, 16, 17, 18, 19, 22, 23, 24, 25, 26, 29, 30, 31];
+  // Calculate real data from user recovery data
+  const calculateDaysSinceStart = () => {
+    if (!user?.recoveryStartDate) return 0;
+    const startDate = new Date(user.recoveryStartDate);
+    const now = new Date();
+    const diff = now.getTime() - startDate.getTime();
+    return Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
+  };
+
+  const calculateCurrentStreak = () => {
+    if (!user?.lastRelapseDate && !user?.recoveryStartDate) {
+      return 0;
+    }
+    
+    if (!user?.lastRelapseDate && user?.recoveryStartDate) {
+      return calculateDaysSinceStart();
+    }
+    
+    const lastRelapse = new Date(user.lastRelapseDate);
+    const now = new Date();
+    const diff = now.getTime() - lastRelapse.getTime();
+    return Math.max(0, Math.floor(diff / (1000 * 60 * 60 * 24)));
+  };
+
+  const generateWeekDays = () => {
+    const today = new Date();
+    const currentStreak = calculateCurrentStreak();
+    const days = [];
+    
+    // Get start of current week (Monday)
+    const startOfWeek = new Date(today);
+    const dayOfWeek = today.getDay();
+    const diff = today.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+    startOfWeek.setDate(diff);
+    
+    for (let i = 0; i < 7; i++) {
+      const currentDay = new Date(startOfWeek);
+      currentDay.setDate(startOfWeek.getDate() + i);
+      
+      const isStreakDay = currentDay <= today && currentStreak > 0;
+      const daysSinceStart = user?.recoveryStartDate ? Math.floor((currentDay.getTime() - new Date(user.recoveryStartDate).getTime()) / (1000 * 60 * 60 * 24)) : 0;
+      
+      days.push({
+        day: DAYS_SHORT[i],
+        color: isStreakDay && daysSinceStart >= 0 ? '#4CAF50' : null,
+        active: isStreakDay && daysSinceStart >= 0
+      });
+    }
+    
+    return days;
+  };
+
+  const generateCalendarDays = () => {
+    if (!user?.recoveryStartDate) return [];
+    
+    const recoveryStart = new Date(user.recoveryStartDate);
+    const currentDate = new Date(currentYear, currentMonth + 1, 0); // Last day of current month
+    const streakDays = [];
+    
+    // If user has no relapses, mark all days since recovery start
+    if (!user.lastRelapseDate) {
+      const startDay = Math.max(1, recoveryStart.getMonth() === currentMonth && recoveryStart.getFullYear() === currentYear ? recoveryStart.getDate() : 1);
+      const endDay = currentDate.getDate();
+      
+      for (let day = startDay; day <= endDay; day++) {
+        const dayDate = new Date(currentYear, currentMonth, day);
+        if (dayDate >= recoveryStart && dayDate <= new Date()) {
+          streakDays.push(day);
+        }
+      }
+    } else {
+      // Mark days since last relapse
+      const lastRelapse = new Date(user.lastRelapseDate);
+      const streakStart = new Date(lastRelapse);
+      streakStart.setDate(lastRelapse.getDate() + 1); // Start streak day after relapse
+      
+      const startDay = Math.max(1, streakStart.getMonth() === currentMonth && streakStart.getFullYear() === currentYear ? streakStart.getDate() : 1);
+      const endDay = currentDate.getDate();
+      
+      for (let day = startDay; day <= endDay; day++) {
+        const dayDate = new Date(currentYear, currentMonth, day);
+        if (dayDate >= streakStart && dayDate <= new Date()) {
+          streakDays.push(day);
+        }
+      }
+    }
+    
+    return streakDays;
+  };
+  
+  const weekDays = generateWeekDays();
+  const calendarDaysWithCircles = generateCalendarDays();
 
   const getDaysInMonth = (month: number, year: number) => {
     return new Date(year, month + 1, 0).getDate();
@@ -127,14 +217,57 @@ export default function StatisticsScreen() {
   };
 
   const streakOptions = [
-    '1 day ago',
-    '2 days ago',
-    '3 days ago',
-    '4 days ago',
-    '5 days ago',
-    '6 days ago',
-    '1 week ago',
+    { label: 'Today', days: 0 },
+    { label: '1 day ago', days: 1 },
+    { label: '2 days ago', days: 2 },
+    { label: '3 days ago', days: 3 },
+    { label: '4 days ago', days: 4 },
+    { label: '5 days ago', days: 5 },
+    { label: '6 days ago', days: 6 },
+    { label: '1 week ago', days: 7 },
+    { label: '2 weeks ago', days: 14 },
+    { label: '1 month ago', days: 30 },
   ];
+
+  const handleUpdateStreak = async () => {
+    if (!selectedStreakOption || !user) return;
+    
+    try {
+      const selectedOption = streakOptions.find(opt => opt.label === selectedStreakOption);
+      if (!selectedOption) return;
+      
+      // Calculate the new recovery start date based on selected option
+      const newStartDate = new Date();
+      newStartDate.setDate(newStartDate.getDate() - selectedOption.days);
+      
+      // Update user's recovery start date and clear any previous relapse date
+      await updateUser({
+        recoveryStartDate: newStartDate.toISOString(),
+        lastRelapseDate: undefined, // Clear relapse date when setting new streak
+      });
+      
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      setShowStreakModal(false);
+      setSelectedStreakOption('');
+    } catch (error) {
+      console.error('Error updating streak:', error);
+    }
+  };
+
+  // Handle loading state
+  if (!isAuthenticated || isLoading) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <StatusBar barStyle="light-content" />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#5B7FDE" />
+          <Text style={styles.loadingText}>
+            {!isAuthenticated ? 'Authenticating...' : 'Loading statistics...'}
+          </Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -268,20 +401,20 @@ export default function StatisticsScreen() {
                   key={index}
                   style={[
                     styles.optionItem,
-                    selectedStreakOption === option && styles.optionItemSelected
+                    selectedStreakOption === option.label && styles.optionItemSelected
                   ]}
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    setSelectedStreakOption(option);
+                    setSelectedStreakOption(option.label);
                   }}
                 >
                   <Text style={[
                     styles.optionText,
-                    selectedStreakOption === option && styles.optionTextSelected
+                    selectedStreakOption === option.label && styles.optionTextSelected
                   ]}>
-                    {option}
+                    {option.label}
                   </Text>
-                  {selectedStreakOption === option && (
+                  {selectedStreakOption === option.label && (
                     <Ionicons name="checkmark" size={20} color="#5B7FDE" />
                   )}
                 </TouchableOpacity>
@@ -289,13 +422,17 @@ export default function StatisticsScreen() {
             </ScrollView>
             
             <TouchableOpacity
-              style={styles.updateButton}
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                setShowStreakModal(false);
-              }}
+              style={[
+                styles.updateButton,
+                !selectedStreakOption && styles.updateButtonDisabled
+              ]}
+              onPress={handleUpdateStreak}
+              disabled={!selectedStreakOption}
             >
-              <Text style={styles.updateButtonText}>Update Streak</Text>
+              <Text style={[
+                styles.updateButtonText,
+                !selectedStreakOption && styles.updateButtonTextDisabled
+              ]}>Update Streak</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -319,8 +456,19 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 34,
-    fontWeight: '700',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFF',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: '#666',
+    fontSize: 16,
+    fontFamily: 'DMSans_400Regular',
+    marginTop: 16,
   },
   editButton: {
     width: 36,
@@ -348,7 +496,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 22,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFF',
   },
   navigationButtons: {
@@ -381,7 +529,7 @@ const styles = StyleSheet.create({
   },
   dayText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#666',
   },
   dayTextActive: {
@@ -393,7 +541,7 @@ const styles = StyleSheet.create({
   },
   monthYearText: {
     fontSize: 18,
-    fontWeight: '500',
+    fontFamily: 'DMSans_400Regular',
     color: 'rgba(255, 255, 255, 0.8)',
   },
   calendar: {
@@ -409,7 +557,7 @@ const styles = StyleSheet.create({
   weekDayHeader: {
     fontSize: 12,
     color: '#666',
-    fontWeight: '500',
+    fontFamily: 'DMSans_400Regular',
     width: 40,
     textAlign: 'center',
   },
@@ -434,7 +582,7 @@ const styles = StyleSheet.create({
   calendarDayText: {
     fontSize: 16,
     color: '#666',
-    fontWeight: '500',
+    fontFamily: 'DMSans_400Regular',
   },
   calendarDayTextActive: {
     color: '#FFF',
@@ -461,7 +609,7 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFF',
     flex: 1,
   },
@@ -488,11 +636,12 @@ const styles = StyleSheet.create({
   },
   optionText: {
     fontSize: 16,
+    fontFamily: 'DMSans_400Regular',
     color: '#FFF',
   },
   optionTextSelected: {
     color: '#5B7FDE',
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
   },
   updateButton: {
     backgroundColor: '#5B7FDE',
@@ -500,9 +649,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
   },
+  updateButtonDisabled: {
+    backgroundColor: '#333',
+    opacity: 0.5,
+  },
   updateButtonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFF',
+  },
+  updateButtonTextDisabled: {
+    color: '#666',
   },
 });

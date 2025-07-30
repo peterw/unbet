@@ -20,16 +20,20 @@ import { Haptics } from '@/utils/haptics';
 import { useUser, useAuth } from '@clerk/clerk-expo';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import { useRevenueCat } from '@/providers/RevenueCatProvider';
+// import { useRevenueCat } from '@/providers/RevenueCatProvider'; // Disabled temporarily
 import { getReferralDetails } from '@/utils/referralCodes';
 import { useConvexAuth } from '@/providers/ConvexAuthProvider';
 import * as Clipboard from 'expo-clipboard';
+import * as Linking from 'expo-linking';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { user: clerkUser } = useUser();
   const { signOut } = useAuth();
-  const { user: revenueUser, packages, purchasePackage } = useRevenueCat();
+  // Temporary fallback since RevenueCat provider is disabled
+  const revenueUser = null;
+  const packages = null;
+  const purchasePackage = async () => ({ success: false });
   const { isAuthenticated } = useConvexAuth();
   
   // Use Convex to get user data - only query if authenticated
@@ -148,9 +152,6 @@ export default function ProfileScreen() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Profile</Text>
         <View style={styles.headerActions}>
-          <TouchableOpacity style={styles.headerButton}>
-            <Ionicons name="flag" size={24} color="#999" />
-          </TouchableOpacity>
           <TouchableOpacity 
             style={styles.headerButton}
             onPress={() => setShowSettings(true)}
@@ -201,7 +202,7 @@ export default function ProfileScreen() {
             <Text style={styles.userName}>{clerkUser?.firstName || clerkUser?.emailAddresses[0].emailAddress.split('@')[0] || 'User'}</Text>
             {isEffectivelyPro && (
               <View style={styles.proBadge}>
-                <Text style={styles.proBadgeText}>Seed+ Pro</Text>
+                <Text style={styles.proBadgeText}>Unbet+ Pro</Text>
               </View>
             )}
           </View>
@@ -223,9 +224,49 @@ export default function ProfileScreen() {
           </View>
         </View>
 
+        {/* Milestones Section */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Milestones</Text>
+            <TouchableOpacity 
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                router.push('/milestones');
+              }}
+              style={styles.viewAllButton}
+            >
+              <Text style={styles.viewAllText}>View All</Text>
+              <Ionicons name="chevron-forward" size={16} color="#5B7FDE" />
+            </TouchableOpacity>
+          </View>
+          
+          {/* Next Milestone Preview */}
+          <LinearGradient
+            colors={['#1A1A2E', '#16213E']}
+            style={styles.milestonePreviewCard}
+          >
+            <View style={styles.milestonePreviewContent}>
+              <View style={styles.milestonePreviewPlanet}>
+                <LinearGradient
+                  colors={['#FF4500', '#FF6347', '#FFA500']}
+                  style={styles.previewPlanet}
+                  start={{ x: 0.2, y: 0.2 }}
+                  end={{ x: 0.8, y: 0.8 }}
+                >
+                  <View style={styles.previewPlanetHighlight} />
+                </LinearGradient>
+              </View>
+              <View style={styles.milestonePreviewInfo}>
+                <Text style={styles.milestonePreviewTitle}>The Resilient</Text>
+                <Text style={styles.milestonePreviewDescription}>7 days • Up Next</Text>
+                <Text style={styles.milestonePreviewSubtext}>One week down! Your mind, body and aura are beginning to be set ablaze.</Text>
+              </View>
+            </View>
+          </LinearGradient>
+        </View>
+
         {/* Challenges Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Challenges</Text>
           
           {/* Monthly Challenge - Active challenges first */}
           <LinearGradient
@@ -332,7 +373,15 @@ export default function ProfileScreen() {
             <Text style={styles.settingsSectionTitle}>YOUR SETTINGS</Text>
 
             {/* Rate the App */}
-            <TouchableOpacity style={styles.settingItem}>
+            <TouchableOpacity 
+              style={styles.settingItem}
+              onPress={() => {
+                const storeUrl = Platform.OS === 'ios' 
+                  ? 'https://apps.apple.com/app/id6737904397?action=write-review'
+                  : 'https://play.google.com/store/apps/details?id=com.tryunbet.app';
+                Linking.openURL(storeUrl);
+              }}
+            >
               <View style={styles.settingItemContent}>
                 <View style={styles.settingIcon}>
                   <Ionicons name="star" size={24} color="#FFD700" />
@@ -341,15 +390,6 @@ export default function ProfileScreen() {
               </View>
             </TouchableOpacity>
 
-            {/* Religion */}
-            <TouchableOpacity style={styles.settingItem}>
-              <View style={styles.settingItemContent}>
-                <View style={styles.settingIcon}>
-                  <Ionicons name="book" size={24} color="#6366F1" />
-                </View>
-                <Text style={styles.settingText}>Religion: {selectedReligion}</Text>
-              </View>
-            </TouchableOpacity>
 
             {/* Blocked Timer */}
             <TouchableOpacity style={styles.settingItem}>
@@ -361,21 +401,11 @@ export default function ProfileScreen() {
               </View>
             </TouchableOpacity>
 
-            {/* Referral Code */}
-            <TouchableOpacity style={styles.settingItem}>
-              <View style={styles.settingItemContent}>
-                <View style={styles.settingIcon}>
-                  <Ionicons name="ticket" size={24} color="#F59E0B" />
-                </View>
-                <Text style={styles.settingText}>Referral Code</Text>
-              </View>
-            </TouchableOpacity>
-
             {/* Your Referral Code */}
             <TouchableOpacity style={styles.settingItem} onPress={copyReferralCode}>
               <View style={styles.settingItemContent}>
                 <View style={styles.settingIcon}>
-                  <Ionicons name="people" size={24} color="#3B82F6" />
+                  <Ionicons name="ticket" size={24} color="#F59E0B" />
                 </View>
                 <View style={styles.referralCodeContainer}>
                   <Text style={styles.settingText}>Your Referral Code: </Text>
@@ -415,6 +445,19 @@ export default function ProfileScreen() {
             </TouchableOpacity>
 
             <Text style={styles.settingsSectionTitle}>ABOUT</Text>
+
+            {/* Privacy Policy */}
+            <TouchableOpacity 
+              style={styles.settingItem}
+              onPress={() => Linking.openURL('https://tryunbet.com/privacy.html')}
+            >
+              <View style={styles.settingItemContent}>
+                <View style={styles.settingIcon}>
+                  <Ionicons name="shield-checkmark" size={24} color="#6B7280" />
+                </View>
+                <Text style={styles.settingText}>Privacy Policy</Text>
+              </View>
+            </TouchableOpacity>
 
             {/* Reset Progress */}
             <TouchableOpacity style={styles.settingItem}>
@@ -469,6 +512,7 @@ const styles = StyleSheet.create({
     color: '#999',
     marginTop: 16,
     fontSize: 16,
+    fontFamily: 'DMSans_400Regular',
   },
   header: {
     flexDirection: 'row',
@@ -480,7 +524,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 24,
-    fontWeight: '700',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFFFFF',
   },
   headerActions: {
@@ -559,7 +603,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFFFFF',
   },
   proBadge: {
@@ -570,7 +614,7 @@ const styles = StyleSheet.create({
   },
   proBadgeText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFFFFF',
   },
   statsContainer: {
@@ -582,22 +626,91 @@ const styles = StyleSheet.create({
   },
   statNumber: {
     fontSize: 24,
-    fontWeight: '700',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFFFFF',
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 12,
+    fontFamily: 'DMSans_400Regular',
     color: '#999999',
   },
   section: {
     marginBottom: 24,
   },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFFFFF',
-    marginBottom: 16,
+  },
+  viewAllButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  viewAllText: {
+    fontSize: 14,
+    fontFamily: 'DMSans_400Regular',
+    color: '#5B7FDE',
+  },
+  milestonePreviewCard: {
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 8,
+  },
+  milestonePreviewContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+  },
+  milestonePreviewPlanet: {
+    shadowColor: '#FF4500',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+  },
+  previewPlanet: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+  },
+  previewPlanetHighlight: {
+    position: 'absolute',
+    top: 8,
+    left: 10,
+    width: 12,
+    height: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+    borderRadius: 6,
+    transform: [{ skewX: '-15deg' }],
+  },
+  milestonePreviewInfo: {
+    flex: 1,
+  },
+  milestonePreviewTitle: {
+    fontSize: 16,
+    fontFamily: 'DMSans_500Medium',
+    color: '#FFFFFF',
+    marginBottom: 2,
+  },
+  milestonePreviewDescription: {
+    fontSize: 12,
+    fontFamily: 'DMSans_400Regular',
+    color: '#D4AF37',
+    marginBottom: 4,
+  },
+  milestonePreviewSubtext: {
+    fontSize: 12,
+    fontFamily: 'DMSans_400Regular',
+    color: 'rgba(255, 255, 255, 0.6)',
+    lineHeight: 16,
   },
   challengeCard: {
     borderRadius: 20,
@@ -612,12 +725,13 @@ const styles = StyleSheet.create({
   },
   challengeName: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFFFFF',
     marginBottom: 8,
   },
   challengeParticipants: {
     fontSize: 14,
+    fontFamily: 'DMSans_400Regular',
     color: 'rgba(255, 255, 255, 0.8)',
     marginBottom: 4,
   },
@@ -640,7 +754,7 @@ const styles = StyleSheet.create({
   },
   challengeProgressText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: 'rgba(255, 255, 255, 0.6)',
     textAlign: 'center',
     textTransform: 'uppercase',
@@ -655,7 +769,7 @@ const styles = StyleSheet.create({
   },
   challengeJoinButtonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFFFFF',
   },
   challengeProgressBar: {
@@ -676,7 +790,7 @@ const styles = StyleSheet.create({
   },
   completedSectionTitle: {
     fontSize: 14,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#666',
     textTransform: 'uppercase',
     letterSpacing: 1,
@@ -701,7 +815,7 @@ const styles = StyleSheet.create({
   },
   settingsTitle: {
     fontSize: 24,
-    fontWeight: '700',
+    fontFamily: 'DMSans_500Medium',
     color: '#FFFFFF',
   },
   settingsContent: {
@@ -710,7 +824,7 @@ const styles = StyleSheet.create({
   },
   settingsSectionTitle: {
     fontSize: 12,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#999',
     marginLeft: 20,
     marginBottom: 16,
@@ -740,6 +854,7 @@ const styles = StyleSheet.create({
   },
   settingText: {
     fontSize: 16,
+    fontFamily: 'DMSans_400Regular',
     color: '#FFFFFF',
     flex: 1,
   },
@@ -750,12 +865,13 @@ const styles = StyleSheet.create({
   },
   referralCodeText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#3B82F6',
   },
   copiedText: {
     color: '#34D399',
     fontSize: 12,
+    fontFamily: 'DMSans_400Regular',
     marginLeft: 76,
     marginTop: -8,
     marginBottom: 8,

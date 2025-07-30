@@ -9,7 +9,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
 import { Haptics } from '@/utils/haptics';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRevenueCat } from '@/providers/RevenueCatProvider';
+// import { useRevenueCat } from '@/providers/RevenueCatProvider'; // Disabled temporarily
 import { getReferralDetails } from '@/utils/referralCodes';
 import { useConvexAuth } from '@/providers/ConvexAuthProvider';
 import * as Clipboard from 'expo-clipboard';
@@ -17,7 +17,10 @@ import * as Clipboard from 'expo-clipboard';
 export default function SettingsScreen() {
   const router = useRouter();
   const { signOut } = useAuth();
-  const { user: revenueUser, packages, purchasePackage } = useRevenueCat();
+  // Temporary fallback since RevenueCat provider is disabled
+  const revenueUser = null;
+  const packages = null;
+  const purchasePackage = async () => ({ success: false });
   const { isAuthenticated } = useConvexAuth();
   
   // Use Convex to get user data - only query if authenticated
@@ -201,7 +204,7 @@ export default function SettingsScreen() {
             <Text style={styles.userName}>{profileData.name}</Text>
             {profileData.isPro && (
               <View style={styles.proBadge}>
-                <Text style={styles.proBadgeText}>Seed+ Pro</Text>
+                <Text style={styles.proBadgeText}>Unbet+ Pro</Text>
               </View>
             )}
           </View>
