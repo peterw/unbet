@@ -372,6 +372,13 @@ export default function ProfileScreen() {
           </View>
 
           <ScrollView style={styles.settingsContent}>
+            {/* User Email */}
+            <View style={styles.userEmailContainer}>
+              <Text style={styles.userEmail}>
+                {clerkUser?.emailAddresses[0]?.emailAddress || 'No email available'}
+              </Text>
+            </View>
+            
             <Text style={styles.settingsSectionTitle}>YOUR SETTINGS</Text>
 
             {/* Rate the App */}
@@ -913,5 +920,17 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: 'DMSans_400Regular',
     color: '#666',
+  },
+  userEmailContainer: {
+    alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    marginBottom: 10,
+  },
+  userEmail: {
+    fontSize: 16,
+    fontFamily: 'DMSans_400Regular',
+    color: '#FFFFFF',
+    textAlign: 'center',
   },
 });
