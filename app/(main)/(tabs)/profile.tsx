@@ -223,6 +223,40 @@ export default function ProfileScreen() {
           </View>
         </View>
 
+        {/* Milestones Preview Card */}
+        <TouchableOpacity 
+          style={styles.milestonesCard}
+          onPress={() => {
+            router.push('/milestones');
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          }}
+        >
+          <LinearGradient
+            colors={['#5B7FDE', '#4ECDC4']}
+            style={styles.milestonesGradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+          />
+          <View style={styles.milestonesContent}>
+            <View style={styles.milestonesLeft}>
+              <Text style={styles.milestonesTitle}>Milestones</Text>
+              <Text style={styles.milestonesSubtitle}>Track your journey</Text>
+              <Text style={styles.milestonesProgress}>{currentStreak} days completed</Text>
+            </View>
+            <View style={styles.milestonesRight}>
+              <View style={styles.milestonePlanet}>
+                <LinearGradient
+                  colors={['#4ECDC4', '#44A08D']}
+                  style={styles.planetGradient}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                />
+              </View>
+              <Ionicons name="chevron-forward" size={20} color="rgba(255, 255, 255, 0.7)" />
+            </View>
+          </View>
+        </TouchableOpacity>
+
         {/* Challenges Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Challenges</Text>
@@ -592,6 +626,58 @@ const styles = StyleSheet.create({
   },
   section: {
     marginBottom: 24,
+  },
+  milestonesCard: {
+    borderRadius: 20,
+    marginBottom: 24,
+    overflow: 'hidden',
+    position: 'relative',
+  },
+  milestonesGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  milestonesContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 20,
+  },
+  milestonesLeft: {
+    flex: 1,
+  },
+  milestonesTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginBottom: 4,
+  },
+  milestonesSubtitle: {
+    fontSize: 14,
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginBottom: 8,
+  },
+  milestonesProgress: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#FFFFFF',
+  },
+  milestonesRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  milestonePlanet: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    overflow: 'hidden',
+  },
+  planetGradient: {
+    flex: 1,
   },
   sectionTitle: {
     fontSize: 18,

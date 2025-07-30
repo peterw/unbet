@@ -14,6 +14,9 @@ import Animated, {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Haptics } from '../../../utils/haptics';
 import { BlurView } from 'expo-blur';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { useConvexAuth } from '@/providers/ConvexAuthProvider';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = RNDimensions.get('window');
 
@@ -34,16 +37,27 @@ export default function HomeScreen() {
   const [showActionMenu, setShowActionMenu] = useState(false);
   const [showPanicModal, setShowPanicModal] = useState(false);
   const [currentQuote] = useState(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
+  const { isAuthenticated } = useConvexAuth();
+  
+  // Get user's recovery start date
+  const userData = useQuery(
+    api.users.getCurrentUser,
+    isAuthenticated ? {} : 'skip'
+  );
   
   // Timer state
-  const [startTime] = useState(new Date('2025-01-29T00:00:00')); // This should come from user data
   const [timer, setTimer] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   // Update timer every second
   useEffect(() => {
+    if (!userData?.recoveryStartDate) {
+      return;
+    }
+    
     // Calculate initial timer value
     const calculateTimer = () => {
       const now = new Date();
+      const startTime = new Date(userData.recoveryStartDate);
       const diff = now.getTime() - startTime.getTime();
       
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -62,7 +76,7 @@ export default function HomeScreen() {
     }, 1000);
     
     return () => clearInterval(interval);
-  }, [startTime]);
+  }, [userData?.recoveryStartDate]);
 
   const openActionMenu = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -103,6 +117,11 @@ export default function HomeScreen() {
   const handleLockdownSettings = () => {
     setShowPanicModal(false);
     router.push('/settings/lockdown');
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  };
+
+  const handleCoinPress = () => {
+    router.push('/milestones');
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
@@ -180,6 +199,11 @@ export default function HomeScreen() {
 
         {/* 3D Brain */}
         <Brain3D />
+
+        {/* Coin Button */}
+        <TouchableOpacity style={styles.coinButton} onPress={handleCoinPress} activeOpacity={0.8}>
+          <Ionicons name="star" size={32} color="#FFD700" />
+        </TouchableOpacity>
 
         {/* Floating Action Button */}
         <TouchableOpacity style={styles.fab} onPress={openActionMenu} activeOpacity={0.8}>
@@ -333,6 +357,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#2A2A2A',
     borderRadius: 60,
     opacity: 0.8,
+  },
+  coinButton: {
+    position: 'absolute',
+    bottom: 170,
+    right: 24, 
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 8,
+    shadowColor: '#FFD700',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    borderWidth: 2,
+    borderColor: '#FFD700',
   },
   fab: {
     position: 'absolute',
