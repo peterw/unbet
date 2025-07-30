@@ -12,7 +12,7 @@
     "web": "expo start --web",
     "test": "jest --watchAll",
     "lint": "expo lint",
-    "prebuild": "npx convex codegen",
+    "prebuild": "echo 'Convex codegen runs in deployment workflow'",
     "eas-build-pre-install": "npx convex codegen",
     "clean": "npm run clean:all",
     "clean:all": "npm run clean:watchman && npm run clean:metro && npm run clean:ios",

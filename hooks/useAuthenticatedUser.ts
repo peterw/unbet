@@ -1,4 +1,4 @@
-import { useAuthSync } from '@/providers/AuthSyncProvider';
+// import { useAuthSync } from '@/providers/AuthSyncProvider'; // Provider not found
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 
@@ -8,8 +8,13 @@ import { useEffect } from 'react';
  * Returns the authenticated user once ready
  */
 export function useAuthenticatedUser() {
-  const { user, isReady, error } = useAuthSync();
+  // const { user, isReady, error } = useAuthSync(); // Provider not available
   const router = useRouter();
+
+  // Temporary fallback until AuthSyncProvider is implemented
+  const user = null;
+  const isReady = true;
+  const error = null;
 
   useEffect(() => {
     // If auth sync failed or user doesn't exist after sync, redirect to onboarding
