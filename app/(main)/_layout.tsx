@@ -2,7 +2,7 @@ import { Redirect, SplashScreen, Stack, Tabs } from 'expo-router';
 import { useSession } from "@clerk/clerk-expo";
 import { Ionicons } from '@expo/vector-icons';
 import { View, Text, ActivityIndicator } from 'react-native';
-import { useConvexAuth } from '@/providers/ConvexAuthProvider';
+import { useConvexAuth } from '@/providers/SimpleConvexAuth';
 
 export default function MainLayout() {
   const { isSignedIn, session, isLoaded } = useSession();
