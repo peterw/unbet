@@ -50,6 +50,8 @@ import AdjustEvents from '@/utils/adjustEvents';
 import FacebookSDK from '@/utils/facebook';
 import LottieView from 'lottie-react-native';
 import { useAnalytics } from '@/providers/AnalyticsProvider';
+import Svg, { Path } from 'react-native-svg';
+import { PanGestureHandler, State } from 'react-native-gesture-handler';
 
 type OnboardingMode = 'full' | 'user_details' | 'signin';
 
@@ -148,6 +150,8 @@ export default function Onboarding() {
   const [religious, setReligious] = useState('');
   const [lastRelapse, setLastRelapse] = useState('');
   const [symptoms, setSymptoms] = useState<string[]>([]);
+  const [signaturePath, setSignaturePath] = useState('');
+  const [currentPath, setCurrentPath] = useState('');
 
   const handleNext = async () => {
     console.log('handleNext called, currentStep:', currentStep);
