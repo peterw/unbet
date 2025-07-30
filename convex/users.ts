@@ -30,6 +30,7 @@ export const store = mutation({
       name: identity.name ?? identity.email ?? identity.tokenIdentifier,
       tokenIdentifier: identity.tokenIdentifier,
       onboarded: false,
+      recoveryStartDate: new Date().toISOString(), // Set recovery start date to today
     });
     
     console.log("Created new user:", userId);
@@ -84,6 +85,7 @@ export const updateCurrentUser = mutation({
       ...(args.recoveryStartDate !== undefined && { recoveryStartDate: args.recoveryStartDate }),
       ...(args.accountabilityPartner !== undefined && { accountabilityPartner: args.accountabilityPartner }),
       ...(args.blockedSites !== undefined && { blockedSites: args.blockedSites }),
+      onboarded: true, // Mark user as onboarded when they update their profile
     });
     return user._id;
   },

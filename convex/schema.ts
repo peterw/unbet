@@ -11,6 +11,12 @@ export default defineSchema({
       recoveryStartDate: v.optional(v.string()),
       accountabilityPartner: v.optional(v.string()),
       blockedSites: v.optional(v.array(v.string())),
+      // Monthly challenge tracking
+      currentMonthlyChallenge: v.optional(v.object({
+        month: v.string(), // e.g., "2025-01"
+        joinedAt: v.string(), // ISO date string
+        completed: v.boolean(),
+      })),
     }).index('by_token', ['tokenIdentifier']),
 
     journalEntries: defineTable({
