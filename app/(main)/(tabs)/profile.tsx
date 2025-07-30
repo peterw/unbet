@@ -27,7 +27,6 @@ import { useConvexAuth } from '@/providers/ConvexAuthProvider';
 import * as Clipboard from 'expo-clipboard';
 import * as Linking from 'expo-linking';
 import Constants from 'expo-constants';
-import { version } from '../../../package.json';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -514,7 +513,7 @@ export default function ProfileScreen() {
             {/* App Version */}
             <View style={styles.versionContainer}>
               <Text style={styles.versionText}>
-                Version {version}
+                Version {Constants.expoConfig?.version || Constants.manifest?.version || '1.3.0'}
               </Text>
             </View>
 
