@@ -376,11 +376,26 @@ export default function ProfileScreen() {
             {/* Rate the App */}
             <TouchableOpacity 
               style={styles.settingItem}
-              onPress={() => {
-                const storeUrl = Platform.OS === 'ios' 
-                  ? 'https://apps.apple.com/app/id6737904397?action=write-review'
-                  : 'https://play.google.com/store/apps/details?id=com.tryunbet.app';
-                Linking.openURL(storeUrl);
+              onPress={async () => {
+                try {
+                  const storeUrl = Platform.OS === 'ios' 
+                    ? 'https://apps.apple.com/app/id6737904397?action=write-review'
+                    : 'market://details?id=com.tryunbet.app';
+                  
+                  const canOpen = await Linking.canOpenURL(storeUrl);
+                  if (canOpen) {
+                    await Linking.openURL(storeUrl);
+                  } else {
+                    // Fallback to web version if native app store isn't available
+                    const fallbackUrl = Platform.OS === 'ios'
+                      ? 'https://apps.apple.com/app/id6737904397'
+                      : 'https://play.google.com/store/apps/details?id=com.tryunbet.app';
+                    await Linking.openURL(fallbackUrl);
+                  }
+                } catch (error) {
+                  console.error('Error opening app store:', error);
+                  Alert.alert('Error', 'Unable to open app store. Please search for "Unbet" in your app store.');
+                }
               }}
             >
               <View style={styles.settingItemContent}>
