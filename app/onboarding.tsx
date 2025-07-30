@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TextInput, Image, Dimensions, ActivityIndicator, Animated, Linking } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TextInput, Image, Dimensions, ActivityIndicator, Animated, Linking, PanResponder } from 'react-native';
+import Svg, { Path } from 'react-native-svg';
 
 // Conditionally import notifications - will fail in Expo Go
 let Notifications: any;
@@ -91,6 +92,42 @@ export default function Onboarding() {
   const scrollRef = useRef<ScrollView>(null);
   const analytics = useAnalytics();
 
+  // Signature handling with PanResponder
+  const panResponder = useRef(
+    PanResponder.create({
+      onStartShouldSetPanResponder: () => true,
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderGrant: (event) => {
+        const { locationX, locationY } = event.nativeEvent;
+        setCurrentPath([{ x: locationX, y: locationY }]);
+      },
+      onPanResponderMove: (event) => {
+        const { locationX, locationY } = event.nativeEvent;
+        setCurrentPath(prev => [...prev, { x: locationX, y: locationY }]);
+      },
+      onPanResponderRelease: () => {
+        if (currentPath.length > 1) {
+          setSignaturePaths(prev => [...prev, currentPath]);
+        }
+        setCurrentPath([]);
+      },
+    })
+  ).current;
+
+  const clearSignature = () => {
+    setSignaturePaths([]);
+    setCurrentPath([]);
+  };
+
+  const pathToSvg = (path: any[]) => {
+    if (path.length < 2) return '';
+    let svgPath = `M ${path[0].x} ${path[0].y}`;
+    for (let i = 1; i < path.length; i++) {
+      svgPath += ` L ${path[i].x} ${path[i].y}`;
+    }
+    return svgPath;
+  };
+
   const { mode: onboardingMode } = useLocalSearchParams<{ mode?: OnboardingMode }>();
 
   const windowDimensions = Dimensions.get('window');
@@ -112,8 +149,8 @@ export default function Onboarding() {
     { id: 12, type: 'sexually_active_age' },
     { id: 13, type: 'porn_increase' },
     { id: 14, type: 'explicit_content' },
-    { id: 15, type: 'blockers' },
-    { id: 16, type: 'track' },
+    // { id: 15, type: 'blockers' },
+    // { id: 16, type: 'track' },
     { id: 17, type: 'religious' },
     { id: 18, type: 'last_relapse' },
     { id: 19, type: 'wakeup' },
@@ -148,6 +185,8 @@ export default function Onboarding() {
   const [religious, setReligious] = useState('');
   const [lastRelapse, setLastRelapse] = useState('');
   const [symptoms, setSymptoms] = useState<string[]>([]);
+  const [signaturePaths, setSignaturePaths] = useState<any[]>([]);
+  const [currentPath, setCurrentPath] = useState<any[]>([]);
 
   const handleNext = async () => {
     console.log('handleNext called, currentStep:', currentStep);
@@ -308,7 +347,7 @@ export default function Onboarding() {
       
       case 'stats':
         return (
-          <ScrollView style={styles.statsContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          <View style={styles.statsContainer}>
             <View style={styles.starsContainer}>
               <View style={[styles.star, { top: '5%', left: '8%', width: 3, height: 3 }]} />
               <View style={[styles.star, { top: '15%', left: '90%', width: 4, height: 4 }]} />
@@ -318,30 +357,32 @@ export default function Onboarding() {
               <View style={[styles.star, { top: '75%', left: '88%', width: 3, height: 3 }]} />
               <View style={[styles.star, { top: '85%', left: '15%', width: 2, height: 2 }]} />
             </View>
-            <Text style={styles.statsTitle}>A science-based approach to defeat porn addiction for good.</Text>
-            <View style={styles.statsBig}>
-              <Text style={styles.statsBigNumber}>41</Text>
-              <Text style={styles.statsBigUnit}>billion hours</Text>
-            </View>
-            <Text style={styles.statsDescription}>are wasted every year watching porn around the world.</Text>
-            <View style={styles.statsItems}>
-              <View style={styles.statsItem}>
-                <Text style={styles.statsIcon}>🚀</Text>
-                <Text style={styles.statsItemText}>Enough time to build 41,000 spaceX starships</Text>
+            <ScrollView style={styles.statsScrollView} contentContainerStyle={styles.statsScrollContent} showsVerticalScrollIndicator={false}>
+              <Text style={styles.statsTitle}>A science-based approach to defeat porn addiction for good.</Text>
+              <View style={styles.statsBig}>
+                <Text style={styles.statsBigNumber}>41</Text>
+                <Text style={styles.statsBigUnit}>billion hours</Text>
               </View>
-              <View style={styles.statsItem}>
-                <Text style={styles.statsIcon}>🏛</Text>
-                <Text style={styles.statsItemText}>Enough time to build the Great Pyramid over 100 times</Text>
+              <Text style={styles.statsDescription}>are wasted every year watching porn around the world.</Text>
+              <View style={styles.statsItems}>
+                <View style={styles.statsItem}>
+                  <Text style={styles.statsIcon}>🚀</Text>
+                  <Text style={styles.statsItemText}>Enough time to build 41,000 spaceX starships</Text>
+                </View>
+                <View style={styles.statsItem}>
+                  <Text style={styles.statsIcon}>🏛</Text>
+                  <Text style={styles.statsItemText}>Enough time to build the Great Pyramid over 100 times</Text>
+                </View>
+                <View style={styles.statsItem}>
+                  <Text style={styles.statsIcon}>🔬</Text>
+                  <Text style={styles.statsItemText}>2.5x spent on scientific global research globally</Text>
+                </View>
               </View>
-              <View style={styles.statsItem}>
-                <Text style={styles.statsIcon}>🔬</Text>
-                <Text style={styles.statsItemText}>2.5x spent on scientific global research globally</Text>
-              </View>
-            </View>
-            <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
+            </ScrollView>
+            <TouchableOpacity style={styles.statsButton} onPress={handleNext}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
-          </ScrollView>
+          </View>
         );
 
       case 'community':
@@ -684,39 +725,39 @@ export default function Onboarding() {
           </View>
         );
 
-      case 'blockers':
-        return (
-          <View style={styles.blockersContainer}>
-            <Text style={styles.blockersTitle}>Install a porn blocker ?</Text>
-            <Text style={styles.blockersSubtitle}>For accountability, block inappropriate content on your phone</Text>
-            <View style={styles.blockersCard}>
-              <Ionicons name="shield-checkmark" size={48} color="#5B8DFF" style={styles.blockersIcon} />
-              <Text style={styles.blockersCardTitle}>Blocker App</Text>
-              <Text style={styles.blockersCardSubtitle}>Block adult content across all browsers and apps</Text>
-            </View>
-            <TouchableOpacity style={styles.installButton} onPress={handleNext}>
-              <Text style={styles.installButtonText}>Install Blocker</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.skipButton} onPress={handleNext}>
-              <Text style={styles.skipButtonText}>Skip for now</Text>
-            </TouchableOpacity>
-          </View>
-        );
+      // case 'blockers':
+      //   return (
+      //     <View style={styles.blockersContainer}>
+      //       <Text style={styles.blockersTitle}>Install a porn blocker ?</Text>
+      //       <Text style={styles.blockersSubtitle}>For accountability, block inappropriate content on your phone</Text>
+      //       <View style={styles.blockersCard}>
+      //         <Ionicons name="shield-checkmark" size={48} color="#5B8DFF" style={styles.blockersIcon} />
+      //         <Text style={styles.blockersCardTitle}>Blocker App</Text>
+      //         <Text style={styles.blockersCardSubtitle}>Block adult content across all browsers and apps</Text>
+      //       </View>
+      //       <TouchableOpacity style={styles.installButton} onPress={handleNext}>
+      //         <Text style={styles.installButtonText}>Install Blocker</Text>
+      //       </TouchableOpacity>
+      //       <TouchableOpacity style={styles.skipButton} onPress={handleNext}>
+      //         <Text style={styles.skipButtonText}>Skip for now</Text>
+      //       </TouchableOpacity>
+      //     </View>
+      //   );
 
-      case 'track':
-        return (
-          <View style={styles.trackContainer}>
-            <Text style={styles.trackTitle}>Track your journey, every single day.</Text>
-            <View style={styles.phoneContainer}>
-              <View style={styles.phoneMockup}>
-                <Text style={styles.phoneMockupText}>Journey Tracker UI</Text>
-              </View>
-            </View>
-            <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
-          </View>
-        );
+      // case 'track':
+      //   return (
+      //     <View style={styles.trackContainer}>
+      //       <Text style={styles.trackTitle}>Track your journey, every single day.</Text>
+      //       <View style={styles.phoneContainer}>
+      //         <View style={styles.phoneMockup}>
+      //           <Text style={styles.phoneMockupText}>Journey Tracker UI</Text>
+      //         </View>
+      //       </View>
+      //       <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
+      //         <Text style={styles.continueButtonText}>Continue</Text>
+      //       </TouchableOpacity>
+      //     </View>
+      //   );
 
       case 'science':
         return (
@@ -751,28 +792,37 @@ export default function Onboarding() {
           <ScrollView style={styles.daysContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <Text style={styles.daysTitle}>90 days to transform your life.</Text>
             <View style={styles.milestonesContainer}>
-              <View style={styles.milestone}>
-                <View style={styles.milestoneCircle}>
-                  <Text style={styles.milestoneNumber}>7</Text>
+              <View style={styles.milestoneCard}>
+                <View style={styles.milestoneCheckmark}>
+                  <Ionicons name="checkmark" size={20} color="#FFFFFF" />
                 </View>
-                <Text style={styles.milestoneTitle}>First Week</Text>
-                <Text style={styles.milestoneText}>Break the habit loop</Text>
+                <View style={styles.milestoneContent}>
+                  <Text style={styles.milestoneDay}>7 days</Text>
+                  <Text style={styles.milestoneTitle}>First Week</Text>
+                  <Text style={styles.milestoneText}>Break the habit loop</Text>
+                </View>
               </View>
-              <View style={styles.milestoneLine} />
-              <View style={styles.milestone}>
-                <View style={styles.milestoneCircle}>
-                  <Text style={styles.milestoneNumber}>30</Text>
+              
+              <View style={styles.milestoneCard}>
+                <View style={styles.milestoneCheckmark}>
+                  <Ionicons name="checkmark" size={20} color="#FFFFFF" />
                 </View>
-                <Text style={styles.milestoneTitle}>One Month</Text>
-                <Text style={styles.milestoneText}>Brain fog clears</Text>
+                <View style={styles.milestoneContent}>
+                  <Text style={styles.milestoneDay}>30 days</Text>
+                  <Text style={styles.milestoneTitle}>One Month</Text>
+                  <Text style={styles.milestoneText}>Brain fog clears</Text>
+                </View>
               </View>
-              <View style={styles.milestoneLine} />
-              <View style={styles.milestone}>
-                <View style={[styles.milestoneCircle, styles.milestoneCircleHighlight]}>
-                  <Text style={styles.milestoneNumber}>90</Text>
+              
+              <View style={[styles.milestoneCard, styles.milestoneCardHighlight]}>
+                <View style={[styles.milestoneCheckmark, styles.milestoneCheckmarkHighlight]}>
+                  <Ionicons name="checkmark" size={20} color="#FFFFFF" />
                 </View>
-                <Text style={styles.milestoneTitle}>Full Reboot</Text>
-                <Text style={styles.milestoneText}>Complete transformation</Text>
+                <View style={styles.milestoneContent}>
+                  <Text style={styles.milestoneDay}>90 days</Text>
+                  <Text style={styles.milestoneTitle}>Full Reboot</Text>
+                  <Text style={styles.milestoneText}>Complete transformation</Text>
+                </View>
               </View>
             </View>
             <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
@@ -1053,30 +1103,32 @@ export default function Onboarding() {
 
       case 'graph':
         return (
-          <ScrollView style={styles.graphContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-            <Text style={styles.graphTitle}>Quit porn forever in as little as 34 days.</Text>
-            <View style={styles.graphPlaceholder}>
-              <Text style={styles.graphPlaceholderText}>Graph visualization</Text>
-            </View>
-            <Text style={styles.graphSubtitle}>The key milestones are</Text>
-            <View style={styles.graphItems}>
-              <View style={styles.graphItem}>
-                <Text style={styles.graphIcon}>🟠</Text>
-                <Text style={styles.graphItemText}>Reduced anxiety and depression symptoms by around 20-30%.</Text>
+          <View style={styles.graphContainer}>
+            <ScrollView style={styles.graphScrollView} contentContainerStyle={styles.graphScrollContent} showsVerticalScrollIndicator={false}>
+              <Text style={styles.graphTitle}>Quit porn forever in as little as 34 days.</Text>
+              <View style={styles.graphPlaceholder}>
+                <Text style={styles.graphPlaceholderText}>Graph visualization</Text>
               </View>
-              <View style={styles.graphItem}>
-                <Text style={styles.graphIcon}>🟢</Text>
-                <Text style={styles.graphItemText}>Enhanced focus and cognitive performance, with improvements of 30-50%.</Text>
+              <Text style={styles.graphSubtitle}>The key milestones are</Text>
+              <View style={styles.graphItems}>
+                <View style={styles.graphItem}>
+                  <Text style={styles.graphIcon}>🟠</Text>
+                  <Text style={styles.graphItemText}>Reduced anxiety and depression symptoms by around 20-30%.</Text>
+                </View>
+                <View style={styles.graphItem}>
+                  <Text style={styles.graphIcon}>🟢</Text>
+                  <Text style={styles.graphItemText}>Enhanced focus and cognitive performance, with improvements of 30-50%.</Text>
+                </View>
+                <View style={styles.graphItem}>
+                  <Text style={styles.graphIcon}>🔵</Text>
+                  <Text style={styles.graphItemText}>Increased relationship satisfaction by around 15-20%.</Text>
+                </View>
               </View>
-              <View style={styles.graphItem}>
-                <Text style={styles.graphIcon}>🔵</Text>
-                <Text style={styles.graphItemText}>Increased relationship satisfaction by around 15-20%.</Text>
-              </View>
-            </View>
-            <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
+            </ScrollView>
+            <TouchableOpacity style={styles.graphButton} onPress={handleNext}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
-          </ScrollView>
+          </View>
         );
 
       case 'commitment':
@@ -1102,8 +1154,38 @@ export default function Onboarding() {
                 <Text style={styles.commitmentItemText}>Becoming the person I want to be</Text>
               </View>
             </View>
-            <View style={styles.signatureBox}>
-              <Text style={styles.signatureText}>Your signature is not recorded</Text>
+            <View style={styles.signatureBox} {...panResponder.panHandlers}>
+              <Svg height="130" width="100%" style={styles.signatureSvg}>
+                {signaturePaths.map((path, index) => (
+                  <Path
+                    key={index}
+                    d={pathToSvg(path)}
+                    stroke="#5B8DFF"
+                    strokeWidth="3"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                ))}
+                {currentPath.length > 0 && (
+                  <Path
+                    d={pathToSvg(currentPath)}
+                    stroke="#5B8DFF"
+                    strokeWidth="3"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                )}
+              </Svg>
+              {signaturePaths.length === 0 && currentPath.length === 0 && (
+                <Text style={styles.signatureText}>Sign here with your finger</Text>
+              )}
+              {(signaturePaths.length > 0 || currentPath.length > 0) && (
+                <TouchableOpacity style={styles.clearButton} onPress={clearSignature}>
+                  <Text style={styles.clearButtonText}>Clear</Text>
+                </TouchableOpacity>
+              )}
             </View>
             <TouchableOpacity style={styles.commitButton} onPress={handleNext}>
               <Text style={styles.commitButtonText}>I commit to myself</Text>
@@ -1117,10 +1199,6 @@ export default function Onboarding() {
           <View style={styles.signupContainer}>
             <Text style={styles.signupTitle}>Create your account</Text>
             <Text style={styles.signupSubtitle}>Join thousands on the path to freedom</Text>
-            <TouchableOpacity style={styles.authButton} onPress={() => handleOAuthSignUp('oauth_google')}>
-              <Ionicons name="logo-google" size={24} color="#FFFFFF" />
-              <Text style={styles.authButtonText}>Continue with Google</Text>
-            </TouchableOpacity>
             <TouchableOpacity style={styles.authButton} onPress={() => handleOAuthSignUp('oauth_apple')}>
               <Ionicons name="logo-apple" size={24} color="#FFFFFF" />
               <Text style={styles.authButtonText}>Continue with Apple</Text>
@@ -1319,17 +1397,31 @@ const styles = StyleSheet.create({
   statsContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 10,
+  },
+  statsScrollView: {
+    flex: 1,
+  },
+  statsScrollContent: {
+    paddingBottom: 20,
+  },
+  statsButton: {
+    backgroundColor: '#5B8DFF',
+    paddingVertical: 20,
+    borderRadius: 40,
+    alignItems: 'center',
+    marginTop: 15,
+    marginBottom: 30,
   },
   statsTitle: {
     fontSize: 32,
     fontFamily: 'DMSerifDisplay_400Regular',
     color: '#FFFFFF',
     lineHeight: 40,
-    marginBottom: 48,
+    marginBottom: 12,
   },
   statsBig: {
-    marginBottom: 20,
+    marginBottom: 15,
   },
   statsBigNumber: {
     fontSize: 90,
@@ -1346,16 +1438,16 @@ const styles = StyleSheet.create({
   statsDescription: {
     fontSize: 20,
     color: '#5B8DFF',
-    marginBottom: 48,
+    marginBottom: 30,
     lineHeight: 28,
   },
   statsItems: {
-    marginBottom: 60,
+    marginBottom: 20,
   },
   statsItem: {
     flexDirection: 'row',
     alignItems: 'flex-start',
-    marginBottom: 20,
+    marginBottom: 15,
   },
   statsIcon: {
     fontSize: 28,
@@ -1722,7 +1814,7 @@ const styles = StyleSheet.create({
   scienceContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 10,
     justifyContent: 'space-between',
   },
   scienceTitle: {
@@ -1779,44 +1871,65 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   milestonesContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingHorizontal: 0,
+    marginBottom: 40,
   },
-  milestone: {
+  milestoneCard: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 20,
-  },
-  milestoneCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
     backgroundColor: '#1A1A2E',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#2A2A3E',
+  },
+  milestoneCardHighlight: {
+    backgroundColor: '#1A2E1A',
+    borderColor: '#4CAF50',
+    shadowColor: '#4CAF50',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
+  },
+  milestoneCheckmark: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#5B8DFF',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 10,
-    borderWidth: 3,
-    borderColor: '#2A2A4A',
+    marginRight: 16,
   },
-  milestoneCircleHighlight: {
-    borderColor: '#5B8DFF',
-    backgroundColor: '#2A2A3E',
+  milestoneCheckmarkHighlight: {
+    backgroundColor: '#4CAF50',
   },
-  milestoneNumber: {
-    fontSize: 28,
+  milestoneContent: {
+    flex: 1,
+  },
+  milestoneDay: {
+    fontSize: 16,
     fontWeight: '700',
-    color: '#FFFFFF',
+    color: '#5B8DFF',
+    marginBottom: 2,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   milestoneTitle: {
     fontSize: 18,
     fontWeight: '600',
     color: '#FFFFFF',
-    marginBottom: 5,
+    marginBottom: 4,
   },
   milestoneText: {
     fontSize: 14,
     color: '#FFFFFF',
     opacity: 0.7,
+    lineHeight: 20,
   },
   milestoneLine: {
     width: 2,
@@ -2460,7 +2573,21 @@ const styles = StyleSheet.create({
   graphContainer: {
     flex: 1,
     paddingHorizontal: 30,
-    paddingTop: 40,
+    paddingTop: 10,
+  },
+  graphScrollView: {
+    flex: 1,
+  },
+  graphScrollContent: {
+    paddingBottom: 20,
+  },
+  graphButton: {
+    backgroundColor: '#5B8DFF',
+    paddingVertical: 20,
+    borderRadius: 40,
+    alignItems: 'center',
+    marginTop: 15,
+    marginBottom: 30,
   },
   graphTitle: {
     fontSize: 32,
@@ -2543,16 +2670,38 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     height: 150,
     marginBottom: 32,
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingBottom: 20,
     borderWidth: 1,
     borderColor: '#5B8DFF',
+    position: 'relative',
+  },
+  signatureSvg: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
   signatureText: {
     fontSize: 14,
     color: '#FFFFFF',
     opacity: 0.5,
+    textAlign: 'center',
+  },
+  clearButton: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: '#5B8DFF',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 15,
+  },
+  clearButtonText: {
+    fontSize: 12,
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
   commitButton: {
     backgroundColor: '#5B8DFF',
