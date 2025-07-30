@@ -53,13 +53,24 @@ export default function HomeScreen() {
     // If user has relapsed, use day after last relapse
     if (user.lastRelapseDate) {
       const lastRelapse = new Date(user.lastRelapseDate);
+      // Validate date
+      if (isNaN(lastRelapse.getTime())) {
+        console.warn('Invalid lastRelapseDate:', user.lastRelapseDate);
+        return new Date(); // Fallback to now
+      }
       lastRelapse.setDate(lastRelapse.getDate() + 1);
       return lastRelapse;
     }
     
     // If user has no relapses, use recovery start date (set when account created)
     if (user.recoveryStartDate) {
-      return new Date(user.recoveryStartDate);
+      const recoveryStart = new Date(user.recoveryStartDate);
+      // Validate date
+      if (isNaN(recoveryStart.getTime())) {
+        console.warn('Invalid recoveryStartDate:', user.recoveryStartDate);
+      } else {
+        return recoveryStart;
+      }
     }
     
     // Final fallback: use account creation time
