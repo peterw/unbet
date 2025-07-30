@@ -16,7 +16,7 @@ import { Haptics } from '../../../utils/haptics';
 import { BlurView } from 'expo-blur';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import { useConvexAuth } from '@/providers/ConvexAuthProvider';
+import { useConvexAuth } from '@/providers/SimpleConvexAuth';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = RNDimensions.get('window');
 

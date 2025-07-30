@@ -11,7 +11,7 @@ import { Haptics } from '@/utils/haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 // import { useRevenueCat } from '@/providers/RevenueCatProvider'; // Disabled temporarily
 import { getReferralDetails } from '@/utils/referralCodes';
-import { useConvexAuth } from '@/providers/ConvexAuthProvider';
+import { useConvexAuth } from '@/providers/SimpleConvexAuth';
 import * as Clipboard from 'expo-clipboard';
 
 export default function SettingsScreen() {

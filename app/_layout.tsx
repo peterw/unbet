@@ -43,7 +43,7 @@ if (!isExpoGo()) {
 import { Platform, AppState } from 'react-native';
 import { useFonts } from 'expo-font';
 import { initializeApp } from '@/utils/envCheck';
-import { ConvexAuthProvider } from '@/providers/ConvexAuthProvider';
+import { SimpleConvexAuthProvider } from '@/providers/SimpleConvexAuth';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { View, Text, ActivityIndicator } from 'react-native';
 
@@ -236,11 +236,11 @@ const RootLayoutNav = () => {
         <RevenueCatProvider>
           <AnalyticsProviderComponent provider={mixpanelProvider}>
             <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-              <ConvexAuthProvider>
+              <SimpleConvexAuthProvider>
                 <GestureHandlerRootView style={{ flex: 1 }}>
                   <Slot />
                 </GestureHandlerRootView>
-              </ConvexAuthProvider>
+              </SimpleConvexAuthProvider>
             </ConvexProviderWithClerk>
           </AnalyticsProviderComponent>
         </RevenueCatProvider>
