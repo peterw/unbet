@@ -26,8 +26,6 @@ jobs:
         env:
           CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
         run: |
-          npx convex env set CLERK_DOMAIN ${{ secrets.CLERK_DOMAIN }}
-          npx convex env set OPENROUTER_API_KEY ${{ secrets.OPENROUTER_API_KEY }}
           npx convex codegen
       
       - name: Check for changes
