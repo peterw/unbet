@@ -513,7 +513,7 @@ export default function ProfileScreen() {
             {/* App Version */}
             <View style={styles.versionContainer}>
               <Text style={styles.versionText}>
-                Version {Constants.expoConfig?.version || '1.3.0'}
+                Version {Constants.expoConfig?.version || Constants.manifest?.version || '1.3.0'}
               </Text>
             </View>
 
