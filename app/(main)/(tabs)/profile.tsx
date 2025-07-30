@@ -26,6 +26,7 @@ import { getReferralDetails } from '@/utils/referralCodes';
 import { useConvexAuth } from '@/providers/ConvexAuthProvider';
 import * as Clipboard from 'expo-clipboard';
 import * as Linking from 'expo-linking';
+import Constants from 'expo-constants';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -509,6 +510,13 @@ export default function ProfileScreen() {
               </View>
             </TouchableOpacity>
 
+            {/* App Version */}
+            <View style={styles.versionContainer}>
+              <Text style={styles.versionText}>
+                Version {Constants.expoConfig?.version || '1.3.0'}
+              </Text>
+            </View>
+
             <View style={{ height: 100 }} />
           </ScrollView>
         </View>
@@ -895,5 +903,15 @@ const styles = StyleSheet.create({
     marginLeft: 76,
     marginTop: -8,
     marginBottom: 8,
+  },
+  versionContainer: {
+    alignItems: 'center',
+    paddingVertical: 10,
+    marginTop: 10,
+  },
+  versionText: {
+    fontSize: 12,
+    fontFamily: 'DMSans_400Regular',
+    color: '#666',
   },
 });
