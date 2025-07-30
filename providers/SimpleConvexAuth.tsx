@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { useAuth } from '@clerk/clerk-expo';
 import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
@@ -30,6 +30,10 @@ interface SimpleConvexAuthProviderProps {
 export function SimpleConvexAuthProvider({ children }: SimpleConvexAuthProviderProps) {
   const { isSignedIn, isLoaded } = useAuth();
   
+  // Track if we're currently creating a user to prevent race conditions
+  const [isCreatingUser, setIsCreatingUser] = useState(false);
+  const creationInProgress = useRef(false);
+  
   // Read-only query to check if user exists
   const user = useQuery(
     api.users.getCurrentUser,
@@ -39,20 +43,34 @@ export function SimpleConvexAuthProvider({ children }: SimpleConvexAuthProviderP
   // Mutation to create user when needed
   const storeUser = useMutation(api.users.store);
   
-  // Auto-create user if signed in but user doesn't exist
+  // Auto-create user if signed in but user doesn't exist (race-condition-free)
   useEffect(() => {
-    if (isSignedIn && isLoaded && user === null) {
+    // Only proceed if user is explicitly null (not undefined/loading)
+    if (isSignedIn && isLoaded && user === null && !isCreatingUser && !creationInProgress.current) {
+      // Set flags to prevent concurrent calls
+      setIsCreatingUser(true);
+      creationInProgress.current = true;
+      
       // User is signed in but doesn't exist in Convex - create them
-      storeUser().catch(error => {
-        // If user was already created by another call, that's fine
-        console.log('User creation handled by another call:', error);
-      });
+      storeUser()
+        .then(() => {
+          console.log('User created successfully');
+        })
+        .catch(error => {
+          // If user was already created by another call, that's fine
+          console.log('User creation handled or failed:', error);
+        })
+        .finally(() => {
+          // Reset flags regardless of outcome
+          setIsCreatingUser(false);
+          creationInProgress.current = false;
+        });
     }
-  }, [isSignedIn, isLoaded, user, storeUser]);
+  }, [isSignedIn, isLoaded, user]); // Remove storeUser from dependencies to prevent re-runs
   
-  // Simple state derivation
-  const isLoading = isLoaded && isSignedIn && user === undefined;
-  const isAuthenticated = isSignedIn && user !== null && user !== undefined;
+  // Correct loading state calculation
+  const isLoading = !isLoaded || (isSignedIn && (user === undefined || isCreatingUser));
+  const isAuthenticated = isLoaded && isSignedIn && user !== null && user !== undefined;
   
   return (
     <SimpleConvexAuthContext.Provider 
