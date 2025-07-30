@@ -23,7 +23,7 @@ import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 // import { useRevenueCat } from '@/providers/RevenueCatProvider'; // Disabled temporarily
 import { getReferralDetails } from '@/utils/referralCodes';
-import { useConvexAuth } from '@/providers/ConvexAuthProvider';
+import { useConvexAuth } from '@/providers/SimpleConvexAuth';
 import * as Clipboard from 'expo-clipboard';
 import * as Linking from 'expo-linking';
 import Constants from 'expo-constants';

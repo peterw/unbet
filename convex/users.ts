@@ -46,12 +46,14 @@ export const getCurrentUser = query({
       return null;
     }
 
+    // Queries must be read-only - just return user or null
     const user = await ctx.db
       .query("users")
       .withIndex("by_token", (q) =>
         q.eq("tokenIdentifier", identity.tokenIdentifier)
       )
       .unique();
+    
     return user;
   }
 });

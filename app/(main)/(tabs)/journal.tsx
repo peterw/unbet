@@ -18,7 +18,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Haptics } from '@/utils/haptics';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
-import { useConvexAuth } from '@/providers/ConvexAuthProvider';
+import { useConvexAuth } from '@/providers/SimpleConvexAuth';
 // import { BlurView } from 'expo-blur'; // Requires rebuild
 // Remove Canvas import as we're using View-based stars
 
