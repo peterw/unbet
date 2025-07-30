@@ -547,12 +547,12 @@ export default function Onboarding() {
             <ScrollView style={styles.scrollContainer}>
               {[
                 'Reclaim control of my life',
-                'Improve Relationships',
-                'Increase Energy',
-                'Increase Libido',
-                'Increase Mental Clarity',
-                'Improve Mental Strength',
-                'Save Time'
+                'Improve relationships',
+                'Financial freedom',
+                'Reduce anxiety and stress',
+                'Stop lying to loved ones',
+                'Build a secure future',
+                'End the shame and secrecy'
               ].map((option) => (
                 <TouchableOpacity
                   key={option}
@@ -588,13 +588,13 @@ export default function Onboarding() {
             <Text style={styles.questionTitle}>What's your motivations behind quitting gambling ?</Text>
             <ScrollView style={styles.scrollContainer}>
               {[
-                'Increase Energy',
-                'Increase Libido',
-                'Increase Mental Clarity',
-                'Improve Mental Strength',
-                'Save Time',
-                'Improve Confidence',
-                'Religious Reasons'
+                'Regain self-respect',
+                'Save money',
+                'Focus on family',
+                'Improve sleep quality',
+                'Reduce mood swings',
+                'Stop chasing losses',
+                'Religious reasons'
               ].map((option) => (
                 <TouchableOpacity
                   key={option}
