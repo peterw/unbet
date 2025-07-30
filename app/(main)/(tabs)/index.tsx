@@ -50,11 +50,6 @@ export default function HomeScreen() {
   const getStreakStartDate = () => {
     if (!user) return new Date();
     
-    // If user has no relapses, use recovery start date
-    if (!user.lastRelapseDate && user.recoveryStartDate) {
-      return new Date(user.recoveryStartDate);
-    }
-    
     // If user has relapsed, use day after last relapse
     if (user.lastRelapseDate) {
       const lastRelapse = new Date(user.lastRelapseDate);
@@ -62,7 +57,17 @@ export default function HomeScreen() {
       return lastRelapse;
     }
     
-    // Fallback to today
+    // If user has no relapses, use recovery start date (set when account created)
+    if (user.recoveryStartDate) {
+      return new Date(user.recoveryStartDate);
+    }
+    
+    // Final fallback: use account creation time
+    if (user._creationTime) {
+      return new Date(user._creationTime);
+    }
+    
+    // Last resort fallback
     return new Date();
   };
 
