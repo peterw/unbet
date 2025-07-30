@@ -20,11 +20,14 @@
       }
     },
     "production": {
-      "autoIncrement": true,
+      "autoIncrement": "version",
       "channel": "production",
       "ios": {
         "autoIncrement": "buildNumber",
         "resourceClass": "m-medium"
+      },
+      "android": {
+        "autoIncrement": "versionCode"
       }
     }
   },
