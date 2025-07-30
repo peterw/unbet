@@ -802,16 +802,11 @@ export default function Onboarding() {
       case 'science':
         return (
           <View style={styles.scienceContainer}>
-<<<<<<< HEAD
             <Text style={styles.scienceTitle}>Evidence-based recovery support.</Text>
             <Text style={styles.scienceSubtitle}>Your journey is supported by research-backed methods and gambling addiction specialists</Text>
             <Text style={styles.medicalDisclaimer}>
               This app provides educational and motivational support only. It is not FDA approved and does not provide medical treatment. Please consult healthcare professionals for addiction treatment.
             </Text>
-=======
-            <Text style={styles.scienceTitle}>Backed by brain science.</Text>
-            <Text style={styles.scienceSubtitle}>Your recovery is designed by neuroscientists and gambling addiction experts</Text>
->>>>>>> origin/main
             <View style={styles.scienceItems}>
               <View style={styles.scienceItem}>
                 <Ionicons name="fitness" size={32} color="#5B8DFF" />
