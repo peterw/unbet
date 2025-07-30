@@ -43,33 +43,48 @@ export function SimpleConvexAuthProvider({ children }: SimpleConvexAuthProviderP
   // Mutation to create user when needed
   const storeUser = useMutation(api.users.store);
   
-  // Auto-create user if signed in but user doesn't exist (race-condition-free)
+  // Attempt to create the Convex user once all prerequisites are met
   useEffect(() => {
-    // Only proceed if user is explicitly null (not undefined/loading)
-    if (isSignedIn && isLoaded && user === null && !isCreatingUser && !creationInProgress.current) {
-      // Set flags to prevent concurrent calls
-      setIsCreatingUser(true);
-      creationInProgress.current = true;
-      
-      // User is signed in but doesn't exist in Convex - create them
-      storeUser()
-        .then(() => {
-          console.log('User created successfully');
-        })
-        .catch(error => {
-          // If user was already created by another call, that's fine
-          console.log('User creation handled or failed:', error);
-        })
-        .finally(() => {
-          // Reset flags regardless of outcome
-          setIsCreatingUser(false);
-          creationInProgress.current = false;
-        });
+    // 1. Make sure Clerk is ready and the person is signed in
+    if (!isSignedIn || !isLoaded) {
+      return;
     }
-  }, [isSignedIn, isLoaded, user]); // Remove storeUser from dependencies to prevent re-runs
+
+    // 2. Wait for the Convex query to finish loading
+    if (user === undefined) {
+      return;
+    }
+
+    // 3. If the user already exists in Convex there's nothing to do
+    if (user !== null) {
+      return;
+    }
+
+    // 4. Guard against overlapping create calls
+    if (isCreatingUser || creationInProgress.current) {
+      return;
+    }
+
+    creationInProgress.current = true;
+    setIsCreatingUser(true);
+
+    const create = async () => {
+      try {
+        await storeUser();
+        console.log('[SimpleConvexAuth] User created in Convex');
+      } catch (err) {
+        console.error('[SimpleConvexAuth] Failed to create user in Convex:', err);
+      } finally {
+        creationInProgress.current = false;
+        setIsCreatingUser(false);
+      }
+    };
+
+    void create();
+  }, [isSignedIn, isLoaded, user]); // intentionally omit storeUser to keep dependencies stable
   
   // Correct loading state calculation
-  const isLoading = !isLoaded || (isSignedIn && (user === undefined || isCreatingUser));
+  const isLoading = !isLoaded || (isSignedIn && (user === undefined || user === null || isCreatingUser));
   const isAuthenticated = isLoaded && isSignedIn && user !== null && user !== undefined;
   
   return (
