@@ -344,6 +344,9 @@ export default function Onboarding() {
             <View style={styles.welcomeContent}>
               <Text style={styles.welcomeTitle}>Welcome{'\n'}to Unbet</Text>
               <Text style={styles.welcomeSubtitle}>Unleash your Potential.{'\n'}Leave Gambling Behind.</Text>
+              <Text style={styles.disclaimer}>
+                This app is not a substitute for professional medical advice. If you're experiencing severe gambling addiction or having thoughts of self-harm, please seek immediate professional help.
+              </Text>
             </View>
             <TouchableOpacity 
               style={styles.welcomeButton} 
@@ -362,6 +365,14 @@ export default function Onboarding() {
               onPress={handleAppleSignIn}
             >
               <Text style={styles.loginButtonText}>Login</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity 
+              style={styles.crisisButton}
+              onPress={() => router.push('/crisis-resources')}
+            >
+              <Ionicons name="call" size={16} color="#FF4444" />
+              <Text style={styles.crisisButtonText}>Crisis Resources & Hotlines</Text>
             </TouchableOpacity>
             <View style={styles.gradientOrbContainer}>
               <LinearGradient
@@ -791,8 +802,11 @@ export default function Onboarding() {
       case 'science':
         return (
           <View style={styles.scienceContainer}>
-            <Text style={styles.scienceTitle}>Backed by brain science.</Text>
-            <Text style={styles.scienceSubtitle}>Your recovery is designed by neuroscientists and gambling addiction experts</Text>
+            <Text style={styles.scienceTitle}>Evidence-based recovery support.</Text>
+            <Text style={styles.scienceSubtitle}>Your journey is supported by research-backed methods and gambling addiction specialists</Text>
+            <Text style={styles.medicalDisclaimer}>
+              This app provides educational and motivational support only. It is not FDA approved and does not provide medical treatment. Please consult healthcare professionals for addiction treatment.
+            </Text>
             <View style={styles.scienceItems}>
               <View style={styles.scienceItem}>
                 <Ionicons name="fitness" size={32} color="#5B8DFF" />
@@ -1388,6 +1402,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     opacity: 0.85,
   },
+  disclaimer: {
+    fontSize: 11,
+    color: '#999',
+    textAlign: 'center',
+    marginTop: 16,
+    lineHeight: 16,
+    paddingHorizontal: 20,
+  },
   welcomeButton: {
     backgroundColor: '#5B8DFF',
     paddingHorizontal: 80,
@@ -1408,6 +1430,24 @@ const styles = StyleSheet.create({
     ...typography.body,
     textDecorationLine: 'underline',
     opacity: 0.7,
+  },
+  crisisButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    marginTop: 16,
+    backgroundColor: 'rgba(255, 68, 68, 0.1)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 68, 68, 0.3)',
+    gap: 8,
+  },
+  crisisButtonText: {
+    fontSize: 13,
+    color: '#FF4444',
+    fontWeight: '500',
   },
   gradientOrbContainer: {
     position: 'absolute',
@@ -1857,8 +1897,16 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#FFFFFF',
     opacity: 0.8,
-    marginBottom: 40,
+    marginBottom: 20,
     textAlign: 'center',
+  },
+  medicalDisclaimer: {
+    fontSize: 11,
+    color: '#999',
+    textAlign: 'center',
+    marginBottom: 30,
+    lineHeight: 16,
+    paddingHorizontal: 20,
   },
   scienceItems: {
     flex: 1,
