@@ -343,7 +343,7 @@ export default function Onboarding() {
             </View>
             <View style={styles.welcomeContent}>
               <Text style={styles.welcomeTitle}>Welcome{'\n'}to Unbet</Text>
-              <Text style={styles.welcomeSubtitle}>Unleash your Potential.{'\n'}Leave Porn Behind.</Text>
+              <Text style={styles.welcomeSubtitle}>Unleash your Potential.{'\n'}Leave Gambling Behind.</Text>
             </View>
             <TouchableOpacity 
               style={styles.welcomeButton} 
