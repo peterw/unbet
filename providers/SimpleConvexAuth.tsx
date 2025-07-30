@@ -1,6 +1,6 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import { useAuth } from '@clerk/clerk-expo';
-import { useQuery } from 'convex/react';
+import { useQuery, useMutation } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 
 interface SimpleConvexAuthContextType {
@@ -30,13 +30,27 @@ interface SimpleConvexAuthProviderProps {
 export function SimpleConvexAuthProvider({ children }: SimpleConvexAuthProviderProps) {
   const { isSignedIn, isLoaded } = useAuth();
   
-  // Single query - no mutations, no complexity
+  // Read-only query to check if user exists
   const user = useQuery(
     api.users.getCurrentUser,
     isSignedIn && isLoaded ? {} : 'skip'
   );
   
-  // Simple state derivation - no side effects
+  // Mutation to create user when needed
+  const storeUser = useMutation(api.users.store);
+  
+  // Auto-create user if signed in but user doesn't exist
+  useEffect(() => {
+    if (isSignedIn && isLoaded && user === null) {
+      // User is signed in but doesn't exist in Convex - create them
+      storeUser().catch(error => {
+        // If user was already created by another call, that's fine
+        console.log('User creation handled by another call:', error);
+      });
+    }
+  }, [isSignedIn, isLoaded, user, storeUser]);
+  
+  // Simple state derivation
   const isLoading = isLoaded && isSignedIn && user === undefined;
   const isAuthenticated = isSignedIn && user !== null && user !== undefined;
   
