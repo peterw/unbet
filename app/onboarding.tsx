@@ -182,7 +182,7 @@ export default function Onboarding() {
     { id: 9, type: 'motivation_2' },
     { id: 10, type: 'age_range' },
     { id: 11, type: 'start_age' },
-    { id: 12, type: 'sexually_active_age' },
+    { id: 12, type: 'sexually_active_age' }, // Now asks about gambling frequency
     { id: 13, type: 'gambling_increase' },
     { id: 14, type: 'risk_escalation' },
     // { id: 15, type: 'blockers' },
@@ -681,15 +681,15 @@ export default function Onboarding() {
       case 'sexually_active_age':
         return (
           <View style={styles.sexuallyActiveContainer}>
-            <Text style={styles.questionTitle}>How old were you when you first became sexually active ?</Text>
+            <Text style={styles.questionTitle}>How often do you gamble ?</Text>
             <View style={styles.optionsContainer}>
               {[
-                'Never',
-                '14 - 17',
-                '18 - 24',
-                '25 - 30',
-                '30 - 40',
-                '40+'
+                'Daily',
+                'Few times a week',
+                'Weekly',
+                'Few times a month',
+                'Monthly',
+                'Rarely'
               ].map((option) => (
                 <TouchableOpacity
                   key={option}
