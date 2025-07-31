@@ -105,7 +105,7 @@ export default function ProfileScreen() {
     try {
       await Share.share({
         message: `Join me on the recovery journey! Use my referral code: ${referralCode}`,
-        url: 'https://app.unbet.com',
+        url: 'https://tryunbet.com',
       });
     } catch (error) {
       console.error('Error sharing:', error);
@@ -474,16 +474,29 @@ export default function ProfileScreen() {
 
             <Text style={styles.settingsSectionTitle}>ABOUT</Text>
 
-            {/* Privacy Policy */}
+            {/* Privacy Policy & Terms */}
             <TouchableOpacity 
               style={styles.settingItem}
-              onPress={() => Linking.openURL('https://tryunbet.com/privacy.html')}
+              onPress={async () => {
+                try {
+                  const url = 'https://tryunbet.com/privacy.html';
+                  const supported = await Linking.canOpenURL(url);
+                  if (supported) {
+                    await Linking.openURL(url);
+                  } else {
+                    Alert.alert('Error', 'Unable to open privacy policy & terms');
+                  }
+                } catch (error) {
+                  console.error('Error opening privacy policy & terms:', error);
+                  Alert.alert('Error', 'Unable to open privacy policy & terms');
+                }
+              }}
             >
               <View style={styles.settingItemContent}>
                 <View style={styles.settingIcon}>
                   <Ionicons name="shield-checkmark" size={24} color="#6B7280" />
                 </View>
-                <Text style={styles.settingText}>Privacy Policy</Text>
+                <Text style={styles.settingText}>Privacy Policy & Terms</Text>
               </View>
             </TouchableOpacity>
 

@@ -48,27 +48,20 @@ export default function HomeScreen() {
 
   // Calculate real streak data
   const getStreakStartDate = () => {
-    if (!user) return new Date();
+    if (!user) return null;
     
-    // If user has relapsed, use day after last relapse
+    // If user has relapsed, use the last relapse date (not day after)
     if (user.lastRelapseDate) {
-      const lastRelapse = new Date(user.lastRelapseDate);
-      lastRelapse.setDate(lastRelapse.getDate() + 1);
-      return lastRelapse;
+      return new Date(user.lastRelapseDate);
     }
     
-    // If user has no relapses, use recovery start date (set when account created)
+    // If user has no relapses, use recovery start date
     if (user.recoveryStartDate) {
       return new Date(user.recoveryStartDate);
     }
     
-    // Final fallback: use account creation time
-    if (user._creationTime) {
-      return new Date(user._creationTime);
-    }
-    
-    // Last resort fallback
-    return new Date();
+    // For new users, use account creation time (this should always exist)
+    return new Date(user._creationTime);
   };
 
   // Update timer every second
@@ -78,6 +71,12 @@ export default function HomeScreen() {
     const calculateTimer = () => {
       const now = new Date();
       const streakStart = getStreakStartDate();
+      
+      // If no streak start date, return zeros
+      if (!streakStart) {
+        return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+      }
+      
       const diff = now.getTime() - streakStart.getTime();
       
       // Ensure we don't show negative time
@@ -127,7 +126,7 @@ export default function HomeScreen() {
 
   const handleReflect = () => {
     setShowActionMenu(false);
-    router.push('/(main)/(tabs)/journal');
+    router.push('/reflect'); // Changed from journal to reflect to open new entry
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
@@ -220,7 +219,7 @@ export default function HomeScreen() {
 
         {/* 3D Brain */}
 
-        {/* Milestones Coin Button */}
+        {/* Milestones Coin Button - COMMENTED OUT (WIP)
         <TouchableOpacity 
           style={styles.coinButton} 
           onPress={() => {
@@ -233,6 +232,7 @@ export default function HomeScreen() {
             <Text style={styles.coinText}>$</Text>
           </View>
         </TouchableOpacity>
+        */
 
         {/* Floating Action Button */}
         <TouchableOpacity style={styles.fab} onPress={openActionMenu} activeOpacity={0.8}>
@@ -250,15 +250,17 @@ export default function HomeScreen() {
             <View style={styles.actionMenuOverlay}>
               <TouchableWithoutFeedback>
                 <View style={styles.actionMenuContainer}>
-                  {/* Panic Button */}
+                  {/* Panic Button - COMMENTED OUT
                   <TouchableOpacity style={[styles.actionMenuItem, styles.panicButton]} onPress={handlePanic}>
                     <Text style={styles.actionMenuText}>Panic</Text>
                   </TouchableOpacity>
+                  */}
 
-                  {/* AI Coach Button */}
+                  {/* AI Coach Button - COMMENTED OUT
                   <TouchableOpacity style={[styles.actionMenuItem, styles.aiCoachButton]} onPress={handleAICoach}>
                     <Text style={styles.actionMenuText}>AI Coach</Text>
                   </TouchableOpacity>
+                  */}
 
                   {/* I relapsed Button */}
                   <TouchableOpacity style={[styles.actionMenuItem, styles.relapsedButton]} onPress={handleRelapse}>

@@ -2,15 +2,53 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Haptics } from '@/utils/haptics';
+import { useMutation, useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { useConvexAuth } from '@/providers/ConvexAuthProvider';
 
 export default function RelapseScreen() {
   const router = useRouter();
+  const { isAuthenticated } = useConvexAuth();
+  const updateUser = useMutation(api.users.updateCurrentUser);
+  const user = useQuery(api.users.getCurrentUser, isAuthenticated ? {} : 'skip');
 
-  const handleRestartMilestone = () => {
+  const getTimeSinceLastRelapse = () => {
+    if (!user) return '0 hours';
+    
+    const startDate = user.lastRelapseDate 
+      ? new Date(user.lastRelapseDate) 
+      : (user.recoveryStartDate ? new Date(user.recoveryStartDate) : new Date());
+    
+    const now = new Date();
+    const diff = now.getTime() - startDate.getTime();
+    const totalSeconds = Math.floor(diff / 1000);
+    
+    const days = Math.floor(totalSeconds / (24 * 60 * 60));
+    const hours = Math.floor((totalSeconds % (24 * 60 * 60)) / (60 * 60));
+    
+    if (days > 0) {
+      return `${days} day${days > 1 ? 's' : ''} and ${hours} hour${hours > 1 ? 's' : ''}`;
+    } else {
+      return `${hours} hour${hours > 1 ? 's' : ''}`;
+    }
+  };
+
+  const handleRestartMilestone = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-    // Reset timer and navigate back
-    router.back();
+    
+    try {
+      // Update the user's lastRelapseDate to now
+      await updateUser({
+        lastRelapseDate: new Date().toISOString(),
+      });
+      
+      // Navigate back to home
+      router.replace('/');
+    } catch (error) {
+      console.error('Error updating relapse date:', error);
+    }
   };
 
   return (
@@ -27,13 +65,23 @@ export default function RelapseScreen() {
 
       <View style={styles.content}>
         <View style={styles.brainContainer}>
-          <View style={styles.brainPlaceholder} />
+          <View style={styles.coinOuter}>
+            <LinearGradient
+              colors={['#E8E8E8', '#C0C0C0', '#A8A8A8']}
+              style={styles.coinInner}
+              start={{ x: 0.2, y: 0.2 }}
+              end={{ x: 0.8, y: 0.8 }}
+            >
+              <View style={styles.coinHighlight} />
+              <View style={styles.coinShadow} />
+            </LinearGradient>
+          </View>
         </View>
 
         <Text style={styles.title}>Hey, It's completely okay.</Text>
         
         <Text style={styles.subtitle}>
-          You made it 11 Hours. Don't let one bad moment wash away the hard work you've put in.
+          {user ? `You made it ${getTimeSinceLastRelapse()}. ` : ''}Don't let one bad moment wash away the hard work you've put in.
         </Text>
 
         <Text style={styles.stats}>
@@ -73,12 +121,48 @@ const styles = StyleSheet.create({
     height: 180,
     marginBottom: 40,
   },
-  brainPlaceholder: {
+  coinOuter: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#444',
     borderRadius: 90,
-    opacity: 0.3,
+    backgroundColor: '#1a1a1a',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 16 },
+    shadowOpacity: 0.6,
+    shadowRadius: 32,
+    elevation: 24,
+  },
+  coinInner: {
+    width: '94%',
+    height: '94%',
+    borderRadius: 85,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  coinHighlight: {
+    position: 'absolute',
+    top: 20,
+    left: 25,
+    width: 40,
+    height: 40,
+    backgroundColor: 'rgba(255, 255, 255, 0.4)',
+    borderRadius: 20,
+    transform: [{ skewX: '-15deg' }],
+  },
+  coinShadow: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    width: 60,
+    height: 30,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    borderRadius: 30,
+    transform: [{ skewX: '15deg' }],
   },
   title: {
     fontSize: 32,

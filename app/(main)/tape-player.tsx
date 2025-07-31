@@ -12,8 +12,6 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Haptics } from '@/utils/haptics';
-// import Slider from '@react-native-community/slider';
-// Using a simple progress bar instead of slider for now
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -22,15 +20,46 @@ export default function TapePlayerScreen() {
   const { id } = useLocalSearchParams();
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration] = useState(131); // 2:11 in seconds
 
-  // Mock tape data
-  const tape = {
-    id: id as string,
-    title: 'The Introduction',
-    imageUrl: 'https://via.placeholder.com/400x400',
-    duration: 131,
+  // Dynamic tape data based on ID
+  const getTapeData = (tapeId: string) => {
+    const tapes = {
+      '1': {
+        id: '1',
+        title: 'Mindful Recovery',
+        subtitle: 'A guided meditation for gambling addiction',
+        duration: 525, // 8:45
+      },
+      '2': {
+        id: '2',
+        title: 'Breaking Free',
+        subtitle: 'Overcome the chains of addiction',
+        duration: 750, // 12:30
+      },
+      '3': {
+        id: '3',
+        title: 'New Beginnings',
+        subtitle: 'Start your journey to recovery',
+        duration: 375, // 6:15
+      },
+      '4': {
+        id: '4',
+        title: 'Daily Affirmations',
+        subtitle: 'Positive mantras for recovery',
+        duration: 262, // 4:22
+      },
+      '5': {
+        id: '5',
+        title: 'Financial Freedom',
+        subtitle: 'Rebuild your financial future',
+        duration: 558, // 9:18
+      },
+    };
+    return tapes[tapeId as keyof typeof tapes] || tapes['1'];
   };
+
+  const tape = getTapeData(id as string);
+  const duration = tape.duration;
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -79,6 +108,8 @@ export default function TapePlayerScreen() {
         >
           <Ionicons name="close" size={28} color="#FFF" />
         </TouchableOpacity>
+        <Text style={styles.headerTitle}>{tape.title}</Text>
+        <View style={{ width: 44 }} />
       </View>
 
       {/* Content Container */}
@@ -118,22 +149,22 @@ export default function TapePlayerScreen() {
           </View>
         </View>
 
-        {/* Title */}
-        <Text style={styles.title}>{tape.title}</Text>
+        {/* Subtitle */}
+        <Text style={styles.subtitle}>{tape.subtitle}</Text>
 
         {/* Instructions */}
         <View style={styles.instructions}>
           <View style={styles.instructionItem}>
-            <Ionicons name="headset" size={24} color="#FFF" />
+            <Ionicons name="headset" size={20} color="rgba(255, 255, 255, 0.8)" />
             <Text style={styles.instructionText}>Listen with headphones</Text>
           </View>
           <View style={styles.instructionItem}>
             <Text style={styles.meditationIcon}>🧘</Text>
-            <Text style={styles.instructionText}>Find a silent, relaxing environment.</Text>
+            <Text style={styles.instructionText}>Find a quiet place</Text>
           </View>
           <View style={styles.instructionItem}>
             <Text style={styles.targetIcon}>🎯</Text>
-            <Text style={styles.instructionText}>Lock in.</Text>
+            <Text style={styles.instructionText}>Focus on your recovery</Text>
           </View>
         </View>
       </View>
@@ -154,14 +185,15 @@ export default function TapePlayerScreen() {
           </View>
           <View style={styles.timeContainer}>
             <Text style={styles.timeText}>{formatTime(currentTime)}</Text>
-            <Text style={styles.timeText}>/ {formatTime(duration)}</Text>
+            <Text style={styles.timeText}> / </Text>
+            <Text style={styles.timeText}>{formatTime(duration)}</Text>
           </View>
         </View>
 
         {/* Control Buttons */}
         <View style={styles.controlButtons}>
           <TouchableOpacity 
-            style={styles.controlButton}
+            style={styles.controlButton} 
             onPress={handleRewind}
           >
             <View style={styles.skipButton}>
@@ -171,19 +203,18 @@ export default function TapePlayerScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={styles.playButton}
+            style={styles.playButton} 
             onPress={togglePlayPause}
           >
             <Ionicons 
               name={isPlaying ? "pause" : "play"} 
               size={32} 
               color="#FFF" 
-              style={isPlaying ? {} : { marginLeft: 4 }}
             />
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={styles.controlButton}
+            style={styles.controlButton} 
             onPress={handleForward}
           >
             <View style={styles.skipButton}>
@@ -203,6 +234,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingTop: 10,
     paddingBottom: 20,
@@ -215,25 +249,32 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  headerTitle: {
+    fontSize: 18,
+    fontFamily: 'DMSans_500Medium',
+    color: '#FFF',
+    flex: 1,
+    textAlign: 'center',
+  },
   contentContainer: {
     flex: 1,
-    paddingBottom: 220, // Space for player controls
+    paddingBottom: 200,
   },
   albumArtContainer: {
     alignItems: 'center',
     marginTop: 20,
-    marginBottom: 30,
+    marginBottom: 40,
   },
   albumArt: {
-    width: SCREEN_WIDTH * 0.6,
-    height: SCREEN_WIDTH * 0.6,
-    borderRadius: 24,
+    width: SCREEN_WIDTH * 0.7,
+    height: SCREEN_WIDTH * 0.7,
+    borderRadius: 30,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 12,
+    shadowColor: '#5B7FDE',
+    shadowOffset: { width: 0, height: 20 },
+    shadowOpacity: 0.5,
+    shadowRadius: 40,
+    elevation: 20,
   },
   albumArtGradient: {
     flex: 1,
@@ -250,24 +291,26 @@ const styles = StyleSheet.create({
   },
   noiseDot: {
     position: 'absolute',
-    width: 2,
-    height: 2,
+    width: 3,
+    height: 3,
     backgroundColor: 'rgba(255, 255, 255, 0.4)',
-    borderRadius: 1,
+    borderRadius: 1.5,
   },
-  title: {
-    fontSize: 28,
-    fontFamily: 'DMSans_500Medium',
-    color: '#FFF',
+  tapeCenterIcon: {
+    fontSize: 64,
+  },
+  subtitle: {
+    fontSize: 18,
+    fontFamily: 'DMSans_400Regular',
+    color: 'rgba(255, 255, 255, 0.7)',
     textAlign: 'center',
-    marginBottom: 30,
-    paddingHorizontal: 20,
+    marginBottom: 40,
+    paddingHorizontal: 40,
+    lineHeight: 24,
   },
   instructions: {
     paddingHorizontal: 40,
-    gap: 16,
-    flex: 1,
-    justifyContent: 'center',
+    gap: 20,
   },
   instructionItem: {
     flexDirection: 'row',
@@ -275,18 +318,19 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   instructionText: {
-    fontSize: 18,
-    color: 'rgba(255, 255, 255, 0.9)',
+    fontSize: 16,
+    color: 'rgba(255, 255, 255, 0.8)',
     flex: 1,
+    fontFamily: 'DMSans_400Regular',
   },
   meditationIcon: {
-    fontSize: 24,
-    width: 24,
+    fontSize: 20,
+    width: 20,
     textAlign: 'center',
   },
   targetIcon: {
-    fontSize: 24,
-    width: 24,
+    fontSize: 20,
+    width: 20,
     textAlign: 'center',
   },
   playerContainer: {
@@ -294,12 +338,12 @@ const styles = StyleSheet.create({
     bottom: 40,
     left: 0,
     right: 0,
-    paddingHorizontal: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    paddingHorizontal: 30,
+    backgroundColor: 'rgba(0, 0, 0, 0.95)',
     paddingTop: 20,
   },
   progressContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     borderRadius: 20,
     padding: 20,
     marginBottom: 30,
@@ -310,15 +354,15 @@ const styles = StyleSheet.create({
   },
   progressBarBackground: {
     width: '100%',
-    height: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    borderRadius: 2,
+    height: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 3,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: '#FFF',
-    borderRadius: 2,
+    backgroundColor: '#5B7FDE',
+    borderRadius: 3,
   },
   timeContainer: {
     flexDirection: 'row',
@@ -329,6 +373,7 @@ const styles = StyleSheet.create({
   timeText: {
     fontSize: 14,
     color: 'rgba(255, 255, 255, 0.6)',
+    fontFamily: 'DMSans_400Regular',
   },
   controlButtons: {
     flexDirection: 'row',
@@ -346,15 +391,20 @@ const styles = StyleSheet.create({
   },
   skipText: {
     fontSize: 14,
-    color: '#FFF',
+    color: 'rgba(255, 255, 255, 0.8)',
     fontWeight: '500',
   },
   playButton: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: '#5B7FDE',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#5B7FDE',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 20,
+    elevation: 12,
   },
 });

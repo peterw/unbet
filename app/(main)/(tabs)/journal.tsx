@@ -19,6 +19,7 @@ import { Haptics } from '@/utils/haptics';
 import { useQuery } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { useConvexAuth } from '@/providers/ConvexAuthProvider';
+import * as Linking from 'expo-linking';
 // import { BlurView } from 'expo-blur'; // Requires rebuild
 // Remove Canvas import as we're using View-based stars
 
@@ -227,122 +228,168 @@ export default function JournalScreen() {
           >
             {/* Community Section */}
             <View style={styles.communityCard}>
-              <View style={styles.communityIcon}>
-                <Ionicons name="logo-discord" size={60} color="#5B7FDE" />
-              </View>
-              <Text style={styles.communityTitle}>You're not alone</Text>
-              <Text style={styles.communityDescription}>
-                Find an accountability partner & share your wins with other pro users
-              </Text>
-              
-              {/* Recent posts */}
-              <View style={styles.postsContainer}>
-                <View style={styles.postCard}>
-                  <View style={styles.postHeader}>
-                    <View style={styles.userAvatar}>
-                      <Text style={styles.avatarText}>R</Text>
-                    </View>
-                    <View style={styles.postInfo}>
-                      <View style={styles.postUserRow}>
-                        <Text style={styles.postUsername}>Ronak</Text>
-                        <Ionicons name="checkmark-circle" size={16} color="#4CAF50" />
-                      </View>
-                      <Text style={styles.postTime}>Yesterday at 2:30 PM</Text>
-                    </View>
+              <LinearGradient
+                colors={['rgba(91, 127, 222, 0.15)', 'rgba(91, 127, 222, 0.05)']}
+                style={styles.communityGradient}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+              >
+                <View style={styles.communityHeader}>
+                  <View style={styles.communityIconContainer}>
+                    <Ionicons name="logo-discord" size={32} color="#5B7FDE" />
                   </View>
-                  <Text style={styles.postContent}>
-                    new record: 14 days thanks Seed 💪🔥
-                  </Text>
-                  <View style={styles.postReactions}>
-                    <Text style={styles.reactionEmoji}>🔥 1</Text>
-                    <Ionicons name="chatbubble-outline" size={16} color="#666" />
+                  <View style={styles.communityTitleContainer}>
+                    <Text style={styles.communityTitle}>You're not alone</Text>
+                    <Text style={styles.communityDescription}>
+                      Connect with others on the same journey
+                    </Text>
                   </View>
                 </View>
                 
-                <View style={styles.postCard}>
-                  <View style={styles.postHeader}>
-                    <View style={[styles.userAvatar, { backgroundColor: '#8B5FDE' }]}>
-                      <Text style={styles.avatarText}>B</Text>
+                {/* Recent posts */}
+                <View style={styles.postsContainer}>
+                  <View style={styles.postCard}>
+                    <View style={styles.postHeader}>
+                      <View style={styles.userAvatar}>
+                        <Text style={styles.avatarText}>R</Text>
+                      </View>
+                      <View style={styles.postInfo}>
+                        <View style={styles.postUserRow}>
+                          <Text style={styles.postUsername}>Ronak</Text>
+                          <Ionicons name="checkmark-circle" size={14} color="#4CAF50" />
+                        </View>
+                        <Text style={styles.postTime}>Yesterday</Text>
+                      </View>
                     </View>
-                    <View style={styles.postInfo}>
-                      <Text style={styles.postUsername}>Bruce</Text>
-                      <Text style={styles.postTime}>Today at 3:31 PM</Text>
-                    </View>
+                    <Text style={styles.postContent}>
+                      new record: 14 days thanks Unbet 💪
+                    </Text>
                   </View>
-                  <Text style={styles.postContent}>
-                    25M US - looking for someone around similar age to stay accountable, also exercising 5 days a week!
-                  </Text>
-                </View>
-              </View>
-              
-              <TouchableOpacity style={styles.joinButton}>
-                <Text style={styles.joinButtonText}>Join the Community</Text>
-              </TouchableOpacity>
-            </View>
-            
-            {/* Rewire Tapes Section */}
-            <View style={styles.tapesSection}>
-              <Text style={styles.tapesSectionTitle}>Rewire Tapes</Text>
-              <Text style={styles.tapesSectionSubtitle}>
-                The 5 day audio course to help train your subconscious mind.
-              </Text>
-              
-              {/* Tape Cards */}
-              <View style={styles.tapeCard}>
-                <View style={styles.tapeHeader}>
-                  <Text style={styles.tapeTitle}>The Introduction</Text>
-                  <View style={styles.tapeStatusBadge}>
-                    <Text style={styles.tapeStatusText}>Unlocked</Text>
+                  
+                  <View style={styles.postCard}>
+                    <View style={styles.postHeader}>
+                      <View style={[styles.userAvatar, { backgroundColor: '#8B5FDE' }]}>
+                        <Text style={styles.avatarText}>B</Text>
+                      </View>
+                      <View style={styles.postInfo}>
+                        <Text style={styles.postUsername}>Bruce</Text>
+                        <Text style={styles.postTime}>Today</Text>
+                      </View>
+                    </View>
+                    <Text style={styles.postContent}>
+                      Looking for accountability partner
+                    </Text>
                   </View>
                 </View>
-                <View style={styles.tapeImageContainer}>
-                  <LinearGradient
-                    colors={[
-                      '#1a1a2e',
-                      '#16213e', 
-                      '#0f3460',
-                      '#1a1a2e'
-                    ]}
-                    style={styles.tapeImageBackground}
-                    start={{ x: 0.1, y: 0.1 }}
-                    end={{ x: 0.9, y: 0.9 }}
-                  >
-                    {/* Noise texture overlay */}
-                    <View style={styles.noiseContainer}>
-                      {[...Array(35)].map((_, i) => (
-                        <View
-                          key={i}
-                          style={[
-                            styles.noiseDot,
-                            {
-                              left: `${Math.random() * 100}%`,
-                              top: `${Math.random() * 100}%`,
-                              opacity: 0.1 + Math.random() * 0.2,
-                              transform: [{ scale: 0.5 + Math.random() * 0.8 }],
-                            },
-                          ]}
-                        />
-                      ))}
-                    </View>
-                  </LinearGradient>
-                </View>
-                <Text style={styles.tapeDescription}>
-                  This introduction equips you with the proper mental frameworks and strategies for using and implementing the SEED rewiring tapes collection. You will understand how the collection has been engineered. And you will learn how to use the tapes in the most effective way.
-                </Text>
+                
                 <TouchableOpacity 
-                  style={styles.playButton}
-                  onPress={() => {
+                  style={styles.joinButton}
+                  onPress={async () => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                    router.push('/tape-player?id=1');
+                    try {
+                      await Linking.openURL('https://discord.gg/Ax8KGcFZ');
+                    } catch (error) {
+                      console.error('Failed to open Discord link:', error);
+                    }
                   }}
                 >
-                  <Ionicons name="play" size={20} color="#FFF" />
-                  <Text style={styles.playButtonText}>Play Tape 1</Text>
+                  <Text style={styles.joinButtonText}>Join Community</Text>
+                  <Ionicons name="arrow-forward" size={18} color="#FFF" />
                 </TouchableOpacity>
-                <Text style={styles.completionText}>32421 users completed</Text>
+              </LinearGradient>
+            </View>
+            
+            {/* Recovery Tapes Section */}
+            <View style={styles.tapesSection}>
+              <Text style={styles.tapesSectionTitle}>Recovery Tapes</Text>
+              <Text style={styles.tapesSectionSubtitle}>
+                Audio sessions designed to rewire your mind and break gambling habits.
+              </Text>
+              
+              {/* Main Featured Tape */}
+              <View style={styles.mainTapeCard}>
+                <LinearGradient
+                  colors={['#1a1a2e', '#16213e', '#0f3460']}
+                  style={styles.mainTapeBackground}
+                  start={{ x: 0.1, y: 0.1 }}
+                  end={{ x: 0.9, y: 0.9 }}
+                >
+                  {/* Noise texture overlay */}
+                  <View style={styles.noiseContainer}>
+                    {[...Array(50)].map((_, i) => (
+                      <View
+                        key={i}
+                        style={[
+                          styles.noiseDot,
+                          {
+                            left: `${Math.random() * 100}%`,
+                            top: `${Math.random() * 100}%`,
+                            opacity: 0.1 + Math.random() * 0.3,
+                            transform: [{ scale: 0.5 + Math.random() * 1.2 }],
+                          },
+                        ]}
+                      />
+                    ))}
+                  </View>
+                  
+                  <View style={styles.mainTapeContent}>
+                    <View style={styles.mainTapeInfo}>
+                      <Text style={styles.mainTapeTitle}>Mindful Recovery</Text>
+                      <Text style={styles.mainTapeArtist}>Dr. Sarah Chen • 230 plays • 8:45</Text>
+                      <Text style={styles.mainTapeDescription}>
+                        A guided meditation to help you recognize triggers and build resilience against gambling urges.
+                      </Text>
+                    </View>
+                    
+                    <TouchableOpacity 
+                      style={styles.mainPlayButton}
+                      onPress={() => {
+                        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                        router.push('/tape-player?id=1');
+                      }}
+                    >
+                      <Ionicons name="play" size={28} color="#000" />
+                    </TouchableOpacity>
+                  </View>
+                </LinearGradient>
               </View>
               
-              {/* Add more tape cards here */}
+              {/* Preview Tapes */}
+              <View style={styles.previewTapesContainer}>
+                {[
+                  { id: "2", title: "Breaking Free", artist: "Recovery Plus", plays: "187", duration: "12:30", icon: "link-outline", color: "#FF6B6B" },
+                  { id: "3", title: "New Beginnings", artist: "Mark Thompson", plays: "143", duration: "6:15", icon: "leaf-outline", color: "#4ECDC4" },
+                  { id: "4", title: "Daily Affirmations", artist: "Wellness Audio", plays: "256", duration: "4:22", icon: "heart-outline", color: "#95E1D3" },
+                  { id: "5", title: "Financial Freedom", artist: "Success Mindset", plays: "98", duration: "9:18", icon: "trending-up-outline", color: "#FFD93D" }
+                ].map((tape, index) => (
+                  <TouchableOpacity 
+                    key={index} 
+                    style={styles.previewTapeCard}
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      router.push(`/tape-player?id=${tape.id}`);
+                    }}
+                  >
+                    <View style={styles.previewTapeAvatar}>
+                      <LinearGradient
+                        colors={['#2a2a4a', '#1a1a3a']}
+                        style={styles.previewTapeAvatarBg}
+                      >
+                        <Ionicons name={tape.icon as any} size={18} color={tape.color} />
+                      </LinearGradient>
+                    </View>
+                    
+                    <View style={styles.previewTapeInfo}>
+                      <Text style={styles.previewTapeTitle}>{tape.title}</Text>
+                      <Text style={styles.previewTapeArtist}>
+                        {tape.artist} • {tape.plays} plays • {tape.duration}
+                      </Text>
+                    </View>
+                    
+                    <Ionicons name="play-outline" size={20} color="#666" />
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
           </ScrollView>
         )}
@@ -605,6 +652,118 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.6)',
     lineHeight: 22,
     marginBottom: 24,
+  },
+  mainTapeCard: {
+    borderRadius: 24,
+    marginBottom: 20,
+    overflow: 'hidden',
+    shadowColor: '#5B7FDE',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
+    elevation: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(91, 127, 222, 0.2)',
+  },
+  mainTapeBackground: {
+    padding: 24,
+    position: 'relative',
+    minHeight: 140,
+  },
+  mainTapeContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  mainTapeInfo: {
+    flex: 1,
+    marginRight: 16,
+  },
+  mainTapeTitle: {
+    fontSize: 22,
+    fontFamily: 'DMSans_500Medium',
+    color: '#FFF',
+    marginBottom: 6,
+    letterSpacing: -0.5,
+  },
+  mainTapeArtist: {
+    fontSize: 14,
+    fontFamily: 'DMSans_400Regular',
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginBottom: 10,
+  },
+  mainTapeDescription: {
+    fontSize: 14,
+    fontFamily: 'DMSans_400Regular',
+    color: 'rgba(255, 255, 255, 0.7)',
+    lineHeight: 22,
+    maxWidth: '85%',
+  },
+  mainPlayButton: {
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: '#FFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#FFF',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 16,
+    elevation: 12,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+  },
+  previewTapesContainer: {
+    gap: 10,
+    marginTop: 8,
+  },
+  previewTapeCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(40, 40, 55, 0.8)',
+    borderRadius: 16,
+    padding: 14,
+    opacity: 0.75,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  previewTapeAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 12,
+    overflow: 'hidden',
+    marginRight: 14,
+    shadowColor: '#5B7FDE',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  previewTapeAvatarBg: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  previewTapeInfo: {
+    flex: 1,
+  },
+  previewTapeTitle: {
+    fontSize: 15,
+    fontFamily: 'DMSans_500Medium',
+    color: '#FFF',
+    marginBottom: 3,
+    letterSpacing: -0.2,
+  },
+  previewTapeArtist: {
+    fontSize: 12,
+    fontFamily: 'DMSans_400Regular',
+    color: 'rgba(255, 255, 255, 0.6)',
   },
   tapeCard: {
     backgroundColor: 'rgba(30, 30, 40, 0.9)',
