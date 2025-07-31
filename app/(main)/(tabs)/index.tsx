@@ -219,7 +219,8 @@ export default function HomeScreen() {
 
         {/* 3D Brain */}
 
-        {/* Milestones Coin Button - COMMENTED OUT (WIP)
+        {/* Milestones Coin Button - COMMENTED OUT (WIP) */}
+        {/*
         <TouchableOpacity 
           style={styles.coinButton} 
           onPress={() => {
@@ -232,7 +233,7 @@ export default function HomeScreen() {
             <Text style={styles.coinText}>$</Text>
           </View>
         </TouchableOpacity>
-        */
+        */}
 
         {/* Floating Action Button */}
         <TouchableOpacity style={styles.fab} onPress={openActionMenu} activeOpacity={0.8}>
