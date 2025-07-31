@@ -352,7 +352,7 @@ export default function SettingsScreen() {
               </View>
             </TouchableOpacity>
 
-            {/* Blocked Timer */}
+            {/* Blocked Timer - COMMENTED OUT
             <TouchableOpacity style={styles.settingItem}>
               <View style={styles.settingItemContent}>
                 <View style={styles.settingIcon}>
@@ -361,6 +361,7 @@ export default function SettingsScreen() {
                 <Text style={styles.settingText}>Blocked Timer: {blockedTimer}</Text>
               </View>
             </TouchableOpacity>
+            */}
 
             {/* Referral Code */}
             <TouchableOpacity style={styles.settingItem}>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   View, 
   Text, 
@@ -12,6 +12,8 @@ import { useRouter, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Haptics } from '@/utils/haptics';
+import { Audio } from 'expo-av';
+import { Asset } from 'expo-asset';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -20,6 +22,17 @@ export default function TapePlayerScreen() {
   const { id } = useLocalSearchParams();
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
+  const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Audio file mapping
+  const audioFiles = {
+    '1': require('../../assets/audio/Tape_1.mp3'),
+    '2': require('../../assets/audio/Tape_2.mp3'),
+    '3': require('../../assets/audio/Tape_3.mp3'),
+    '4': require('../../assets/audio/Tape_4.mp3'),
+    '5': require('../../assets/audio/Tape_5.mp3'),
+  };
 
   // Dynamic tape data based on ID
   const getTapeData = (tapeId: string) => {
@@ -28,76 +41,121 @@ export default function TapePlayerScreen() {
         id: '1',
         title: 'Mindful Recovery',
         subtitle: 'A guided meditation for gambling addiction',
-        duration: 525, // 8:45
       },
       '2': {
         id: '2',
         title: 'Breaking Free',
         subtitle: 'Overcome the chains of addiction',
-        duration: 750, // 12:30
       },
       '3': {
         id: '3',
         title: 'New Beginnings',
         subtitle: 'Start your journey to recovery',
-        duration: 375, // 6:15
       },
       '4': {
         id: '4',
         title: 'Daily Affirmations',
         subtitle: 'Positive mantras for recovery',
-        duration: 262, // 4:22
       },
       '5': {
         id: '5',
         title: 'Financial Freedom',
         subtitle: 'Rebuild your financial future',
-        duration: 558, // 9:18
       },
     };
     return tapes[tapeId as keyof typeof tapes] || tapes['1'];
   };
 
   const tape = getTapeData(id as string);
-  const duration = tape.duration;
+  const [duration, setDuration] = useState(0);
   
-  // Debug logging
-  console.log('Tape ID from URL:', id);
-  console.log('Tape data:', tape);
-
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const togglePlayPause = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setIsPlaying(!isPlaying);
-  };
-
-  const handleRewind = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setCurrentTime(Math.max(0, currentTime - 15));
-  };
-
-  const handleForward = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setCurrentTime(Math.min(duration, currentTime + 15));
-  };
-
-  // Simulate playback
+  // Load audio on mount and cleanup on unmount
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isPlaying && currentTime < duration) {
-      interval = setInterval(() => {
-        setCurrentTime(prev => Math.min(duration, prev + 1));
-      }, 1000);
-    } else if (currentTime >= duration) {
-      setIsPlaying(false);
+    loadAudio();
+    return () => {
+      // Cleanup when component unmounts (user leaves page)
+      if (sound) {
+        sound.stopAsync().then(() => {
+          sound.unloadAsync();
+        });
+      }
+    };
+  }, [tape.id]);
+
+  const loadAudio = async () => {
+    try {
+      setIsLoading(true);
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+        staysActiveInBackground: true,
+        shouldDuckAndroid: true,
+      });
+
+      const audioFile = audioFiles[tape.id as keyof typeof audioFiles];
+      const { sound: newSound } = await Audio.Sound.createAsync(
+        audioFile,
+        { shouldPlay: false }
+      );
+
+      const status = await newSound.getStatusAsync();
+      if (status.isLoaded && status.durationMillis) {
+        setDuration(status.durationMillis / 1000);
+      }
+
+      newSound.setOnPlaybackStatusUpdate((status) => {
+        if (status.isLoaded) {
+          setCurrentTime(status.positionMillis / 1000);
+          if (status.didJustFinish) {
+            setIsPlaying(false);
+            setCurrentTime(0);
+          }
+        }
+      });
+
+      setSound(newSound);
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Error loading audio:', error);
+      setIsLoading(false);
     }
-    return () => clearInterval(interval);
-  }, [isPlaying, currentTime, duration]);
+  };
+
+  const togglePlayPause = async () => {
+    if (!sound) return;
+    
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    
+    if (isPlaying) {
+      await sound.pauseAsync();
+      setIsPlaying(false);
+    } else {
+      await sound.playAsync();
+      setIsPlaying(true);
+    }
+  };
+
+  const handleRewind = async () => {
+    if (!sound) return;
+    
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const newPosition = Math.max(0, currentTime - 15) * 1000;
+    await sound.setPositionAsync(newPosition);
+  };
+
+  const handleForward = async () => {
+    if (!sound) return;
+    
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const newPosition = Math.min(duration, currentTime + 15) * 1000;
+    await sound.setPositionAsync(newPosition);
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -207,14 +265,21 @@ export default function TapePlayerScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={styles.playButton} 
+            style={[styles.playButton, isLoading && styles.playButtonDisabled]} 
             onPress={togglePlayPause}
+            disabled={isLoading}
           >
-            <Ionicons 
-              name={isPlaying ? "pause" : "play"} 
-              size={36} 
-              color="#FFF" 
-            />
+            {isLoading ? (
+              <View style={styles.loadingIndicator}>
+                <Ionicons name="time-outline" size={36} color="#FFF" />
+              </View>
+            ) : (
+              <Ionicons 
+                name={isPlaying ? "pause" : "play"} 
+                size={36} 
+                color="#FFF" 
+              />
+            )}
           </TouchableOpacity>
 
           <TouchableOpacity 
@@ -255,7 +320,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontFamily: 'DMSans_500Medium',
+    fontFamily: 'DMSans_700Bold',
     color: '#FFF',
     flex: 1,
     textAlign: 'center',
@@ -270,15 +335,15 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   albumArt: {
-    width: SCREEN_WIDTH * 0.7,
-    height: SCREEN_WIDTH * 0.7,
-    borderRadius: 30,
+    width: SCREEN_WIDTH * 0.5,
+    height: SCREEN_WIDTH * 0.5,
+    borderRadius: 24,
     overflow: 'hidden',
     shadowColor: '#5B7FDE',
-    shadowOffset: { width: 0, height: 20 },
-    shadowOpacity: 0.5,
-    shadowRadius: 40,
-    elevation: 20,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
+    elevation: 12,
   },
   albumArtGradient: {
     flex: 1,
@@ -429,5 +494,12 @@ const styles = StyleSheet.create({
     elevation: 15,
     borderWidth: 2,
     borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  playButtonDisabled: {
+    opacity: 0.5,
+  },
+  loadingIndicator: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });

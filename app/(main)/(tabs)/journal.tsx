@@ -235,15 +235,10 @@ export default function JournalScreen() {
                 end={{ x: 1, y: 1 }}
               >
                 <View style={styles.communityHeader}>
-                  <View style={styles.communityIconContainer}>
-                    <Ionicons name="logo-discord" size={32} color="#5B7FDE" />
-                  </View>
-                  <View style={styles.communityTitleContainer}>
-                    <Text style={styles.communityTitle}>You're not alone</Text>
-                    <Text style={styles.communityDescription}>
-                      Connect with others on the same journey
-                    </Text>
-                  </View>
+                  <Text style={styles.communityTitle}>You're not alone</Text>
+                  <Text style={styles.communityDescription}>
+                    Connect with others on the same journey
+                  </Text>
                 </View>
                 
                 {/* Recent posts */}
@@ -251,11 +246,11 @@ export default function JournalScreen() {
                   <View style={styles.postCard}>
                     <View style={styles.postHeader}>
                       <View style={styles.userAvatar}>
-                        <Text style={styles.avatarText}>R</Text>
+                        <Text style={styles.avatarText}>D</Text>
                       </View>
                       <View style={styles.postInfo}>
                         <View style={styles.postUserRow}>
-                          <Text style={styles.postUsername}>Ronak</Text>
+                          <Text style={styles.postUsername}>Dante</Text>
                           <Ionicons name="checkmark-circle" size={14} color="#4CAF50" />
                         </View>
                         <Text style={styles.postTime}>Yesterday</Text>
@@ -336,7 +331,7 @@ export default function JournalScreen() {
                   <View style={styles.mainTapeContent}>
                     <View style={styles.mainTapeInfo}>
                       <Text style={styles.mainTapeTitle}>Mindful Recovery</Text>
-                      <Text style={styles.mainTapeArtist}>Dr. Sarah Chen • 230 plays • 8:45</Text>
+                      <Text style={styles.mainTapeArtist}>Dante Ngeemi • 230 plays • 8:45</Text>
                       <Text style={styles.mainTapeDescription}>
                         A guided meditation to help you recognize triggers and build resilience against gambling urges.
                       </Text>
