@@ -22,15 +22,25 @@ export default function TapePlayerScreen() {
   const { id } = useLocalSearchParams();
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
-  const [duration] = useState(131); // 2:11 in seconds
+  const [duration, setDuration] = useState(131); // Default duration
 
-  // Mock tape data
-  const tape = {
-    id: id as string,
-    title: 'The Introduction',
-    imageUrl: 'https://via.placeholder.com/400x400',
-    duration: 131,
+  // Tape data based on ID
+  const tapes: Record<string, any> = {
+    '1': { title: 'The Introduction', duration: 131 },
+    '2': { title: 'Breaking Free', duration: 750 }, // 12:30
+    '3': { title: 'New Beginnings', duration: 375 }, // 6:15
+    '4': { title: 'Daily Affirmations', duration: 262 }, // 4:22
+    '5': { title: 'Financial Freedom', duration: 558 }, // 9:18
   };
+  
+  const tape = tapes[id as string] || tapes['1'];
+  
+  // Update duration when tape changes
+  useEffect(() => {
+    setDuration(tape.duration);
+    setCurrentTime(0);
+    setIsPlaying(false);
+  }, [id]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -79,6 +89,8 @@ export default function TapePlayerScreen() {
         >
           <Ionicons name="close" size={28} color="#FFF" />
         </TouchableOpacity>
+        <Text style={styles.headerTitle}>{tape.title}</Text>
+        <View style={styles.headerSpacer} />
       </View>
 
       {/* Content Container */}
@@ -117,9 +129,6 @@ export default function TapePlayerScreen() {
             </LinearGradient>
           </View>
         </View>
-
-        {/* Title */}
-        <Text style={styles.title}>{tape.title}</Text>
 
         {/* Instructions */}
         <View style={styles.instructions}>
@@ -203,37 +212,61 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingTop: 10,
     paddingBottom: 20,
   },
+  headerTitle: {
+    fontSize: 20,
+    fontFamily: 'DMSans_500Medium',
+    color: '#FFF',
+    flex: 1,
+    textAlign: 'center',
+    marginHorizontal: 16,
+  },
+  headerSpacer: {
+    width: 48, // Same width as close button to center the title
+    height: 48,
+  },
   closeButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   contentContainer: {
     flex: 1,
-    paddingBottom: 220, // Space for player controls
+    paddingBottom: 320, // More space for player controls
   },
   albumArtContainer: {
     alignItems: 'center',
-    marginTop: 20,
-    marginBottom: 30,
+    marginTop: 10,
+    marginBottom: 20,
   },
   albumArt: {
-    width: SCREEN_WIDTH * 0.6,
-    height: SCREEN_WIDTH * 0.6,
-    borderRadius: 24,
+    width: SCREEN_WIDTH * 0.55,
+    height: SCREEN_WIDTH * 0.55,
+    borderRadius: 28,
     overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 12,
+    shadowColor: '#5B7FDE',
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
+    elevation: 16,
+    borderWidth: 2,
+    borderColor: 'rgba(91, 127, 222, 0.3)',
   },
   albumArtGradient: {
     flex: 1,
@@ -262,22 +295,34 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 30,
     paddingHorizontal: 20,
+    letterSpacing: -0.5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
   instructions: {
-    paddingHorizontal: 40,
-    gap: 16,
-    flex: 1,
-    justifyContent: 'center',
+    paddingHorizontal: 30,
+    gap: 12,
+    marginTop: 10,
+    marginBottom: 20,
   },
   instructionItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 16,
+    gap: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   instructionText: {
-    fontSize: 18,
+    fontSize: 15,
+    fontFamily: 'DMSans_400Regular',
     color: 'rgba(255, 255, 255, 0.9)',
     flex: 1,
+    lineHeight: 20,
   },
   meditationIcon: {
     fontSize: 24,
@@ -292,17 +337,28 @@ const styles = StyleSheet.create({
   playerContainer: {
     position: 'absolute',
     bottom: 40,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
-    paddingTop: 20,
+    left: 20,
+    right: 20,
+    backgroundColor: 'rgba(20, 20, 30, 0.95)',
+    paddingTop: 16,
+    paddingBottom: 12,
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   progressContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 20,
-    padding: 20,
-    marginBottom: 30,
+    backgroundColor: 'rgba(40, 40, 55, 0.8)',
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 16,
+    marginHorizontal: 4,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.05)',
   },
   progressBarContainer: {
     width: '100%',
@@ -310,15 +366,19 @@ const styles = StyleSheet.create({
   },
   progressBarBackground: {
     width: '100%',
-    height: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    borderRadius: 2,
+    height: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 3,
     overflow: 'hidden',
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: '#FFF',
-    borderRadius: 2,
+    backgroundColor: '#5B7FDE',
+    borderRadius: 3,
+    shadowColor: '#5B7FDE',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
   },
   timeContainer: {
     flexDirection: 'row',
@@ -327,17 +387,23 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   timeText: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 15,
+    fontFamily: 'DMSans_500Medium',
+    color: 'rgba(255, 255, 255, 0.8)',
   },
   controlButtons: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 40,
+    gap: 50,
+    paddingHorizontal: 20,
   },
   controlButton: {
-    padding: 8,
+    padding: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
   },
   skipButton: {
     flexDirection: 'row',
@@ -346,15 +412,22 @@ const styles = StyleSheet.create({
   },
   skipText: {
     fontSize: 14,
+    fontFamily: 'DMSans_500Medium',
     color: '#FFF',
-    fontWeight: '500',
   },
   playButton: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: '#5B7FDE',
     justifyContent: 'center',
     alignItems: 'center',
+    shadowColor: '#5B7FDE',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.4,
+    shadowRadius: 16,
+    elevation: 12,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
 });
