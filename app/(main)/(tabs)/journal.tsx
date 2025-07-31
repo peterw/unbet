@@ -293,8 +293,9 @@ export default function JournalScreen() {
                     }
                   }}
                 >
+                  <Ionicons name="logo-discord" size={20} color="#FFF" />
                   <Text style={styles.joinButtonText}>Join Community</Text>
-                  <Ionicons name="arrow-forward" size={18} color="#FFF" />
+                  <Ionicons name="arrow-forward" size={16} color="#FFF" />
                 </TouchableOpacity>
               </LinearGradient>
             </View>
@@ -534,35 +535,37 @@ const styles = StyleSheet.create({
   },
   // Community styles
   communityCard: {
-    backgroundColor: 'rgba(40, 40, 60, 0.8)',
-    borderRadius: 20,
-    padding: 24,
+    borderRadius: 24,
     marginBottom: 24,
+    overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(91, 127, 222, 0.3)',
+    borderColor: 'rgba(91, 127, 222, 0.2)',
   },
-  communityIcon: {
-    alignSelf: 'center',
+  communityGradient: {
+    padding: 20,
+  },
+  communityHeader: {
     marginBottom: 16,
   },
+  communityTextContainer: {
+    alignItems: 'center',
+  },
   communityTitle: {
-    fontSize: 24,
+    fontSize: 22,
     fontFamily: 'DMSans_500Medium',
     color: '#FFF',
+    marginBottom: 6,
     textAlign: 'center',
-    marginBottom: 8,
   },
   communityDescription: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: 'DMSans_400Regular',
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: 'rgba(255, 255, 255, 0.6)',
     textAlign: 'center',
-    lineHeight: 22,
-    marginBottom: 24,
   },
   postsContainer: {
-    gap: 12,
-    marginBottom: 20,
+    gap: 10,
+    marginBottom: 16,
   },
   postCard: {
     backgroundColor: 'rgba(30, 30, 40, 0.8)',
@@ -626,13 +629,22 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.7)',
   },
   joinButton: {
-    backgroundColor: '#5B7FDE',
+    backgroundColor: '#5865F2',
     borderRadius: 16,
     paddingVertical: 16,
+    paddingHorizontal: 24,
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    shadowColor: '#5865F2',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5,
   },
   joinButtonText: {
-    fontSize: 18,
+    fontSize: 16,
     fontFamily: 'DMSans_500Medium',
     color: '#FFF',
   },

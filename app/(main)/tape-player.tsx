@@ -60,6 +60,10 @@ export default function TapePlayerScreen() {
 
   const tape = getTapeData(id as string);
   const duration = tape.duration;
+  
+  // Debug logging
+  console.log('Tape ID from URL:', id);
+  console.log('Tape data:', tape);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -155,7 +159,7 @@ export default function TapePlayerScreen() {
         {/* Instructions */}
         <View style={styles.instructions}>
           <View style={styles.instructionItem}>
-            <Ionicons name="headset" size={20} color="rgba(255, 255, 255, 0.8)" />
+            <Ionicons name="headset" size={22} color="#5B7FDE" />
             <Text style={styles.instructionText}>Listen with headphones</Text>
           </View>
           <View style={styles.instructionItem}>
@@ -197,7 +201,7 @@ export default function TapePlayerScreen() {
             onPress={handleRewind}
           >
             <View style={styles.skipButton}>
-              <Ionicons name="play-back" size={20} color="#FFF" />
+              <Ionicons name="play-back" size={22} color="rgba(255, 255, 255, 0.9)" />
               <Text style={styles.skipText}>15</Text>
             </View>
           </TouchableOpacity>
@@ -208,7 +212,7 @@ export default function TapePlayerScreen() {
           >
             <Ionicons 
               name={isPlaying ? "pause" : "play"} 
-              size={32} 
+              size={36} 
               color="#FFF" 
             />
           </TouchableOpacity>
@@ -219,7 +223,7 @@ export default function TapePlayerScreen() {
           >
             <View style={styles.skipButton}>
               <Text style={styles.skipText}>15</Text>
-              <Ionicons name="play-forward" size={20} color="#FFF" />
+              <Ionicons name="play-forward" size={22} color="rgba(255, 255, 255, 0.9)" />
             </View>
           </TouchableOpacity>
         </View>
@@ -258,7 +262,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     flex: 1,
-    paddingBottom: 200,
+    paddingBottom: 240, // Increased padding to prevent overlap
   },
   albumArtContainer: {
     alignItems: 'center',
@@ -343,10 +347,17 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   progressContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 20,
-    padding: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderRadius: 24,
+    padding: 24,
     marginBottom: 30,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5,
   },
   progressBarContainer: {
     width: '100%',
@@ -354,15 +365,25 @@ const styles = StyleSheet.create({
   },
   progressBarBackground: {
     width: '100%',
-    height: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 3,
+    height: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 4,
     overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
   },
   progressBarFill: {
     height: '100%',
     backgroundColor: '#5B7FDE',
-    borderRadius: 3,
+    borderRadius: 4,
+    shadowColor: '#5B7FDE',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 2,
   },
   timeContainer: {
     flexDirection: 'row',
@@ -395,16 +416,18 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   playButton: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     backgroundColor: '#5B7FDE',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#5B7FDE',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.4,
-    shadowRadius: 20,
-    elevation: 12,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.5,
+    shadowRadius: 24,
+    elevation: 15,
+    borderWidth: 2,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
 });
