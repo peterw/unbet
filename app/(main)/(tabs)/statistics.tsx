@@ -204,6 +204,11 @@ export default function StatisticsScreen() {
       
       // Start new week
       if ((firstDay + day - 1) % 7 === 6 || day === daysInMonth) {
+        // Fill remaining days of the week with empty cells
+        while (week.length < 7) {
+          week.push(<View key={`empty-end-${week.length}`} style={styles.calendarDay} />);
+        }
+        
         days.push(
           <View key={`week-${day}`} style={styles.weekRow}>
             {week}
@@ -551,22 +556,22 @@ const styles = StyleSheet.create({
   },
   weekDaysRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    paddingHorizontal: 8,
     marginBottom: 16,
   },
   weekDayHeader: {
     fontSize: 12,
     color: '#666',
     fontFamily: 'DMSans_400Regular',
-    width: 40,
+    flex: 1,
     textAlign: 'center',
   },
   weekRow: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    paddingHorizontal: 8,
   },
   calendarDay: {
-    width: 40,
+    flex: 1,
     height: 40,
     justifyContent: 'center',
     alignItems: 'center',

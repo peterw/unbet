@@ -128,6 +128,10 @@ export default function Onboarding() {
     }
   };
 
+  // Create refs to store paths to avoid closure issues
+  const pathsRef = useRef<any[]>([]);
+  const currentPathRef = useRef<any[]>([]);
+  
   // Signature handling with PanResponder
   const panResponder = useRef(
     PanResponder.create({
@@ -135,31 +139,45 @@ export default function Onboarding() {
       onMoveShouldSetPanResponder: () => true,
       onPanResponderGrant: (event) => {
         const { locationX, locationY } = event.nativeEvent;
+        currentPathRef.current = [{ x: locationX, y: locationY }];
         setCurrentPath([{ x: locationX, y: locationY }]);
       },
       onPanResponderMove: (event) => {
         const { locationX, locationY } = event.nativeEvent;
-        setCurrentPath(prev => [...prev, { x: locationX, y: locationY }]);
+        currentPathRef.current = [...currentPathRef.current, { x: locationX, y: locationY }];
+        setCurrentPath([...currentPathRef.current]);
       },
       onPanResponderRelease: () => {
-        if (currentPath.length > 1) {
-          setSignaturePaths(prev => [...prev, currentPath]);
+        console.log('PanResponder Release - currentPath length:', currentPathRef.current.length);
+        if (currentPathRef.current.length > 1) {
+          // Store in ref first
+          pathsRef.current = [...pathsRef.current, currentPathRef.current];
+          console.log('Stored paths in ref:', pathsRef.current.length);
+          // Then update state
+          setSignaturePaths([...pathsRef.current]);
         }
+        currentPathRef.current = [];
         setCurrentPath([]);
       },
     })
   ).current;
 
   const clearSignature = () => {
+    pathsRef.current = [];
     setSignaturePaths([]);
     setCurrentPath([]);
   };
 
+  // Debug effect to monitor signature state
+  useEffect(() => {
+    console.log('Signature paths updated:', signaturePaths.length, 'paths');
+  }, [signaturePaths]);
+
   const pathToSvg = (path: any[]) => {
-    if (path.length < 2) return '';
-    let svgPath = `M ${path[0].x} ${path[0].y}`;
+    if (!path || path.length < 2) return '';
+    let svgPath = `M ${Math.round(path[0].x)} ${Math.round(path[0].y)}`;
     for (let i = 1; i < path.length; i++) {
-      svgPath += ` L ${path[i].x} ${path[i].y}`;
+      svgPath += ` L ${Math.round(path[i].x)} ${Math.round(path[i].y)}`;
     }
     return svgPath;
   };
@@ -182,7 +200,7 @@ export default function Onboarding() {
     { id: 9, type: 'motivation_2' },
     { id: 10, type: 'age_range' },
     { id: 11, type: 'start_age' },
-    { id: 12, type: 'sexually_active_age' },
+    { id: 12, type: 'sexually_active_age' }, // Now asks about gambling frequency
     { id: 13, type: 'gambling_increase' },
     { id: 14, type: 'risk_escalation' },
     // { id: 15, type: 'blockers' },
@@ -436,9 +454,11 @@ export default function Onboarding() {
           <View style={styles.healingContainer}>
             <Text style={styles.healingTitle}>See your brain healing in real-time.</Text>
             <View style={styles.healingImageContainer}>
-              <View style={styles.healingPlaceholder}>
-                <Text style={styles.healingPlaceholderText}>Brain visualization</Text>
-              </View>
+              <Image 
+                source={require('../assets/images/onboarding_brain.png')}
+                style={styles.brainImage}
+                resizeMode="contain"
+              />
             </View>
             <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
               <Text style={styles.continueButtonText}>Continue</Text>
@@ -681,15 +701,15 @@ export default function Onboarding() {
       case 'sexually_active_age':
         return (
           <View style={styles.sexuallyActiveContainer}>
-            <Text style={styles.questionTitle}>How old were you when you first became sexually active ?</Text>
+            <Text style={styles.questionTitle}>How often do you gamble ?</Text>
             <View style={styles.optionsContainer}>
               {[
-                'Never',
-                '14 - 17',
-                '18 - 24',
-                '25 - 30',
-                '30 - 40',
-                '40+'
+                'Daily',
+                'Few times a week',
+                'Weekly',
+                'Few times a month',
+                'Monthly',
+                'Rarely'
               ].map((option) => (
                 <TouchableOpacity
                   key={option}
@@ -1135,9 +1155,11 @@ export default function Onboarding() {
           <View style={styles.graphContainer}>
             <ScrollView style={styles.graphScrollView} contentContainerStyle={styles.graphScrollContent} showsVerticalScrollIndicator={false}>
               <Text style={styles.graphTitle}>Overcome gambling addiction in as little as 90 days.</Text>
-              <View style={styles.graphPlaceholder}>
-                <Text style={styles.graphPlaceholderText}>Graph visualization</Text>
-              </View>
+              <Image 
+                source={require('../assets/images/onboarding_graph.png')}
+                style={styles.graphImage}
+                resizeMode="contain"
+              />
               <Text style={styles.graphSubtitle}>The key milestones are</Text>
               <View style={styles.graphItems}>
                 <View style={styles.graphItem}>
@@ -1162,7 +1184,10 @@ export default function Onboarding() {
 
       case 'commitment':
         return (
-          <ScrollView style={styles.commitmentContainer} contentContainerStyle={styles.commitmentContent}>
+          <ScrollView 
+            style={styles.commitmentContainer} 
+            contentContainerStyle={styles.commitmentContent}
+            scrollEnabled={false}>
             <Text style={styles.commitmentTitle}>Let's commit.</Text>
             <Text style={styles.commitmentSubtitle}>From this day onwards, I commit to</Text>
             <View style={styles.commitmentItems}>
@@ -1183,41 +1208,57 @@ export default function Onboarding() {
                 <Text style={styles.commitmentItemText}>Becoming the person I want to be</Text>
               </View>
             </View>
-            <View style={styles.signatureBox} {...panResponder.panHandlers}>
-              <Svg height="130" width="100%" style={styles.signatureSvg}>
-                {signaturePaths.map((path, index) => (
-                  <Path
-                    key={index}
-                    d={pathToSvg(path)}
-                    stroke="#5B8DFF"
-                    strokeWidth="3"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                ))}
-                {currentPath.length > 0 && (
-                  <Path
-                    d={pathToSvg(currentPath)}
-                    stroke="#5B8DFF"
-                    strokeWidth="3"
-                    fill="none"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
+            <View style={styles.signatureBox}>
+              <View style={styles.signatureCanvas} {...panResponder.panHandlers}>
+                <Svg 
+                  height={150} 
+                  width={Dimensions.get('window').width - 60}
+                  style={styles.signatureSvg}
+                  viewBox={`0 0 ${Dimensions.get('window').width - 60} 150`}
+                >
+                  {signaturePaths.map((path, index) => {
+                    const pathData = pathToSvg(path);
+                    return pathData ? (
+                      <Path
+                        key={`path-${index}`}
+                        d={pathData}
+                        stroke="#5B8DFF"
+                        strokeWidth="3"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    ) : null;
+                  })}
+                  {currentPath.length > 0 && pathToSvg(currentPath) && (
+                    <Path
+                      d={pathToSvg(currentPath)}
+                      stroke="#5B8DFF"
+                      strokeWidth="3"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  )}
+                </Svg>
+                {signaturePaths.length === 0 && currentPath.length === 0 && (
+                  <Text style={styles.signatureText}>Sign here with your finger before moving to next page</Text>
                 )}
-              </Svg>
-              {signaturePaths.length === 0 && currentPath.length === 0 && (
-                <Text style={styles.signatureText}>Sign here with your finger</Text>
-              )}
+              </View>
               {(signaturePaths.length > 0 || currentPath.length > 0) && (
                 <TouchableOpacity style={styles.clearButton} onPress={clearSignature}>
                   <Text style={styles.clearButtonText}>Clear</Text>
                 </TouchableOpacity>
               )}
             </View>
-            <TouchableOpacity style={styles.commitButton} onPress={handleNext}>
-              <Text style={styles.commitButtonText}>I commit to myself</Text>
+            <TouchableOpacity 
+              style={[styles.commitButton, signaturePaths.length === 0 && styles.commitButtonDisabled]} 
+              onPress={handleNext}
+              disabled={signaturePaths.length === 0}
+            >
+              <Text style={[styles.commitButtonText, signaturePaths.length === 0 && styles.commitButtonTextDisabled]}>
+                I commit to myself
+              </Text>
             </TouchableOpacity>
           </ScrollView>
         );
@@ -1567,17 +1608,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  healingPlaceholder: {
+  brainImage: {
     width: 300,
     height: 300,
-    backgroundColor: '#1A1A2E',
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  healingPlaceholderText: {
-    color: '#5B8DFF',
-    fontSize: 16,
   },
   lifeContainer: {
     flex: 1,
@@ -2625,18 +2658,10 @@ const styles = StyleSheet.create({
     lineHeight: 40,
     marginBottom: 32,
   },
-  graphPlaceholder: {
+  graphImage: {
     width: '100%',
     height: 200,
-    backgroundColor: '#1A1A2E',
-    borderRadius: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
     marginBottom: 24,
-  },
-  graphPlaceholderText: {
-    color: '#5B8DFF',
-    fontSize: 16,
   },
   graphSubtitle: {
     fontSize: 20,
@@ -2699,24 +2724,28 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     height: 150,
     marginBottom: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
     borderWidth: 1,
     borderColor: '#5B8DFF',
+    overflow: 'hidden',
+  },
+  signatureCanvas: {
+    width: '100%',
+    height: '100%',
     position: 'relative',
   },
   signatureSvg: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
+    backgroundColor: 'transparent',
   },
   signatureText: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: [{ translateX: -120 }, { translateY: -10 }],
     fontSize: 14,
     color: '#FFFFFF',
     opacity: 0.5,
     textAlign: 'center',
+    width: 240,
   },
   clearButton: {
     position: 'absolute',
@@ -2740,10 +2769,17 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
     marginBottom: 20,
   },
+  commitButtonDisabled: {
+    backgroundColor: '#333',
+    opacity: 0.5,
+  },
   commitButtonText: {
     color: '#FFFFFF',
     fontSize: 20,
     fontWeight: '600',
     textAlign: 'center',
+  },
+  commitButtonTextDisabled: {
+    color: '#666',
   },
 });
