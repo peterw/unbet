@@ -42,16 +42,6 @@ if (!isExpoGo()) {
 
 import { Platform } from 'react-native';
 import { useFonts } from 'expo-font';
-import {
-  DMSans_300Light,
-  DMSans_400Regular,
-  DMSans_500Medium,
-  DMSans_700Bold,
-} from '@expo-google-fonts/dm-sans';
-import {
-  DMSerifDisplay_400Regular,
-  DMSerifDisplay_400Regular_Italic,
-} from '@expo-google-fonts/dm-serif-display';
 import { initializeApp } from '@/utils/envCheck';
 import { ConvexAuthProvider } from '@/providers/ConvexAuthProvider';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
@@ -102,14 +92,14 @@ const convex = new ConvexReactClient(convexUrl!, {
 });
 
 const RootLayoutNav = () => {
-  // Load fonts
+  // Load fonts from local files
   const [fontsLoaded] = useFonts({
-    DMSans_300Light,
-    DMSans_400Regular,
-    DMSans_500Medium,
-    DMSans_700Bold,
-    DMSerifDisplay_400Regular,
-    DMSerifDisplay_400Regular_Italic,
+    DMSans_300Light: require('../assets/fonts/DM_Sans/static/DMSans-Light.ttf'),
+    DMSans_400Regular: require('../assets/fonts/DM_Sans/static/DMSans-Regular.ttf'),
+    DMSans_500Medium: require('../assets/fonts/DM_Sans/static/DMSans-Medium.ttf'),
+    DMSans_700Bold: require('../assets/fonts/DM_Sans/static/DMSans-Bold.ttf'),
+    DMSerifDisplay_400Regular: require('../assets/fonts/DM_Serif_Display/DMSerifDisplay-Regular.ttf'),
+    DMSerifDisplay_400Regular_Italic: require('../assets/fonts/DM_Serif_Display/DMSerifDisplay-Italic.ttf'),
   });
 
   // Initialise the Mixpanel analytics provider once. The token should be
