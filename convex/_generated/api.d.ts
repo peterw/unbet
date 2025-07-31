@@ -13,8 +13,8 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
-import type * as analyse from "../analyse.js";
-import type * as protein from "../protein.js";
+import type * as journalEntries from "../journalEntries.js";
+import type * as migrations from "../migrations.js";
 import type * as users from "../users.js";
 
 /**
@@ -26,8 +26,8 @@ import type * as users from "../users.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  analyse: typeof analyse;
-  protein: typeof protein;
+  journalEntries: typeof journalEntries;
+  migrations: typeof migrations;
   users: typeof users;
 }>;
 export declare const api: FilterApi<

@@ -9,69 +9,47 @@ import {
   Dimensions,
   Animated,
   Image,
-  Platform
+  Platform,
+  ActivityIndicator
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Haptics } from '@/utils/haptics';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { useConvexAuth } from '@/providers/ConvexAuthProvider';
+// import { BlurView } from 'expo-blur'; // Requires rebuild
 // Remove Canvas import as we're using View-based stars
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 
-// Starfield background component with animated particles
+// Starfield background component with static particles
 function StarfieldBackground() {
-  const stars = useRef(
-    Array.from({ length: 200 }, () => ({
-      x: Math.random() * SCREEN_WIDTH,
-      y: Math.random() * SCREEN_HEIGHT,
-      size: Math.random() * 1.5 + 0.3,
-      opacity: Math.random() * 0.6 + 0.1,
-      speed: Math.random() * 0.5 + 0.1,
-    }))
-  ).current;
-
-  const animationRef = useRef<any>();
-  const [, forceUpdate] = useState({});
-
-  useEffect(() => {
-    const animate = () => {
-      stars.forEach(star => {
-        star.y += star.speed;
-        if (star.y > SCREEN_HEIGHT) {
-          star.y = -10;
-          star.x = Math.random() * SCREEN_WIDTH;
-        }
-      });
-      forceUpdate({});
-      animationRef.current = requestAnimationFrame(animate);
-    };
-    animationRef.current = requestAnimationFrame(animate);
-
-    return () => {
-      if (animationRef.current) {
-        cancelAnimationFrame(animationRef.current);
-      }
-    };
-  }, []);
-
   return (
     <View style={StyleSheet.absoluteFillObject}>
-      {stars.map((star, i) => (
-        <View
-          key={i}
-          style={[
-            styles.star,
-            {
-              left: star.x,
-              top: star.y,
-              width: star.size * 2,
-              height: star.size * 2,
-              borderRadius: star.size,
-              opacity: star.opacity,
-            },
-          ]}
-        />
-      ))}
+      {[...Array(200)].map((_, i) => {
+        // Generate consistent star positions based on index
+        const x = ((i * 137.5) % 100); // Golden angle distribution
+        const y = ((i * 23.7) % 100);
+        const size = 0.3 + (i % 5) * 0.3; // Vary sizes
+        const opacity = 0.1 + (i % 10) * 0.05; // Vary opacity
+        
+        return (
+          <View
+            key={i}
+            style={[
+              styles.star,
+              {
+                left: `${x}%`,
+                top: `${y}%`,
+                width: size * 2,
+                height: size * 2,
+                opacity: opacity,
+              },
+            ]}
+          />
+        );
+      })}
     </View>
   );
 }
@@ -88,18 +66,32 @@ export default function JournalScreen() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'Tapes' | 'Reflections'>('Reflections');
   const fadeAnim = useRef(new Animated.Value(1)).current;
+  const { isAuthenticated } = useConvexAuth();
 
-  // Mock journal entries
-  const journalEntries: JournalEntry[] = [
-    {
-      id: '1',
-      date: new Date(2024, 6, 23, 15, 7), // Jul 23, 3:07 PM
-      content: 'Bekebensnne',
-      category: 'Thoughts',
-      preview: 'Bekebensnne'
-    },
-    // Add more entries as needed
-  ];
+  // Fetch journal entries from Convex only if authenticated
+  const journalEntriesData = useQuery(
+    api.journalEntries.list,
+    isAuthenticated ? {} : 'skip'
+  );
+  const isLoading = isAuthenticated && journalEntriesData === undefined;
+  
+  // Remove debug logging that could cause re-renders
+  // useEffect(() => {
+  //   console.log('[Journal] Query result:', { 
+  //     entriesCount: journalEntriesData?.length,
+  //     isLoading,
+  //     data: journalEntriesData 
+  //   });
+  // }, [journalEntriesData, isLoading]);
+
+  // Transform Convex data to match our interface
+  const journalEntries: JournalEntry[] = journalEntriesData?.map(entry => ({
+    id: entry._id,
+    date: new Date(entry.createdAt),
+    content: entry.content,
+    category: entry.category,
+    preview: entry.content.substring(0, 100) + (entry.content.length > 100 ? '...' : '')
+  })) || [];
 
   const handleTabChange = (tab: 'Tapes' | 'Reflections') => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -182,32 +174,39 @@ export default function JournalScreen() {
             showsVerticalScrollIndicator={false}
             contentContainerStyle={styles.scrollContent}
           >
-            {journalEntries.map((entry) => (
-              <TouchableOpacity
-                key={entry.id}
-                style={styles.entryCard}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  router.push({
-                    pathname: '/entry/journal-[id]',
-                    params: { id: entry.id }
-                  });
-                }}
-                activeOpacity={0.7}
-              >
-                <View style={styles.entryHeader}>
-                  <Text style={styles.entryDate}>{formatDate(entry.date)}</Text>
-                  <View style={[styles.categoryBadge, { backgroundColor: getCategoryColor(entry.category) }]}>
-                    <Text style={styles.categoryText}>{entry.category}</Text>
+            {isLoading ? (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#5B7FDE" />
+                <Text style={styles.loadingText}>Loading reflections...</Text>
+              </View>
+            ) : journalEntries.length === 0 ? (
+              <View style={styles.emptyContainer}>
+                <Ionicons name="book-outline" size={64} color="#444" />
+                <Text style={styles.emptyTitle}>No reflections yet</Text>
+                <Text style={styles.emptyText}>Start your journey by writing your first reflection</Text>
+              </View>
+            ) : (
+              journalEntries.map((entry) => (
+              <View key={entry.id} style={styles.entryCardContainer}>
+                <View style={styles.entryCard}>
+                  <View style={styles.entryCardGlass} />
+                  <View style={styles.entryCardInner}>
+                    <View style={styles.entryHeader}>
+                      <Text style={styles.entryDate}>{formatDate(entry.date)}</Text>
+                      <View style={[styles.categoryBadge, { backgroundColor: getCategoryColor(entry.category) }]}>
+                        <Text style={styles.categoryText}>{entry.category}</Text>
+                      </View>
+                    </View>
+                    <Text style={styles.entryContent} numberOfLines={3}>
+                      {entry.content}
+                    </Text>
                   </View>
                 </View>
-                <Text style={styles.entryContent} numberOfLines={2}>
-                  {entry.preview}
-                </Text>
-              </TouchableOpacity>
-            ))}
+              </View>
+              ))
+            )}
             
-            {/* Add new reflection button */}
+            {/* Add new reflection button - always show */}
             <TouchableOpacity
               style={styles.addButton}
               onPress={() => {
@@ -395,14 +394,32 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 100,
   },
+  entryCardContainer: {
+    marginBottom: 16,
+  },
   entryCard: {
-    backgroundColor: 'rgba(40, 40, 40, 0.8)',
-    borderRadius: 20,
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    marginBottom: 12,
+    borderRadius: 24,
+    overflow: 'hidden',
+    backgroundColor: 'rgba(30, 30, 35, 0.7)',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(255, 255, 255, 0.1)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  entryCardGlass: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+  },
+  entryCardInner: {
+    paddingVertical: 20,
+    paddingHorizontal: 24,
   },
   entryHeader: {
     flexDirection: 'row',
@@ -411,25 +428,26 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   entryDate: {
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.5)',
-    fontWeight: '400',
+    fontSize: 18,
+    color: '#5B7FDE',
+    fontWeight: '500',
   },
   categoryBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 6,
+    borderRadius: 12,
   },
   categoryText: {
-    fontSize: 14,
-    fontWeight: '500',
+    fontSize: 15,
+    fontWeight: '600',
     color: '#FFF',
   },
   entryContent: {
-    fontSize: 18,
+    fontSize: 20,
     color: '#FFF',
-    lineHeight: 24,
+    lineHeight: 28,
     fontWeight: '400',
+    marginTop: 4,
   },
   addButton: {
     alignSelf: 'center',
@@ -617,5 +635,35 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'rgba(255, 255, 255, 0.4)',
     textAlign: 'center',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 60,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: '#666',
+    marginTop: 16,
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 60,
+  },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#FFF',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    maxWidth: 250,
   },
 });

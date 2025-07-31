@@ -1,13 +1,32 @@
 import { Platform } from 'react-native';
+import { isExpoGo } from '@/utils/isExpoGo';
 
 // Only import Facebook SDK on native platforms
-let Settings: any = {};
-let AppEventsLogger: any = { AppEvents: {} };
+let Settings: any = {
+  setAppID: () => {},
+  initializeSDK: () => {},
+  setAdvertiserTrackingEnabled: () => {},
+};
+let AppEventsLogger: any = { 
+  AppEvents: {
+    CompletedTutorial: 'CompletedTutorial',
+    Subscribe: 'Subscribe',
+    AddedToWishlist: 'AddedToWishlist',
+  },
+  logEvent: () => {},
+  logPurchase: () => {},
+  flush: () => {},
+};
 
-if (Platform.OS !== 'web') {
-  const fbsdk = require('react-native-fbsdk-next');
-  Settings = fbsdk.Settings;
-  AppEventsLogger = fbsdk.AppEventsLogger;
+// Only load in production/development builds, not in Expo Go
+if (Platform.OS !== 'web' && !isExpoGo()) {
+  try {
+    const fbsdk = require('react-native-fbsdk-next');
+    Settings = fbsdk.Settings;
+    AppEventsLogger = fbsdk.AppEventsLogger;
+  } catch (error) {
+    console.warn('Failed to load react-native-fbsdk-next:', error);
+  }
 }
 
 /**
@@ -21,18 +40,25 @@ class FacebookSDK {
    * Initialise the SDK once. Safe to call multiple times.
    */
   static init(appId: string) {
-    if (this.initialized || Platform.OS === 'web') {
+    if (this.initialized || Platform.OS === 'web' || isExpoGo()) {
+      console.log('Facebook SDK not initialized - web platform or Expo Go');
       return;
     }
 
-    // Configure and initialise the SDK
-    Settings.setAppID(appId);
-    Settings.initializeSDK();
+    try {
+      // Configure and initialise the SDK
+      Settings.setAppID(appId);
+      Settings.initializeSDK();
 
-    // Enable advertiser tracking so events contain IDFA when users allow it
-    Settings.setAdvertiserTrackingEnabled(true);
+      // Enable advertiser tracking so events contain IDFA when users allow it
+      Settings.setAdvertiserTrackingEnabled(true);
 
-    this.initialized = true;
+      this.initialized = true;
+      console.log('Facebook SDK initialized successfully');
+    } catch (error) {
+      console.error('Failed to initialize Facebook SDK:', error);
+      // Don't set initialized to true if initialization failed
+    }
   }
 
   /** Log the standard Completed Tutorial/Onboarding event. */

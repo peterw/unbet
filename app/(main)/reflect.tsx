@@ -1,18 +1,44 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, TextInput, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, TextInput, ScrollView, KeyboardAvoidingView, Platform, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Haptics } from '@/utils/haptics';
+import { useMutation } from 'convex/react';
+import { api } from '@/convex/_generated/api';
 
 export default function ReflectScreen() {
   const router = useRouter();
   const [reflection, setReflection] = useState('');
+  const [category, setCategory] = useState<'Thoughts' | 'Feelings' | 'Gratitude' | 'Progress'>('Thoughts');
+  const [isSaving, setIsSaving] = useState(false);
+  
+  const createEntry = useMutation(api.journalEntries.create);
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!reflection.trim()) return;
+    
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    // Save reflection
-    console.log('Saving reflection:', reflection);
-    router.back();
+    setIsSaving(true);
+    
+    try {
+      console.log('Attempting to save journal entry...');
+      await createEntry({
+        content: reflection.trim(),
+        category: category,
+      });
+      console.log('Journal entry saved successfully');
+      router.back();
+    } catch (error) {
+      console.error('Error saving reflection:', error);
+      // Check if it's an authentication error
+      if (error && error.toString().includes('Not authenticated')) {
+        alert('Authentication error. Please sign out and sign in again.');
+      } else {
+        alert('Failed to save reflection. Please try again.');
+      }
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -35,11 +61,15 @@ export default function ReflectScreen() {
           <TouchableOpacity 
             style={styles.saveButton}
             onPress={handleSave}
-            disabled={!reflection.trim()}
+            disabled={!reflection.trim() || isSaving}
           >
-            <Text style={[styles.saveButtonText, !reflection.trim() && styles.saveButtonTextDisabled]}>
-              Save
-            </Text>
+            {isSaving ? (
+              <ActivityIndicator size="small" color="#5B7FDE" />
+            ) : (
+              <Text style={[styles.saveButtonText, (!reflection.trim() || isSaving) && styles.saveButtonTextDisabled]}>
+                Save
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
 
@@ -51,6 +81,39 @@ export default function ReflectScreen() {
           <Text style={styles.prompt}>
             Take a moment to reflect on your journey. What are you feeling? What challenges did you face today? What are you grateful for?
           </Text>
+
+          {/* Category Selection */}
+          <View style={styles.categoryContainer}>
+            <Text style={styles.categoryTitle}>Category:</Text>
+            <ScrollView 
+              horizontal 
+              showsHorizontalScrollIndicator={false}
+              style={styles.categoryScroll}
+            >
+              <View style={styles.categoryButtons}>
+                {(['Thoughts', 'Feelings', 'Gratitude', 'Progress'] as const).map((cat) => (
+                  <TouchableOpacity
+                    key={cat}
+                    style={[
+                      styles.categoryButton,
+                      category === cat && styles.categoryButtonActive
+                    ]}
+                    onPress={() => {
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                      setCategory(cat);
+                    }}
+                  >
+                    <Text style={[
+                      styles.categoryButtonText,
+                      category === cat && styles.categoryButtonTextActive
+                    ]}>
+                      {cat}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ScrollView>
+          </View>
 
           <TextInput
             style={styles.textInput}
@@ -147,5 +210,41 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: '#888',
     lineHeight: 22,
+  },
+  categoryContainer: {
+    marginBottom: 20,
+  },
+  categoryTitle: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#FFF',
+    marginBottom: 12,
+  },
+  categoryScroll: {
+    maxHeight: 40,
+  },
+  categoryButtons: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  categoryButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: '#1A1A1A',
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+  },
+  categoryButtonActive: {
+    backgroundColor: '#5B7FDE',
+    borderColor: '#5B7FDE',
+  },
+  categoryButtonText: {
+    fontSize: 14,
+    color: '#888',
+  },
+  categoryButtonTextActive: {
+    color: '#FFF',
+    fontWeight: '500',
   },
 });

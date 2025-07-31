@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, TouchableWithoutFeedback, Dimensions as RNDimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, TouchableWithoutFeedback, Dimensions as RNDimensions, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -31,30 +31,18 @@ const QUOTES = [
 
 export default function HomeScreen() {
   const router = useRouter();
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [showActionMenu, setShowActionMenu] = useState(false);
   const [showPanicModal, setShowPanicModal] = useState(false);
   const [currentQuote] = useState(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
   
   // Timer state
   const [startTime] = useState(new Date('2025-01-29T00:00:00')); // This should come from user data
   const [timer, setTimer] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  
-  // Animation values
-  const rotation = useSharedValue(0);
-  const fabScale = useSharedValue(1);
-  const overlayOpacity = useSharedValue(0);
-  
-  // Button positions for expanded state
-  const buttonAnimations = [
-    { x: useSharedValue(0), y: useSharedValue(0), opacity: useSharedValue(0), scale: useSharedValue(0.8) }, // Panic
-    { x: useSharedValue(0), y: useSharedValue(0), opacity: useSharedValue(0), scale: useSharedValue(0.8) }, // AI Coach
-    { x: useSharedValue(0), y: useSharedValue(0), opacity: useSharedValue(0), scale: useSharedValue(0.8) }, // I relapsed
-    { x: useSharedValue(0), y: useSharedValue(0), opacity: useSharedValue(0), scale: useSharedValue(0.8) }, // Reflect
-  ];
 
   // Update timer every second
   useEffect(() => {
-    const interval = setInterval(() => {
+    // Calculate initial timer value
+    const calculateTimer = () => {
       const now = new Date();
       const diff = now.getTime() - startTime.getTime();
       
@@ -63,97 +51,46 @@ export default function HomeScreen() {
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
       
-      setTimer({ days, hours, minutes, seconds });
+      return { days, hours, minutes, seconds };
+    };
+    
+    // Set initial value
+    setTimer(calculateTimer());
+    
+    const interval = setInterval(() => {
+      setTimer(calculateTimer());
     }, 1000);
     
     return () => clearInterval(interval);
   }, [startTime]);
 
-  // Animated styles
-  const fabAnimatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { rotate: `${rotation.value}deg` },
-      { scale: fabScale.value }
-    ]
-  }));
-
-  const overlayAnimatedStyle = useAnimatedStyle(() => ({
-    opacity: overlayOpacity.value,
-    pointerEvents: overlayOpacity.value > 0 ? 'auto' : 'none',
-  }));
-
-  const buttonAnimatedStyles = buttonAnimations.map((anim) =>
-    useAnimatedStyle(() => ({
-      transform: [
-        { translateX: anim.x.value },
-        { translateY: anim.y.value },
-        { scale: anim.scale.value }
-      ],
-      opacity: anim.opacity.value,
-    }))
-  );
-
-
-  const toggleExpand = useCallback(() => {
+  const openActionMenu = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const expanding = !isExpanded;
-    setIsExpanded(expanding);
-    
-    // Animate FAB rotation
-    rotation.value = withSpring(expanding ? 45 : 0, {
-      damping: 20,
-      stiffness: 300,
-    });
-    
-    // Animate overlay
-    overlayOpacity.value = withTiming(expanding ? 1 : 0, { duration: 200 });
-    
-    // Animate buttons
-    const buttonRadius = 90;
-    const positions = [
-      { x: -buttonRadius * 1.5, y: -buttonRadius * 0.5 }, // Panic (top left)
-      { x: buttonRadius * 1.5, y: -buttonRadius * 0.5 },  // AI Coach (top right)
-      { x: -buttonRadius * 1.5, y: -buttonRadius * 1.8 }, // I relapsed (bottom left)
-      { x: buttonRadius * 1.5, y: -buttonRadius * 1.8 },  // Reflect (bottom right)
-    ];
-    
-    buttonAnimations.forEach((anim, index) => {
-      if (expanding) {
-        anim.opacity.value = withTiming(1, { duration: 200 });
-        anim.scale.value = withSpring(1, { damping: 15, stiffness: 300 });
-        anim.x.value = withSpring(positions[index].x, { damping: 15, stiffness: 300 });
-        anim.y.value = withSpring(positions[index].y, { damping: 15, stiffness: 300 });
-      } else {
-        anim.opacity.value = withTiming(0, { duration: 150 });
-        anim.scale.value = withSpring(0.8, { damping: 15, stiffness: 300 });
-        anim.x.value = withSpring(0, { damping: 15, stiffness: 300 });
-        anim.y.value = withSpring(0, { damping: 15, stiffness: 300 });
-      }
-    });
-  }, [isExpanded]);
+    setShowActionMenu(true);
+  }, []);
 
 
   const handlePanic = () => {
-    setIsExpanded(false);
+    setShowActionMenu(false);
     setShowPanicModal(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   };
 
   const handleAICoach = () => {
-    setIsExpanded(false);
+    setShowActionMenu(false);
     router.push('/chat');
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
   const handleRelapse = () => {
-    setIsExpanded(false);
+    setShowActionMenu(false);
     router.push('/relapse');
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
   };
 
   const handleReflect = () => {
-    setIsExpanded(false);
-    router.push('/journal');
+    setShowActionMenu(false);
+    router.push('/(main)/(tabs)/journal');
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
@@ -190,19 +127,29 @@ export default function HomeScreen() {
       <View style={styles.container}>
         {/* Stars background */}
         <View style={styles.starsContainer}>
-          {[...Array(50)].map((_, i) => (
-            <View
-              key={i}
-              style={[
-                styles.star,
-                {
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  opacity: Math.random() * 0.8 + 0.2,
-                },
-              ]}
-            />
-          ))}
+          {[...Array(200)].map((_, i) => {
+            // Generate consistent star positions based on index
+            const x = ((i * 137.5) % 100); // Golden angle distribution
+            const y = ((i * 23.7) % 100);
+            const size = 0.3 + (i % 5) * 0.3; // Vary sizes
+            const opacity = 0.1 + (i % 10) * 0.05; // Vary opacity
+            
+            return (
+              <View
+                key={i}
+                style={[
+                  styles.star,
+                  {
+                    left: `${x}%`,
+                    top: `${y}%`,
+                    width: size * 2,
+                    height: size * 2,
+                    opacity: opacity,
+                  },
+                ]}
+              />
+            );
+          })}
         </View>
 
         {/* Quote */}
@@ -234,55 +181,46 @@ export default function HomeScreen() {
         {/* 3D Brain */}
         <Brain3D />
 
-        {/* Diamond indicator */}
-        <View style={styles.diamondContainer}>
-          <Ionicons name="diamond" size={40} color="#4A90E2" />
-        </View>
+        {/* Floating Action Button */}
+        <TouchableOpacity style={styles.fab} onPress={openActionMenu} activeOpacity={0.8}>
+          <Ionicons name="add" size={28} color="white" />
+        </TouchableOpacity>
 
-        {/* Floating Action Buttons */}
-        <View style={styles.fabContainer}>
-          {/* Panic Button */}
-          <Animated.View style={[styles.actionButton, buttonAnimatedStyles[0]]}>
-            <TouchableOpacity style={[styles.actionButtonInner, styles.panicButton]} onPress={handlePanic}>
-              <Text style={styles.actionButtonText}>Panic</Text>
-            </TouchableOpacity>
-          </Animated.View>
+        {/* Action Menu Modal */}
+        <Modal
+          visible={showActionMenu}
+          transparent
+          animationType="fade"
+          onRequestClose={() => setShowActionMenu(false)}
+        >
+          <TouchableWithoutFeedback onPress={() => setShowActionMenu(false)}>
+            <View style={styles.actionMenuOverlay}>
+              <TouchableWithoutFeedback>
+                <View style={styles.actionMenuContainer}>
+                  {/* Panic Button */}
+                  <TouchableOpacity style={[styles.actionMenuItem, styles.panicButton]} onPress={handlePanic}>
+                    <Text style={styles.actionMenuText}>Panic</Text>
+                  </TouchableOpacity>
 
-          {/* AI Coach Button */}
-          <Animated.View style={[styles.actionButton, buttonAnimatedStyles[1]]}>
-            <TouchableOpacity style={[styles.actionButtonInner, styles.aiCoachButton]} onPress={handleAICoach}>
-              <Text style={styles.actionButtonText}>AI Coach</Text>
-            </TouchableOpacity>
-          </Animated.View>
+                  {/* AI Coach Button */}
+                  <TouchableOpacity style={[styles.actionMenuItem, styles.aiCoachButton]} onPress={handleAICoach}>
+                    <Text style={styles.actionMenuText}>AI Coach</Text>
+                  </TouchableOpacity>
 
-          {/* I relapsed Button */}
-          <Animated.View style={[styles.actionButton, buttonAnimatedStyles[2]]}>
-            <TouchableOpacity style={[styles.actionButtonInner, styles.relapsedButton]} onPress={handleRelapse}>
-              <Text style={styles.actionButtonText}>I relapsed</Text>
-            </TouchableOpacity>
-          </Animated.View>
+                  {/* I relapsed Button */}
+                  <TouchableOpacity style={[styles.actionMenuItem, styles.relapsedButton]} onPress={handleRelapse}>
+                    <Text style={styles.actionMenuText}>I relapsed</Text>
+                  </TouchableOpacity>
 
-          {/* Reflect Button */}
-          <Animated.View style={[styles.actionButton, buttonAnimatedStyles[3]]}>
-            <TouchableOpacity style={[styles.actionButtonInner, styles.reflectButton]} onPress={handleReflect}>
-              <Text style={styles.actionButtonText}>I wanna reflect</Text>
-            </TouchableOpacity>
-          </Animated.View>
-
-          {/* Main FAB */}
-          <TouchableOpacity style={styles.fab} onPress={toggleExpand}>
-            <Animated.View style={fabAnimatedStyle}>
-              <Ionicons name="add" size={32} color="white" />
-            </Animated.View>
-          </TouchableOpacity>
-        </View>
-
-        {/* Overlay for expanded state */}
-        {isExpanded && (
-          <TouchableWithoutFeedback onPress={toggleExpand}>
-            <Animated.View style={[styles.overlay, overlayAnimatedStyle]} />
+                  {/* Reflect Button */}
+                  <TouchableOpacity style={[styles.actionMenuItem, styles.reflectButton]} onPress={handleReflect}>
+                    <Text style={styles.actionMenuText}>I wanna reflect</Text>
+                  </TouchableOpacity>
+                </View>
+              </TouchableWithoutFeedback>
+            </View>
           </TouchableWithoutFeedback>
-        )}
+        </Modal>
 
         {/* Panic Modal */}
         <Modal
@@ -330,87 +268,80 @@ const styles = StyleSheet.create({
     borderRadius: 1,
   },
   quote: {
-    color: '#FFF',
-    fontSize: 22,
-    fontWeight: '600',
+    color: '#999',
+    fontSize: 20,
+    fontWeight: '400',
     textAlign: 'center',
-    marginTop: 60,
-    marginHorizontal: 20,
-    lineHeight: 30,
+    marginTop: 80,
+    marginHorizontal: 30,
+    lineHeight: 28,
   },
   timerContainer: {
-    marginTop: 40,
-    marginLeft: 40,
+    marginTop: 60,
+    marginLeft: 30,
   },
   timerRow: {
     flexDirection: 'row',
     alignItems: 'baseline',
-    marginBottom: 10,
+    marginBottom: 8,
   },
   timerNumber: {
-    color: '#FFF',
-    fontSize: 72,
-    fontWeight: '300',
-    width: 120,
+    color: '#E0E0E0',
+    fontSize: 64,
+    fontWeight: '200',
+    width: 110,
+    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'sans-serif-light',
   },
   timerLabel: {
-    color: '#4A90E2',
-    fontSize: 28,
+    color: '#5B8FDE',
+    fontSize: 24,
     fontWeight: '300',
-    marginLeft: 10,
+    marginLeft: 8,
   },
   statusText: {
-    color: '#999',
-    fontSize: 18,
-    marginLeft: 40,
-    marginTop: 10,
+    color: '#666',
+    fontSize: 16,
+    marginLeft: 30,
+    marginTop: 16,
   },
   progressText: {
-    color: '#999',
-    fontSize: 18,
-    marginLeft: 40,
-    marginTop: 5,
+    color: '#666',
+    fontSize: 16,
+    marginLeft: 30,
+    marginTop: 4,
   },
   brainContainer: {
     position: 'absolute',
-    right: 20,
-    top: '35%',
-    width: 200,
-    height: 200,
+    right: 30,
+    top: '40%',
+    width: 180,
+    height: 180,
   },
   brainPlaceholder: {
     width: '100%',
     height: '100%',
-    backgroundColor: '#444',
-    borderRadius: 100,
-    opacity: 0.3,
+    backgroundColor: '#1A1A1A',
+    borderRadius: 90,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
   },
   brainInner: {
-    width: '80%',
-    height: '80%',
-    backgroundColor: '#666',
-    borderRadius: 80,
-    opacity: 0.5,
-  },
-  diamondContainer: {
-    position: 'absolute',
-    right: 50,
-    bottom: 180,
-  },
-  fabContainer: {
-    position: 'absolute',
-    bottom: 120,
-    right: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
+    width: '70%',
+    height: '70%',
+    backgroundColor: '#2A2A2A',
+    borderRadius: 60,
+    opacity: 0.8,
   },
   fab: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: '#5B5FDE',
+    position: 'absolute',
+    bottom: 100,
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#5B7FDE',
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 8,
@@ -419,45 +350,44 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
   },
-  actionButton: {
-    position: 'absolute',
+  actionMenuOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    justifyContent: 'flex-end',
   },
-  actionButtonInner: {
-    paddingHorizontal: 40,
+  actionMenuContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: 120,
+  },
+  actionMenuItem: {
     paddingVertical: 20,
-    borderRadius: 40,
-    minWidth: 160,
+    borderRadius: 16,
     alignItems: 'center',
-    elevation: 6,
+    justifyContent: 'center',
+    marginBottom: 12,
+    elevation: 2,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
-    shadowRadius: 6,
+    shadowRadius: 4,
   },
   panicButton: {
-    backgroundColor: '#C74545',
+    backgroundColor: '#B54A4A',
   },
   aiCoachButton: {
-    backgroundColor: '#4DB8B8',
+    backgroundColor: '#4DB6AC',
   },
   relapsedButton: {
-    backgroundColor: '#8B5FDE',
+    backgroundColor: '#8B6DD4',
   },
   reflectButton: {
-    backgroundColor: '#5B7FDE',
+    backgroundColor: '#5B8FDE',
   },
-  actionButtonText: {
-    color: '#FFF',
+  actionMenuText: {
+    color: '#FFFFFF',
     fontSize: 20,
-    fontWeight: '500',
-  },
-  overlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    fontWeight: '600',
+    letterSpacing: 0.3,
   },
   modalOverlay: {
     flex: 1,

@@ -1,5 +1,5 @@
 import * as SecureStore from 'expo-secure-store';
-import { ClerkLoaded, ClerkProvider, useAuth } from '@clerk/clerk-expo';
+import { ClerkLoaded, ClerkProvider, useAuth, ClerkLoading } from '@clerk/clerk-expo';
 import { Slot, SplashScreen } from 'expo-router';
 import { ConvexReactClient } from 'convex/react';
 import { ConvexProviderWithClerk } from 'convex/react-clerk';
@@ -11,9 +11,35 @@ import { AnalyticsProviderComponent } from '@/providers/AnalyticsProvider';
 import AdjustSDK from '@/utils/adjust';
 import AdjustEvents from '@/utils/adjustEvents';
 import AppTrackingTransparency, { ATTStatus } from '@/utils/appTrackingTransparency';
+import { isExpoGo } from '@/utils/isExpoGo';
+
+// Conditionally import Adjust
+let Adjust: any = {
+  getIdfv: (callback: Function) => callback('unknown'),
+};
+
+if (!isExpoGo()) {
+  try {
+    Adjust = require('react-native-adjust').Adjust;
+  } catch (error) {
+    console.warn('Failed to load react-native-adjust:', error);
+  }
+}
 import FacebookSDK from '@/utils/facebook';
-import Purchases from 'react-native-purchases';
-import { Adjust } from 'react-native-adjust';
+
+// Conditionally import Purchases
+let Purchases: any = {
+  setAttributes: async () => {},
+};
+
+if (!isExpoGo()) {
+  try {
+    Purchases = require('react-native-purchases').default;
+  } catch (error) {
+    console.warn('Failed to load react-native-purchases:', error);
+  }
+}
+
 import { Platform } from 'react-native';
 import { useFonts } from 'expo-font';
 import {
@@ -27,7 +53,9 @@ import {
   DMSerifDisplay_400Regular_Italic,
 } from '@expo-google-fonts/dm-serif-display';
 import { initializeApp } from '@/utils/envCheck';
-import { SimpleAuthProvider } from '@/providers/SimpleAuthProvider';
+import { ConvexAuthProvider } from '@/providers/ConvexAuthProvider';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { View, Text, ActivityIndicator } from 'react-native';
 
 const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!
 
@@ -41,11 +69,12 @@ const tokenCache = {
   async getToken(key: string) {
     try {
       const item = await SecureStore.getItemAsync(key)
-      if (item) {
-        console.log(`${key} was used 🔐 \n`)
-      } else {
-        console.log('No values stored under key: ' + key)
-      }
+      // Remove verbose logging to prevent spam
+      // if (item) {
+      //   console.log(`${key} was used 🔐 \n`)
+      // } else {
+      //   console.log('No values stored under key: ' + key)
+      // }
       return item
     } catch (error) {
       console.error('SecureStore get item error: ', error)
@@ -65,7 +94,10 @@ const tokenCache = {
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, {
+const convexUrl = process.env.EXPO_PUBLIC_CONVEX_URL;
+console.log('Convex URL:', convexUrl);
+
+const convex = new ConvexReactClient(convexUrl!, {
   unsavedChangesWarning: false,
 });
 
@@ -91,38 +123,62 @@ const RootLayoutNav = () => {
 
   useEffect(() => {
     if (fontsLoaded) {
-      SplashScreen.hideAsync();
+      console.log('[RootLayout] Fonts loaded, will hide splash screen');
+      // Add a small delay to ensure all components are mounted
+      setTimeout(() => {
+        console.log('[RootLayout] Hiding splash screen now');
+        SplashScreen.hideAsync().catch(err => {
+          console.error('[RootLayout] Error hiding splash screen:', err);
+        });
+      }, 100);
     }
   }, [fontsLoaded]);
+
+  // Failsafe: Force hide splash screen after 5 seconds to prevent being stuck
+  useEffect(() => {
+    const failsafeTimer = setTimeout(() => {
+      console.warn('[RootLayout] Failsafe: Force hiding splash screen after 5 seconds');
+      SplashScreen.hideAsync().catch(err => {
+        console.error('[RootLayout] Failsafe error hiding splash screen:', err);
+      });
+    }, 5000);
+
+    return () => clearTimeout(failsafeTimer);
+  }, []);
 
   useEffect(() => {
     // Check environment variables on app initialization
     initializeApp();
     
-    // Initialize Adjust SDK
-    const adjustAppToken = process.env.EXPO_PUBLIC_ADJUST_APP_TOKEN || 'YOUR_APP_TOKEN';
-    const adjustEnvironment = process.env.NODE_ENV === 'production' ? 'production' : 'sandbox';
-
-    AdjustSDK.initialize(adjustAppToken, adjustEnvironment as 'sandbox' | 'production');
+    // Initialize Adjust SDK only if token is provided
+    const adjustAppToken = process.env.EXPO_PUBLIC_ADJUST_APP_TOKEN;
+    if (adjustAppToken && adjustAppToken !== 'your_adjust_app_token_here') {
+      const adjustEnvironment = process.env.NODE_ENV === 'production' ? 'production' : 'sandbox';
+      AdjustSDK.initialize(adjustAppToken, adjustEnvironment as 'sandbox' | 'production');
+      
+      // Track app opened - this will automatically detect if it's first launch
+      const isFirstLaunch = !(global as any).__ADJUST_FIRST_LAUNCH_TRACKED__;
+      if (isFirstLaunch) {
+        (global as any).__ADJUST_FIRST_LAUNCH_TRACKED__ = true;
+        // Track first app opened (unique event)
+        setTimeout(() => AdjustEvents.trackFirstAppOpened(), 1000);
+      } else {
+        // Track regular app opened
+        setTimeout(() => AdjustEvents.trackAppOpened(), 1000);
+      }
+    } else {
+      console.log('Adjust SDK not initialized - no token provided');
+    }
 
     // 👉 Initialise Facebook / Meta SDK
     const fbAppId = process.env.EXPO_PUBLIC_FACEBOOK_APP_ID || 'YOUR_FACEBOOK_APP_ID';
     FacebookSDK.init(fbAppId);
 
-    // Track app opened - this will automatically detect if it's first launch
-    const isFirstLaunch = !(global as any).__ADJUST_FIRST_LAUNCH_TRACKED__;
-    if (isFirstLaunch) {
-      (global as any).__ADJUST_FIRST_LAUNCH_TRACKED__ = true;
-      // Track first app opened (unique event)
-      setTimeout(() => AdjustEvents.trackFirstAppOpened(), 1000);
-    } else {
-      // Track regular app opened
-      setTimeout(() => AdjustEvents.trackAppOpened(), 1000);
-    }
 
     // Request ATT permission after a delay to let the app settle
     setTimeout(async () => {
       try {
+        const adjustAppToken = process.env.EXPO_PUBLIC_ADJUST_APP_TOKEN;
         const status = await AppTrackingTransparency.requestWithTiming(3000);
         console.log('🔒 Final ATT status:', AppTrackingTransparency.getStatusMessage(status));
 
@@ -131,8 +187,10 @@ const RootLayoutNav = () => {
           console.log('✅ ATT granted - updating device identifiers...');
 
           // Update device identifiers in both RevenueCat and trigger Adjust attribution refresh
-          await AdjustSDK.updateDeviceIdentifiersAfterATT();
-          console.log('🔄 Device identifiers updated - attribution should refresh automatically');
+          if (adjustAppToken && adjustAppToken !== 'your_adjust_app_token_here') {
+            await AdjustSDK.updateDeviceIdentifiersAfterATT();
+          }
+          console.log('🔄 Device identifiers updated');
         }
 
         // Get the advertising ID if available and forward to RevenueCat
@@ -149,7 +207,7 @@ const RootLayoutNav = () => {
         }
 
         // Also forward IDFV for completeness (iOS only)
-        if (Platform.OS === 'ios') {
+        if (Platform.OS === 'ios' && adjustAppToken && adjustAppToken !== 'your_adjust_app_token_here') {
           Adjust.getIdfv(async (idfv?: string) => {
             if (idfv && idfv !== 'unknown') {
               try {
@@ -165,33 +223,52 @@ const RootLayoutNav = () => {
         console.error('❌ Error requesting ATT permission:', error);
       }
     }, 2000);
-
+    
     // Cleanup function
     return () => {
-      AdjustSDK.cleanup();
+      if (adjustAppToken && adjustAppToken !== 'your_adjust_app_token_here') {
+        AdjustSDK.cleanup();
+      }
     };
+
   }, []);
 
   if (!fontsLoaded) {
-    return null;
+    console.log('Fonts not loaded yet, showing loading screen');
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#000' }}>
+        <ActivityIndicator size="large" color="#fff" />
+        <Text style={{ marginTop: 10, color: '#fff' }}>Loading fonts...</Text>
+      </View>
+    );
   }
 
+  console.log('Rendering app with Clerk key:', publishableKey ? 'Set' : 'Missing');
+
   return (
-    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-      <ClerkLoaded>
-        <RevenueCatProvider>
-          <AnalyticsProviderComponent provider={mixpanelProvider}>
-            <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
-              <SimpleAuthProvider>
-                <GestureHandlerRootView style={{ flex: 1 }}>
-                  <Slot />
-                </GestureHandlerRootView>
-              </SimpleAuthProvider>
-            </ConvexProviderWithClerk>
-          </AnalyticsProviderComponent>
-        </RevenueCatProvider>
-      </ClerkLoaded>
-    </ClerkProvider>
+    <ErrorBoundary>
+      <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+        <ClerkLoading>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <ActivityIndicator size="large" />
+            <Text style={{ marginTop: 10 }}>Loading Clerk...</Text>
+          </View>
+        </ClerkLoading>
+        <ClerkLoaded>
+          <RevenueCatProvider>
+            <AnalyticsProviderComponent provider={mixpanelProvider}>
+              <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
+                <ConvexAuthProvider>
+                  <GestureHandlerRootView style={{ flex: 1 }}>
+                    <Slot />
+                  </GestureHandlerRootView>
+                </ConvexAuthProvider>
+              </ConvexProviderWithClerk>
+            </AnalyticsProviderComponent>
+          </RevenueCatProvider>
+        </ClerkLoaded>
+      </ClerkProvider>
+    </ErrorBoundary>
   );
 };
 

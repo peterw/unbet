@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TextInput, Image, Dimensions, ActivityIndicator, Animated } from 'react-native';
+
+// Conditionally import notifications - will fail in Expo Go
+let Notifications: any;
+try {
+  Notifications = require('expo-notifications');
+} catch (error) {
+  console.log('expo-notifications not available in Expo Go. Use development build for notifications.');
+}
 import { useSignUp, useOAuth, useAuth as useClerkAuth } from '@clerk/clerk-expo';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,18 +18,34 @@ import { useMutation, useQuery, useConvex } from 'convex/react';
 import { api } from '@/convex/_generated/api';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRevenueCat } from '../providers/RevenueCatProvider';
+import { isExpoGo } from '@/utils/isExpoGo';
+
 // Only import RevenueCat UI on native platforms
-let RevenueCatUI: any = {};
-let PAYWALL_RESULT: any = {};
-if (Platform.OS !== 'web') {
-  const rcUI = require("react-native-purchases-ui");
-  RevenueCatUI = rcUI.default;
-  PAYWALL_RESULT = rcUI.PAYWALL_RESULT;
+let RevenueCatUI: any = {
+  presentPaywall: async () => ({ result: 'CANCELLED' }),
+  presentPaywallIfNeeded: async () => ({ result: 'NOT_PRESENTED' }),
+};
+let PAYWALL_RESULT: any = {
+  PURCHASED: 'PURCHASED',
+  CANCELLED: 'CANCELLED',
+  NOT_PRESENTED: 'NOT_PRESENTED',
+  ERROR: 'ERROR',
+  RESTORED: 'RESTORED',
+};
+
+if (Platform.OS !== 'web' && !isExpoGo()) {
+  try {
+    const rcUI = require("react-native-purchases-ui");
+    RevenueCatUI = rcUI.default;
+    PAYWALL_RESULT = rcUI.PAYWALL_RESULT;
+  } catch (error) {
+    console.warn('Failed to load react-native-purchases-ui:', error);
+  }
 }
 import { Haptics } from '../utils/haptics';
 import { ExternalLink } from '../components/ExternalLink';
 import { requestRating, trackRatingAction, shouldShowRating } from '../utils/ratings';
-import { validateReferralCode, getReferralDetails } from './utils/referralCodes';
+import { validateReferralCode, getReferralDetails } from '@/utils/referralCodes';
 import AdjustEvents from '@/utils/adjustEvents';
 import FacebookSDK from '@/utils/facebook';
 import LottieView from 'lottie-react-native';
@@ -153,6 +177,15 @@ export default function Onboarding() {
       console.log('Moving to next step:', currentStep + 1);
       setCurrentStep(prev => prev + 1);
     } else {
+      // Mark user as onboarded when completing onboarding
+      console.log('Onboarding complete, marking user as onboarded');
+      try {
+        if (updateUser) {
+          await updateUser({});  // This will set onboarded: true
+        }
+      } catch (error) {
+        console.error('Error updating user onboarded status:', error);
+      }
       router.replace('/(main)');
     }
   };
@@ -165,15 +198,28 @@ export default function Onboarding() {
       const { createdSessionId, setActive } = await startOAuthFlow();
 
       if (createdSessionId && setActive) {
+        console.log('[Onboarding] Setting active session...');
         await setActive({ session: createdSessionId });
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        await store();
+        
+        // Give Clerk time to propagate the session
+        console.log('[Onboarding] Waiting for session to propagate...');
+        await new Promise(resolve => setTimeout(resolve, 1500));
+        
+        try {
+          console.log('[Onboarding] Creating user in Convex...');
+          await store();
+          console.log('[Onboarding] User created successfully');
+        } catch (storeError) {
+          console.error('[Onboarding] Error creating user in Convex:', storeError);
+          // Continue anyway - the SimpleAuthProvider will retry
+        }
         
         analytics.track({ name: 'Signup Success', properties: { strategy } });
         if (createdSessionId) {
           analytics.identify(createdSessionId);
         }
         
+        console.log('[Onboarding] Moving to next step...');
         handleNext();
       }
     } catch (err) {
@@ -262,7 +308,7 @@ export default function Onboarding() {
       
       case 'stats':
         return (
-          <View style={styles.statsContainer}>
+          <ScrollView style={styles.statsContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <View style={styles.starsContainer}>
               <View style={[styles.star, { top: '5%', left: '8%', width: 3, height: 3 }]} />
               <View style={[styles.star, { top: '15%', left: '90%', width: 4, height: 4 }]} />
@@ -295,7 +341,7 @@ export default function Onboarding() {
             <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         );
 
       case 'community':
@@ -332,7 +378,7 @@ export default function Onboarding() {
 
       case 'life':
         return (
-          <View style={styles.lifeContainer}>
+          <ScrollView style={styles.lifeContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <Text style={styles.lifeTitle}>This journey{'\n'}can save your life.</Text>
             <View style={styles.lifeGrid}>
               <View style={styles.lifeItem}>
@@ -359,12 +405,12 @@ export default function Onboarding() {
             <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         );
 
       case 'transform':
         return (
-          <View style={styles.transformContainer}>
+          <ScrollView style={styles.transformContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <Text style={styles.transformTitle}>10,653 people transformed their lives this year.</Text>
             <View style={styles.transformTestimonials}>
               <View style={styles.testimonial}>
@@ -383,7 +429,7 @@ export default function Onboarding() {
             <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         );
 
       case 'session_duration':
@@ -411,19 +457,15 @@ export default function Onboarding() {
                   <TouchableOpacity
                     key={option}
                     style={[styles.optionButton, sessionDuration === option && styles.optionButtonSelected]}
-                    onPress={() => setSessionDuration(option)}
+                    onPress={() => {
+                      setSessionDuration(option);
+                      handleNext();
+                    }}
                   >
                     <Text style={styles.optionButtonText}>{option}</Text>
                   </TouchableOpacity>
                 ))}
               </View>
-              <TouchableOpacity 
-                style={[styles.continueButton, !sessionDuration && styles.continueButtonDisabled]} 
-                onPress={handleNext}
-                disabled={!sessionDuration}
-              >
-                <Text style={styles.continueButtonText}>Continue</Text>
-              </TouchableOpacity>
             </ScrollView>
           </View>
         );
@@ -518,7 +560,6 @@ export default function Onboarding() {
             <Text style={styles.questionTitle}>What is your age range ?</Text>
             <View style={styles.optionsContainer}>
               {[
-                'Before 13',
                 '14 - 17',
                 '18 - 24',
                 '25 - 30',
@@ -528,19 +569,15 @@ export default function Onboarding() {
                 <TouchableOpacity
                   key={option}
                   style={[styles.optionButton, userAge === option && styles.optionButtonSelected]}
-                  onPress={() => setUserAge(option)}
+                  onPress={() => {
+                    setUserAge(option);
+                    handleNext();
+                  }}
                 >
                   <Text style={styles.optionButtonText}>{option}</Text>
                 </TouchableOpacity>
               ))}
             </View>
-            <TouchableOpacity 
-              style={[styles.continueButton, !userAge && styles.continueButtonDisabled]} 
-              onPress={handleNext}
-              disabled={!userAge}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
           </View>
         );
 
@@ -550,7 +587,6 @@ export default function Onboarding() {
             <Text style={styles.questionTitle}>When did you start watching porn ?</Text>
             <View style={styles.optionsContainer}>
               {[
-                'Before 13',
                 '14 - 17',
                 '18 - 24',
                 '25 - 30',
@@ -560,32 +596,27 @@ export default function Onboarding() {
                 <TouchableOpacity
                   key={option}
                   style={[styles.optionButton, startAge === option && styles.optionButtonSelected]}
-                  onPress={() => setStartAge(option)}
+                  onPress={() => {
+                    setStartAge(option);
+                    handleNext();
+                  }}
                 >
                   <Text style={styles.optionButtonText}>{option}</Text>
                 </TouchableOpacity>
               ))}
             </View>
-            <TouchableOpacity 
-              style={[styles.continueButton, !startAge && styles.continueButtonDisabled]} 
-              onPress={handleNext}
-              disabled={!startAge}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
           </View>
         );
 
       case 'sexually_active_age':
         return (
           <View style={styles.sexuallyActiveContainer}>
-            <Text style={styles.questionTitle}>How old were you when your first became sexually active ?</Text>
+            <Text style={styles.questionTitle}>How old were you when you first became sexually active ?</Text>
             <View style={styles.optionsContainer}>
               {[
                 'Never',
-                'Before 13',
                 '14 - 17',
-                '18 -24',
+                '18 - 24',
                 '25 - 30',
                 '30 - 40',
                 '40+'
@@ -593,19 +624,15 @@ export default function Onboarding() {
                 <TouchableOpacity
                   key={option}
                   style={[styles.optionButton, sexuallyActiveAge === option && styles.optionButtonSelected]}
-                  onPress={() => setSexuallyActiveAge(option)}
+                  onPress={() => {
+                    setSexuallyActiveAge(option);
+                    handleNext();
+                  }}
                 >
                   <Text style={styles.optionButtonText}>{option}</Text>
                 </TouchableOpacity>
               ))}
             </View>
-            <TouchableOpacity 
-              style={[styles.continueButton, !sexuallyActiveAge && styles.continueButtonDisabled]} 
-              onPress={handleNext}
-              disabled={!sexuallyActiveAge}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
           </View>
         );
 
@@ -621,19 +648,15 @@ export default function Onboarding() {
                 <TouchableOpacity
                   key={option}
                   style={[styles.optionButton, pornIncrease === option && styles.optionButtonSelected]}
-                  onPress={() => setPornIncrease(option)}
+                  onPress={() => {
+                    setPornIncrease(option);
+                    handleNext();
+                  }}
                 >
                   <Text style={styles.optionButtonText}>{option}</Text>
                 </TouchableOpacity>
               ))}
             </View>
-            <TouchableOpacity 
-              style={[styles.continueButton, !pornIncrease && styles.continueButtonDisabled]} 
-              onPress={handleNext}
-              disabled={!pornIncrease}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
           </View>
         );
 
@@ -649,19 +672,15 @@ export default function Onboarding() {
                 <TouchableOpacity
                   key={option}
                   style={[styles.optionButton, explicitContent === option && styles.optionButtonSelected]}
-                  onPress={() => setExplicitContent(option)}
+                  onPress={() => {
+                    setExplicitContent(option);
+                    handleNext();
+                  }}
                 >
                   <Text style={styles.optionButtonText}>{option}</Text>
                 </TouchableOpacity>
               ))}
             </View>
-            <TouchableOpacity 
-              style={[styles.continueButton, !explicitContent && styles.continueButtonDisabled]} 
-              onPress={handleNext}
-              disabled={!explicitContent}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
           </View>
         );
 
@@ -729,7 +748,7 @@ export default function Onboarding() {
 
       case 'days':
         return (
-          <View style={styles.daysContainer}>
+          <ScrollView style={styles.daysContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <Text style={styles.daysTitle}>90 days to transform your life.</Text>
             <View style={styles.milestonesContainer}>
               <View style={styles.milestone}>
@@ -759,12 +778,12 @@ export default function Onboarding() {
             <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         );
 
       case 'plan':
         return (
-          <View style={styles.planContainer}>
+          <ScrollView style={styles.planContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <Text style={styles.planTitle}>Your personalized recovery plan is ready</Text>
             <View style={styles.planCard}>
               <Text style={styles.planCardTitle}>Custom Recovery Plan</Text>
@@ -788,13 +807,13 @@ export default function Onboarding() {
             <TouchableOpacity style={styles.getStartedButton} onPress={handleNext}>
               <Text style={styles.getStartedButtonText}>Get Started</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         );
 
 
       case 'notification':
         return (
-          <View style={styles.notificationContainer}>
+          <ScrollView style={styles.notificationContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <Text style={styles.notificationTitle}>Increase your willpower with some notification buffs</Text>
             <View style={styles.notificationCard}>
               <Text style={styles.notificationCardTitle}>Seed Would Like to Send You Notifications</Text>
@@ -803,7 +822,30 @@ export default function Onboarding() {
                 <TouchableOpacity style={styles.dontAllowButton} onPress={handleNext}>
                   <Text style={styles.dontAllowButtonText}>Don't Allow</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.allowButton} onPress={handleNext}>
+                <TouchableOpacity style={styles.allowButton} onPress={async () => {
+                  if (Platform.OS !== 'web') {
+                    try {
+                      // Check if Notifications module is available (won't be in Expo Go)
+                      if (Notifications && Notifications.getPermissionsAsync) {
+                        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+                        let finalStatus = existingStatus;
+                        if (existingStatus !== 'granted') {
+                          const { status } = await Notifications.requestPermissionsAsync();
+                          finalStatus = status;
+                        }
+                        if (finalStatus === 'granted') {
+                          console.log('Notification permissions granted!');
+                        }
+                      } else {
+                        console.log('Notifications module not available in Expo Go. Run with development build.');
+                      }
+                    } catch (error) {
+                      console.log('Error requesting notification permissions:', error);
+                      console.log('Note: Notifications require a development build. Run: npx expo run:ios');
+                    }
+                  }
+                  handleNext();
+                }}>
                   <Text style={styles.allowButtonText}>Allow</Text>
                 </TouchableOpacity>
               </View>
@@ -822,7 +864,7 @@ export default function Onboarding() {
               <Text style={styles.notificationPreviewBody}>Small steps compound to big results.</Text>
               <Text style={styles.notificationPreviewMore}>3 more notifications</Text>
             </View>
-          </View>
+          </ScrollView>
         );
 
 
@@ -927,19 +969,15 @@ export default function Onboarding() {
                 <TouchableOpacity
                   key={option}
                   style={[styles.optionButton, religious === option && styles.optionButtonSelected]}
-                  onPress={() => setReligious(option)}
+                  onPress={() => {
+                    setReligious(option);
+                    handleNext();
+                  }}
                 >
                   <Text style={styles.optionButtonText}>{option}</Text>
                 </TouchableOpacity>
               ))}
             </View>
-            <TouchableOpacity 
-              style={[styles.continueButton, !religious && styles.continueButtonDisabled]} 
-              onPress={handleNext}
-              disabled={!religious}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
           </View>
         );
 
@@ -960,19 +998,15 @@ export default function Onboarding() {
                 <TouchableOpacity
                   key={option}
                   style={[styles.optionButton, lastRelapse === option && styles.optionButtonSelected]}
-                  onPress={() => setLastRelapse(option)}
+                  onPress={() => {
+                    setLastRelapse(option);
+                    handleNext();
+                  }}
                 >
                   <Text style={styles.optionButtonText}>{option}</Text>
                 </TouchableOpacity>
               ))}
             </View>
-            <TouchableOpacity 
-              style={[styles.continueButton, !lastRelapse && styles.continueButtonDisabled]} 
-              onPress={handleNext}
-              disabled={!lastRelapse}
-            >
-              <Text style={styles.continueButtonText}>Continue</Text>
-            </TouchableOpacity>
           </View>
         );
 
@@ -1019,7 +1053,7 @@ export default function Onboarding() {
 
       case 'graph':
         return (
-          <View style={styles.graphContainer}>
+          <ScrollView style={styles.graphContainer} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
             <Text style={styles.graphTitle}>Quit porn forever in as little as 34 days.</Text>
             <View style={styles.graphPlaceholder}>
               <Text style={styles.graphPlaceholderText}>Graph visualization</Text>
@@ -1042,18 +1076,18 @@ export default function Onboarding() {
             <TouchableOpacity style={styles.continueButton} onPress={handleNext}>
               <Text style={styles.continueButtonText}>Continue</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         );
 
       case 'commitment':
         return (
-          <View style={styles.commitmentContainer}>
+          <ScrollView style={styles.commitmentContainer} contentContainerStyle={styles.commitmentContent}>
             <Text style={styles.commitmentTitle}>Let's commit.</Text>
             <Text style={styles.commitmentSubtitle}>From this day onwards, I commit to</Text>
             <View style={styles.commitmentItems}>
               <View style={styles.commitmentItem}>
                 <Ionicons name="checkmark-circle" size={24} color="#5B8DFF" />
-                <Text style={styles.commitmentItemText}>Prioritizing my mental and physical</Text>
+                <Text style={styles.commitmentItemText}>Prioritizing my mental and physical health</Text>
               </View>
               <View style={styles.commitmentItem}>
                 <Ionicons name="checkmark-circle" size={24} color="#5B8DFF" />
@@ -1074,7 +1108,7 @@ export default function Onboarding() {
             <TouchableOpacity style={styles.commitButton} onPress={handleNext}>
               <Text style={styles.commitButtonText}>I commit to myself</Text>
             </TouchableOpacity>
-          </View>
+          </ScrollView>
         );
 
 
@@ -1131,6 +1165,43 @@ export default function Onboarding() {
     </View>
   );
 }
+
+// Typography constants
+const typography = {
+  headline: {
+    fontSize: 32,
+    fontWeight: '700' as const,
+    color: '#FFFFFF',
+    letterSpacing: -0.5,
+  },
+  subheadline: {
+    fontSize: 24,
+    fontWeight: '600' as const,
+    color: '#FFFFFF',
+  },
+  body: {
+    fontSize: 18,
+    fontWeight: '400' as const,
+    color: '#FFFFFF',
+    lineHeight: 26,
+  },
+  bodySmall: {
+    fontSize: 16,
+    fontWeight: '400' as const,
+    color: '#999999',
+    lineHeight: 24,
+  },
+  button: {
+    fontSize: 18,
+    fontWeight: '600' as const,
+    color: '#FFFFFF',
+  },
+  caption: {
+    fontSize: 14,
+    fontWeight: '400' as const,
+    color: '#999999',
+  },
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -1189,21 +1260,18 @@ const styles = StyleSheet.create({
     marginBottom: 60,
   },
   welcomeTitle: {
-    fontSize: 56,
-    fontFamily: 'DMSerifDisplay_400Regular',
+    fontSize: 48,
+    fontWeight: '700',
     color: '#FFFFFF',
     textAlign: 'center',
-    lineHeight: 64,
+    lineHeight: 56,
     marginBottom: 16,
-    letterSpacing: -2,
+    letterSpacing: -1,
   },
   welcomeSubtitle: {
-    fontSize: 22,
-    color: '#FFFFFF',
+    ...typography.body,
     textAlign: 'center',
-    lineHeight: 32,
     opacity: 0.85,
-    fontFamily: 'DMSans_400Regular',
   },
   welcomeButton: {
     backgroundColor: '#5B8DFF',
@@ -1216,17 +1284,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   welcomeButtonText: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontFamily: 'DMSans_500Medium',
+    ...typography.button,
   },
   loginButton: {
     marginTop: 20,
   },
   loginButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontFamily: 'DMSans_400Regular',
+    ...typography.body,
     textDecorationLine: 'underline',
     opacity: 0.7,
   },
@@ -1303,12 +1367,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
     marginHorizontal: 30,
-    marginBottom: 40,
+    marginBottom: 30,
   },
   continueButtonText: {
-    color: '#FFFFFF',
+    ...typography.button,
     fontSize: 20,
-    fontFamily: 'DMSans_500Medium',
   },
   communityContainer: {
     flex: 1,
@@ -1477,9 +1540,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   questionTitle: {
-    fontSize: 32,
-    fontFamily: 'DMSerifDisplay_400Regular',
-    color: '#FFFFFF',
+    ...typography.headline,
     lineHeight: 40,
     marginBottom: 40,
   },
@@ -1498,10 +1559,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#5B8DFF',
   },
   optionButtonText: {
+    ...typography.button,
     fontSize: 20,
-    color: '#FFFFFF',
     textAlign: 'center',
-    fontFamily: 'DMSans_500Medium',
   },
   // Motivation styles
   motivationContainer: {
@@ -1511,6 +1571,10 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flex: 1,
+  },
+  scrollContent: {
+    flexGrow: 1,
+    paddingBottom: 40,
   },
   checkboxContainer: {
     flexDirection: 'row',
@@ -1601,9 +1665,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   installButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '600',
+    ...typography.button,
   },
   skipButton: {
     paddingVertical: 10,
@@ -1653,6 +1715,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 30,
     paddingTop: 40,
+    justifyContent: 'space-between',
   },
   scienceTitle: {
     fontSize: 36,
@@ -1671,6 +1734,7 @@ const styles = StyleSheet.create({
   scienceItems: {
     flex: 1,
     justifyContent: 'center',
+    marginVertical: 20,
   },
   scienceItem: {
     backgroundColor: '#1A1A2E',
@@ -1759,9 +1823,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   planTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    ...typography.headline,
     lineHeight: 36,
     marginBottom: 30,
     textAlign: 'center',
@@ -1794,15 +1856,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#5B8DFF',
     paddingVertical: 20,
     borderRadius: 40,
-    position: 'absolute',
-    bottom: 50,
-    left: 20,
-    right: 20,
+    marginTop: 30,
+    marginHorizontal: 20,
+    marginBottom: 20,
   },
   getStartedButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '600',
+    ...typography.button,
     textAlign: 'center',
   },
   // Choose plan styles
@@ -1812,9 +1871,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   choosePlanTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    ...typography.headline,
     marginBottom: 30,
     textAlign: 'center',
   },
@@ -2015,9 +2072,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   enableButtonText: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '600',
+    ...typography.button,
   },
   // Notification time styles
   notificationTimeContainer: {
@@ -2026,9 +2081,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   notificationTimeTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    ...typography.headline,
     lineHeight: 36,
     marginBottom: 40,
   },
@@ -2088,9 +2141,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   wakeupTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    ...typography.headline,
     marginBottom: 10,
   },
   wakeupSubtitle: {
@@ -2196,9 +2247,7 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   goalTitle: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#FFFFFF',
+    ...typography.headline,
     marginBottom: 30,
   },
   goalScroll: {
@@ -2446,8 +2495,12 @@ const styles = StyleSheet.create({
   },
   commitmentContainer: {
     flex: 1,
+  },
+  commitmentContent: {
+    flexGrow: 1,
     paddingHorizontal: 30,
     paddingTop: 40,
+    paddingBottom: 30,
   },
   commitmentTitle: {
     fontSize: 40,
@@ -2493,10 +2546,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#5B8DFF',
     paddingVertical: 20,
     borderRadius: 40,
-    position: 'absolute',
-    bottom: 50,
-    left: 30,
-    right: 30,
+    marginTop: 30,
+    marginHorizontal: 30,
+    marginBottom: 20,
   },
   commitButtonText: {
     color: '#FFFFFF',

@@ -1,4 +1,5 @@
 import { Platform } from 'react-native';
+import { isExpoGo } from '@/utils/isExpoGo';
 
 // Only import Adjust on native platforms
 let Adjust: any = {};
@@ -16,11 +17,26 @@ let AdjustEvent: any = class {
   setCurrency() {}
 };
 
-if (Platform.OS !== 'web') {
-  const adjustLib = require('react-native-adjust');
-  Adjust = adjustLib.Adjust;
-  AdjustConfig = adjustLib.AdjustConfig;
-  AdjustEvent = adjustLib.AdjustEvent;
+if (Platform.OS !== 'web' && !isExpoGo()) {
+  try {
+    const adjustLib = require('react-native-adjust');
+    Adjust = adjustLib.Adjust || adjustLib.default?.Adjust || {};
+    AdjustConfig = adjustLib.AdjustConfig || adjustLib.default?.AdjustConfig || {
+      EnvironmentSandbox: 'sandbox',
+      EnvironmentProduction: 'production',
+      LogLevelVerbose: 'verbose',
+    };
+    AdjustEvent = adjustLib.AdjustEvent || adjustLib.default?.AdjustEvent || class {
+      constructor(token: string) {
+        this.token = token;
+      }
+      setRevenue() {}
+      setTransactionId() {}
+      setCurrency() {}
+    };
+  } catch (error) {
+    console.warn('Failed to load react-native-adjust:', error);
+  }
 }
 
 export class AdjustSDK {
@@ -32,6 +48,8 @@ export class AdjustSDK {
       console.log('Adjust SDK already initialized or on web platform');
       return;
     }
+
+    try {
 
     const adjustConfig = new AdjustConfig(
       appToken,
@@ -98,6 +116,11 @@ export class AdjustSDK {
     
     // Check if Adjust ID is already available and set it in RevenueCat
     this.setInitialAdjustId();
+    } catch (error) {
+      console.error('Failed to initialize Adjust SDK:', error);
+      // Don't set initialized to true if initialization failed
+      // This prevents the "invalid reuse after initialization failure" error
+    }
   }
 
   // Set initial Adjust ID if available at app launch

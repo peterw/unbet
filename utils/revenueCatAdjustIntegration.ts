@@ -1,13 +1,18 @@
 import { Platform } from 'react-native';
+import { isExpoGo } from '@/utils/isExpoGo';
 
 // Only import RevenueCat types on native platforms
 let PurchasesPackage: any;
 let CustomerInfo: any;
 
-if (Platform.OS !== 'web') {
-  const rcLib = require('react-native-purchases');
-  PurchasesPackage = rcLib.PurchasesPackage;
-  CustomerInfo = rcLib.CustomerInfo;
+if (Platform.OS !== 'web' && !isExpoGo()) {
+  try {
+    const rcLib = require('react-native-purchases');
+    PurchasesPackage = rcLib.PurchasesPackage;
+    CustomerInfo = rcLib.CustomerInfo;
+  } catch (error) {
+    console.warn('Failed to load react-native-purchases:', error);
+  }
 }
 
 /**
