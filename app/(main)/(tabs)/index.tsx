@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, TouchableWithoutFeedback, Dimensions as RNDimensions, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Modal, TouchableWithoutFeedback, Dimensions as RNDimensions, Platform, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
@@ -14,6 +14,9 @@ import Animated, {
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Haptics } from '../../../utils/haptics';
 import { BlurView } from 'expo-blur';
+import { useQuery } from 'convex/react';
+import { api } from '@/convex/_generated/api';
+import { useConvexAuth } from '@/providers/ConvexAuthProvider';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = RNDimensions.get('window');
 
@@ -31,25 +34,58 @@ const QUOTES = [
 
 export default function HomeScreen() {
   const router = useRouter();
+  const { isAuthenticated } = useConvexAuth();
   const [showActionMenu, setShowActionMenu] = useState(false);
   const [showPanicModal, setShowPanicModal] = useState(false);
   const [currentQuote] = useState(QUOTES[Math.floor(Math.random() * QUOTES.length)]);
   
+  // Get user data from Convex
+  const user = useQuery(api.users.getCurrentUser, isAuthenticated ? {} : 'skip');
+  const isLoading = isAuthenticated && user === undefined;
+  
   // Timer state
-  const [startTime] = useState(new Date('2025-01-29T00:00:00')); // This should come from user data
   const [timer, setTimer] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  // Calculate real streak data
+  const getStreakStartDate = () => {
+    if (!user) return null;
+    
+    // If user has relapsed, use the last relapse date (not day after)
+    if (user.lastRelapseDate) {
+      return new Date(user.lastRelapseDate);
+    }
+    
+    // If user has no relapses, use recovery start date
+    if (user.recoveryStartDate) {
+      return new Date(user.recoveryStartDate);
+    }
+    
+    // For new users, use account creation time (this should always exist)
+    return new Date(user._creationTime);
+  };
 
   // Update timer every second
   useEffect(() => {
-    // Calculate initial timer value
+    if (!user) return;
+    
     const calculateTimer = () => {
       const now = new Date();
-      const diff = now.getTime() - startTime.getTime();
+      const streakStart = getStreakStartDate();
       
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      // If no streak start date, return zeros
+      if (!streakStart) {
+        return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+      }
+      
+      const diff = now.getTime() - streakStart.getTime();
+      
+      // Ensure we don't show negative time
+      const totalSeconds = Math.max(0, Math.floor(diff / 1000));
+      
+      const days = Math.floor(totalSeconds / (24 * 60 * 60));
+      const hours = Math.floor((totalSeconds % (24 * 60 * 60)) / (60 * 60));
+      const minutes = Math.floor((totalSeconds % (60 * 60)) / 60);
+      const seconds = totalSeconds % 60;
       
       return { days, hours, minutes, seconds };
     };
@@ -62,7 +98,7 @@ export default function HomeScreen() {
     }, 1000);
     
     return () => clearInterval(interval);
-  }, [startTime]);
+  }, [user]);
 
   const openActionMenu = useCallback(() => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -90,7 +126,7 @@ export default function HomeScreen() {
 
   const handleReflect = () => {
     setShowActionMenu(false);
-    router.push('/(main)/(tabs)/journal');
+    router.push('/reflect'); // Changed from journal to reflect to open new entry
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
@@ -109,18 +145,21 @@ export default function HomeScreen() {
   // Calculate progress percentage (mock data - should come from user data)
   const progress = 16; // 16% rewired
   
-  // 3D Brain component placeholder
-  const Brain3D = () => {
-    // This would be replaced with actual 3D brain/rock model
+  // 3D Brain component removed
+
+  // Handle loading state
+  if (!isAuthenticated || isLoading) {
     return (
-      <View style={styles.brainContainer}>
-        <View style={styles.brainPlaceholder}>
-          {/* Placeholder for 3D brain model */}
-          <View style={styles.brainInner} />
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <View style={[styles.container, styles.loadingContainer]}>
+          <ActivityIndicator size="large" color="#5B7FDE" />
+          <Text style={styles.loadingText}>
+            {!isAuthenticated ? 'Authenticating...' : 'Loading...'}
+          </Text>
         </View>
-      </View>
+      </GestureHandlerRootView>
     );
-  };
+  }
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -157,19 +196,19 @@ export default function HomeScreen() {
 
         {/* Timer */}
         <View style={styles.timerContainer}>
-          <View style={styles.timerRow}>
+          <View style={styles.timerItem}>
             <Text style={styles.timerNumber}>{timer.days}</Text>
             <Text style={styles.timerLabel}>days</Text>
           </View>
-          <View style={styles.timerRow}>
+          <View style={styles.timerItem}>
             <Text style={styles.timerNumber}>{timer.hours}</Text>
             <Text style={styles.timerLabel}>hours</Text>
           </View>
-          <View style={styles.timerRow}>
+          <View style={styles.timerItem}>
             <Text style={styles.timerNumber}>{timer.minutes}</Text>
             <Text style={styles.timerLabel}>minutes</Text>
           </View>
-          <View style={styles.timerRow}>
+          <View style={styles.timerItem}>
             <Text style={styles.timerNumber}>{timer.seconds}</Text>
             <Text style={styles.timerLabel}>seconds</Text>
           </View>
@@ -179,7 +218,22 @@ export default function HomeScreen() {
         <Text style={styles.progressText}>{progress}% rewired</Text>
 
         {/* 3D Brain */}
-        <Brain3D />
+
+        {/* Milestones Coin Button - COMMENTED OUT (WIP) */}
+        {/*
+        <TouchableOpacity 
+          style={styles.coinButton} 
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            router.push('/milestones');
+          }} 
+          activeOpacity={0.8}
+        >
+          <View style={styles.coinIcon}>
+            <Text style={styles.coinText}>$</Text>
+          </View>
+        </TouchableOpacity>
+        */}
 
         {/* Floating Action Button */}
         <TouchableOpacity style={styles.fab} onPress={openActionMenu} activeOpacity={0.8}>
@@ -197,15 +251,17 @@ export default function HomeScreen() {
             <View style={styles.actionMenuOverlay}>
               <TouchableWithoutFeedback>
                 <View style={styles.actionMenuContainer}>
-                  {/* Panic Button */}
+                  {/* Panic Button - COMMENTED OUT
                   <TouchableOpacity style={[styles.actionMenuItem, styles.panicButton]} onPress={handlePanic}>
                     <Text style={styles.actionMenuText}>Panic</Text>
                   </TouchableOpacity>
+                  */}
 
-                  {/* AI Coach Button */}
+                  {/* AI Coach Button - COMMENTED OUT
                   <TouchableOpacity style={[styles.actionMenuItem, styles.aiCoachButton]} onPress={handleAICoach}>
                     <Text style={styles.actionMenuText}>AI Coach</Text>
                   </TouchableOpacity>
+                  */}
 
                   {/* I relapsed Button */}
                   <TouchableOpacity style={[styles.actionMenuItem, styles.relapsedButton]} onPress={handleRelapse}>
@@ -255,6 +311,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#0A0A0A',
   },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: '#666',
+    fontSize: 16,
+    fontFamily: 'DMSans_400Regular',
+    marginTop: 16,
+  },
   starsContainer: {
     position: 'absolute',
     width: '100%',
@@ -270,7 +336,7 @@ const styles = StyleSheet.create({
   quote: {
     color: '#999',
     fontSize: 20,
-    fontWeight: '400',
+    fontFamily: 'DMSans_400Regular',
     textAlign: 'center',
     marginTop: 80,
     marginHorizontal: 30,
@@ -278,37 +344,42 @@ const styles = StyleSheet.create({
   },
   timerContainer: {
     marginTop: 60,
-    marginLeft: 30,
+    paddingLeft: 30,
+    alignItems: 'flex-start',
   },
-  timerRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-    marginBottom: 8,
+  timerItem: {
+    alignItems: 'center',
+    marginBottom: 20,
   },
   timerNumber: {
     color: '#E0E0E0',
-    fontSize: 64,
-    fontWeight: '200',
-    width: 110,
-    fontFamily: Platform.OS === 'ios' ? 'Helvetica Neue' : 'sans-serif-light',
+    fontSize: 80,
+    fontFamily: 'DMSans_300Light',
+    textAlign: 'left',
   },
   timerLabel: {
     color: '#5B8FDE',
-    fontSize: 24,
-    fontWeight: '300',
-    marginLeft: 8,
+    fontSize: 20,
+    fontFamily: 'DMSans_300Light',
+    textAlign: 'left',
+    marginTop: -10,
   },
   statusText: {
     color: '#666',
     fontSize: 16,
+    fontFamily: 'DMSans_400Regular',
     marginLeft: 30,
-    marginTop: 16,
+    marginRight: 30,
+    marginTop: 8,
   },
   progressText: {
     color: '#666',
     fontSize: 16,
+    fontFamily: 'DMSans_400Regular',
     marginLeft: 30,
+    marginRight: 30,
     marginTop: 4,
+    marginBottom: 100,
   },
   brainContainer: {
     position: 'absolute',
@@ -333,6 +404,41 @@ const styles = StyleSheet.create({
     backgroundColor: '#2A2A2A',
     borderRadius: 60,
     opacity: 0.8,
+  },
+  coinButton: {
+    position: 'absolute',
+    bottom: 170,
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#4A90E2',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+  },
+  coinIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#FFD700',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#FFD700',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  coinText: {
+    fontSize: 24,
+    fontFamily: 'DMSans_500Medium',
+    color: '#B8860B',
+    fontWeight: 'bold',
   },
   fab: {
     position: 'absolute',
@@ -386,7 +492,7 @@ const styles = StyleSheet.create({
   actionMenuText: {
     color: '#FFFFFF',
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     letterSpacing: 0.3,
   },
   modalOverlay: {
@@ -405,12 +511,13 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 20,
-    fontWeight: '600',
+    fontFamily: 'DMSans_500Medium',
     color: '#000',
     marginBottom: 8,
   },
   modalSubtitle: {
     fontSize: 16,
+    fontFamily: 'DMSans_400Regular',
     color: '#666',
     marginBottom: 24,
   },
@@ -433,11 +540,11 @@ const styles = StyleSheet.create({
   modalButtonTextBlue: {
     color: '#007AFF',
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: 'DMSans_500Medium',
   },
   modalButtonTextRed: {
     color: '#FF3B30',
     fontSize: 16,
-    fontWeight: '500',
+    fontFamily: 'DMSans_500Medium',
   },
 });

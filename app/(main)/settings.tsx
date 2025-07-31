@@ -9,7 +9,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
 import { Haptics } from '@/utils/haptics';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useRevenueCat } from '@/providers/RevenueCatProvider';
+// import { useRevenueCat } from '@/providers/RevenueCatProvider'; // Disabled temporarily
 import { getReferralDetails } from '@/utils/referralCodes';
 import { useConvexAuth } from '@/providers/ConvexAuthProvider';
 import * as Clipboard from 'expo-clipboard';
@@ -17,7 +17,10 @@ import * as Clipboard from 'expo-clipboard';
 export default function SettingsScreen() {
   const router = useRouter();
   const { signOut } = useAuth();
-  const { user: revenueUser, packages, purchasePackage } = useRevenueCat();
+  // Temporary fallback since RevenueCat provider is disabled
+  const revenueUser = null;
+  const packages = null;
+  const purchasePackage = async () => ({ success: false });
   const { isAuthenticated } = useConvexAuth();
   
   // Use Convex to get user data - only query if authenticated
@@ -201,7 +204,7 @@ export default function SettingsScreen() {
             <Text style={styles.userName}>{profileData.name}</Text>
             {profileData.isPro && (
               <View style={styles.proBadge}>
-                <Text style={styles.proBadgeText}>Seed+ Pro</Text>
+                <Text style={styles.proBadgeText}>Unbet+ Pro</Text>
               </View>
             )}
           </View>
@@ -349,7 +352,7 @@ export default function SettingsScreen() {
               </View>
             </TouchableOpacity>
 
-            {/* Blocked Timer */}
+            {/* Blocked Timer - COMMENTED OUT
             <TouchableOpacity style={styles.settingItem}>
               <View style={styles.settingItemContent}>
                 <View style={styles.settingIcon}>
@@ -358,6 +361,7 @@ export default function SettingsScreen() {
                 <Text style={styles.settingText}>Blocked Timer: {blockedTimer}</Text>
               </View>
             </TouchableOpacity>
+            */}
 
             {/* Referral Code */}
             <TouchableOpacity style={styles.settingItem}>
@@ -454,13 +458,26 @@ export default function SettingsScreen() {
             {/* Customer Support */}
             <TouchableOpacity 
               style={styles.settingItem}
-              onPress={() => Linking.openURL('mailto:support@antigambling.app')}
+              onPress={() => Linking.openURL('https://tryunbet.com/support.html')}
             >
               <View style={styles.settingItemContent}>
                 <View style={styles.settingIcon}>
                   <Ionicons name="help-circle" size={24} color="#6B7280" />
                 </View>
                 <Text style={styles.settingText}>Customer Support Center</Text>
+              </View>
+            </TouchableOpacity>
+
+            {/* Privacy Policy */}
+            <TouchableOpacity 
+              style={styles.settingItem}
+              onPress={() => Linking.openURL('https://tryunbet.com/privacy.html')}
+            >
+              <View style={styles.settingItemContent}>
+                <View style={styles.settingIcon}>
+                  <Ionicons name="shield-checkmark" size={24} color="#6B7280" />
+                </View>
+                <Text style={styles.settingText}>Privacy Policy</Text>
               </View>
             </TouchableOpacity>
 

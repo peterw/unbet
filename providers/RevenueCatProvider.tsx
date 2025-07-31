@@ -105,6 +105,13 @@ export const RevenueCatProvider = ({ children }: any) => {
    */
   const forwardAdjustIdToRevenueCat = async () => {
     try {
+      // Check if Adjust is properly initialized before calling getAdid
+      const adjustAppToken = process.env.EXPO_PUBLIC_ADJUST_APP_TOKEN;
+      if (!adjustAppToken || adjustAppToken === 'your_adjust_app_token_here' || !Adjust.getAdid) {
+        console.log('ℹ️ Adjust SDK not initialized or token not set - skipping Adjust ID forwarding');
+        return;
+      }
+
       Adjust.getAdid(async (adid?: string) => {
         if (!adid || adid === 'unknown') {
           console.log('ℹ️ Adjust adid not yet available – will retry later');

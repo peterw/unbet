@@ -5,13 +5,13 @@ import { Ionicons } from '@expo/vector-icons';
 import { Haptics } from '@/utils/haptics';
 
 const PROMPTS = [
-  "I want to quit porn but I don't know where to start. Can you help me?",
-  "What are some effective strategies for overcoming porn addiction?",
-  "How can I deal with urges to watch porn?",
-  "I keep relapsing. What can I do to stay committed to quitting?",
-  "Explain the effects of porn on the brain and why it's addictive.",
-  "Give me some tips for building a healthier relationship with my sexuality.",
-  "How can I repair relationships damaged by my porn use?"
+  "I want to quit gambling but I don't know where to start. Can you help me?",
+  "What are some effective strategies for overcoming gambling addiction?",
+  "How can I deal with urges to gamble?",
+  "I keep relapsing with betting. What can I do to stay committed to quitting?",
+  "Explain the effects of gambling on the brain and why it's addictive.",
+  "Give me some tips for building a healthier relationship with money and risk.",
+  "How can I repair relationships damaged by my gambling?"
 ];
 
 export default function ChatScreen() {

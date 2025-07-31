@@ -2,7 +2,7 @@
   "expo": {
     "name": "Unbet",
     "slug": "unbet-oiowoj0reohd6gbnpyung",
-    "version": "1.2.2",
+    "version": "1.3.0",
     "orientation": "portrait",
     "icon": "./app_logo.png",
     "scheme": "unbet",
@@ -15,6 +15,7 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.peterwang.unbet",
+      "requireFullScreen": true,
       "infoPlist": {
         "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
         "ITSAppUsesNonExemptEncryption": false,
@@ -63,7 +64,7 @@
         {
           "appID": "2189816538127814",
           "clientToken": "607d6eca13cb11c7f87dd17a0f89cf01",
-          "displayName": "Protein AI",
+          "displayName": "Unbet",
           "scheme": "fb2189816538127814",
           "advertiserIDCollectionEnabled": false,
           "autoLogAppEventsEnabled": true,

@@ -25,6 +25,9 @@
       "ios": {
         "autoIncrement": "buildNumber",
         "resourceClass": "m-medium"
+      },
+      "android": {
+        "autoIncrement": "versionCode"
       }
     }
   },
