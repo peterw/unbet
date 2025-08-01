@@ -348,20 +348,30 @@ export default function Onboarding() {
       case 'welcome':
         return (
           <View style={styles.welcomeContainer}>
+            {/* Premium star field background */}
             <View style={styles.starsContainer}>
-              <View style={[styles.star, { top: '10%', left: '10%', width: 4, height: 4 }]} />
-              <View style={[styles.star, { top: '20%', left: '85%', width: 6, height: 6 }]} />
-              <View style={[styles.star, { top: '30%', left: '15%', width: 3, height: 3 }]} />
-              <View style={[styles.star, { top: '50%', left: '90%', width: 5, height: 5 }]} />
-              <View style={[styles.star, { top: '65%', left: '5%', width: 4, height: 4 }]} />
-              <View style={[styles.star, { top: '75%', left: '80%', width: 3, height: 3 }]} />
-              <View style={[styles.star, { top: '85%', left: '20%', width: 5, height: 5 }]} />
-              <View style={[styles.star, { top: '45%', left: '92%', width: 3, height: 3 }]} />
-              <View style={[styles.star, { top: '35%', left: '8%', width: 4, height: 4 }]} />
+              {[...Array(25)].map((_, i) => (
+                <View
+                  key={i}
+                  style={[
+                    styles.star,
+                    {
+                      top: `${Math.random() * 100}%`,
+                      left: `${Math.random() * 100}%`,
+                      width: Math.random() * 4 + 2,
+                      height: Math.random() * 4 + 2,
+                      opacity: Math.random() * 0.6 + 0.2,
+                    },
+                  ]}
+                />
+              ))}
             </View>
+            
             <View style={styles.welcomeContent}>
-              <Text style={styles.welcomeTitle}>Welcome{'\n'}to Unbet</Text>
-              <Text style={styles.welcomeSubtitle}>Unleash your Potential.{'\n'}Leave Gambling Behind.</Text>
+              <Text style={styles.welcomeTitle}>
+                Welcome{'\n'}to <Text style={styles.welcomeTitleGold}>Unbet</Text>
+              </Text>
+              <Text style={styles.welcomeSubtitle}>Secure your Future.{'\n'}Leave Gambling Behind.</Text>
             </View>
             <TouchableOpacity 
               style={styles.welcomeButton} 
@@ -381,14 +391,6 @@ export default function Onboarding() {
             >
               <Text style={styles.loginButtonText}>Login</Text>
             </TouchableOpacity>
-            <View style={styles.gradientOrbContainer}>
-              <LinearGradient
-                colors={['#5B6FED', '#7B8FFF', '#9BAFFF', 'transparent']}
-                style={styles.gradientOrb}
-                start={{ x: 0.5, y: 0 }}
-                end={{ x: 0.5, y: 1 }}
-              />
-            </View>
           </View>
         );
       
@@ -1409,46 +1411,61 @@ const styles = StyleSheet.create({
     position: 'absolute',
     backgroundColor: '#FFFFFF',
     borderRadius: 50,
-    opacity: 0.2,
   },
   welcomeContent: {
     alignItems: 'center',
     marginBottom: 60,
   },
   welcomeTitle: {
-    fontSize: 48,
+    fontSize: 72,
     fontFamily: 'DMSerifDisplay_400Regular',
     color: '#FFFFFF',
     textAlign: 'center',
-    lineHeight: 56,
+    lineHeight: 80,
     marginBottom: 16,
     letterSpacing: -1,
   },
+  welcomeTitleGold: {
+    color: '#FFD700',
+    textShadowColor: '#FFD700',
+    textShadowOffset: { width: 0, height: 0 },
+    textShadowRadius: 20,
+  },
   welcomeSubtitle: {
-    ...typography.body,
+    fontSize: 18,
+    fontFamily: 'DMSans_400Regular',
+    color: '#FFFFFF',
     textAlign: 'center',
-    opacity: 0.85,
+    opacity: 0.7,
+    lineHeight: 26,
   },
   welcomeButton: {
-    backgroundColor: '#5B8DFF',
-    paddingHorizontal: 80,
+    backgroundColor: '#5B7FDE',
+    paddingHorizontal: 60,
     paddingVertical: 18,
-    borderRadius: 32,
+    borderRadius: 30,
     marginBottom: 20,
-    width: '100%',
-    maxWidth: 380,
-    alignItems: 'center',
+    shadowColor: '#5B7FDE',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 8,
   },
   welcomeButtonText: {
-    ...typography.button,
+    fontSize: 18,
+    fontFamily: 'DMSans_700Bold',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
   },
   loginButton: {
-    marginTop: 20,
+    position: 'absolute',
+    bottom: 50,
   },
   loginButtonText: {
-    ...typography.body,
-    textDecorationLine: 'underline',
-    opacity: 0.7,
+    fontSize: 16,
+    fontFamily: 'DMSans_400Regular',
+    color: '#FFFFFF',
+    opacity: 0.6,
   },
   gradientOrbContainer: {
     position: 'absolute',

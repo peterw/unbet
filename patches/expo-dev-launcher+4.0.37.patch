@@ -1,0 +1,13 @@
+diff --git a/node_modules/expo-dev-launcher/expo-dev-launcher.podspec b/node_modules/expo-dev-launcher/expo-dev-launcher.podspec
+index 1234567..abcdefg 100644
+--- a/node_modules/expo-dev-launcher/expo-dev-launcher.podspec
++++ b/node_modules/expo-dev-launcher/expo-dev-launcher.podspec
+@@ -21,7 +21,6 @@ Pod::Spec.new do |s|
+   s.static_framework = true
+   
+   s.dependency 'React-Core'
+-  s.dependency 'ReactAppDependencyProvider'
+   s.dependency 'expo-dev-menu-interface'
+   s.dependency 'EXManifests'
+   s.dependency 'EXUpdatesInterface'
+EOF < /dev/null
