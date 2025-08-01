@@ -373,24 +373,28 @@ export default function Onboarding() {
               </Text>
               <Text style={styles.welcomeSubtitle}>Secure your Future.{'\n'}Leave Gambling Behind.</Text>
             </View>
-            <TouchableOpacity 
-              style={styles.welcomeButton} 
-              onPress={() => {
-                console.log('Start journey button pressed');
-                console.log('Current step before:', currentStep);
-                console.log('Screens length:', screens.length);
-                handleNext();
-              }}
-              activeOpacity={0.8}
-            >
-              <Text style={styles.welcomeButtonText}>Start my journey</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.loginButton} 
-              onPress={handleAppleSignIn}
-            >
-              <Text style={styles.loginButtonText}>Login</Text>
-            </TouchableOpacity>
+            
+            <View style={styles.welcomeActions}>
+              <TouchableOpacity 
+                style={styles.welcomeButton} 
+                onPress={() => {
+                  console.log('Start journey button pressed');
+                  console.log('Current step before:', currentStep);
+                  console.log('Screens length:', screens.length);
+                  handleNext();
+                }}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.welcomeButtonText}>Start my journey</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.loginButton} 
+                onPress={handleAppleSignIn}
+              >
+                <Text style={styles.loginButtonText}>Login</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         );
       
@@ -1396,9 +1400,11 @@ const styles = StyleSheet.create({
   },
   welcomeContainer: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 30,
+    paddingTop: 120,
+    paddingBottom: 80,
   },
   starsContainer: {
     position: 'absolute',
@@ -1414,15 +1420,16 @@ const styles = StyleSheet.create({
   },
   welcomeContent: {
     alignItems: 'center',
-    marginBottom: 60,
+    flex: 1,
+    justifyContent: 'center',
   },
   welcomeTitle: {
-    fontSize: 72,
+    fontSize: 64,
     fontFamily: 'DMSerifDisplay_400Regular',
     color: '#FFFFFF',
     textAlign: 'center',
-    lineHeight: 80,
-    marginBottom: 16,
+    lineHeight: 72,
+    marginBottom: 32,
     letterSpacing: -1,
   },
   welcomeTitleGold: {
@@ -1432,19 +1439,24 @@ const styles = StyleSheet.create({
     textShadowRadius: 20,
   },
   welcomeSubtitle: {
-    fontSize: 18,
-    fontFamily: 'DMSans_400Regular',
+    fontSize: 20,
+    fontFamily: 'DMSans_500Medium',
     color: '#FFFFFF',
     textAlign: 'center',
-    opacity: 0.7,
-    lineHeight: 26,
+    opacity: 0.85,
+    lineHeight: 28,
+    letterSpacing: 0.2,
+  },
+  welcomeActions: {
+    width: '100%',
+    alignItems: 'center',
   },
   welcomeButton: {
     backgroundColor: '#5B7FDE',
     paddingHorizontal: 60,
-    paddingVertical: 18,
+    paddingVertical: 20,
     borderRadius: 30,
-    marginBottom: 20,
+    marginBottom: 24,
     shadowColor: '#5B7FDE',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
@@ -1458,14 +1470,14 @@ const styles = StyleSheet.create({
     letterSpacing: 0.5,
   },
   loginButton: {
-    position: 'absolute',
-    bottom: 50,
+    marginBottom: 20,
   },
   loginButtonText: {
-    fontSize: 16,
-    fontFamily: 'DMSans_400Regular',
+    fontSize: 17,
+    fontFamily: 'DMSans_500Medium',
     color: '#FFFFFF',
-    opacity: 0.6,
+    opacity: 0.75,
+    letterSpacing: 0.2,
   },
   gradientOrbContainer: {
     position: 'absolute',
