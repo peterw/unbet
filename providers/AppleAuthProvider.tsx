@@ -28,11 +28,12 @@ export const useAppleAuth = () => {
 
 interface AppleAuthProviderProps {
   children: React.ReactNode;
+  onSuccessRoute?: string;
 }
 
 const APPLE_USER_KEY = 'apple_user_id';
 
-export function AppleAuthProvider({ children }: AppleAuthProviderProps) {
+export function AppleAuthProvider({ children, onSuccessRoute = '/(main)/(tabs)/' }: AppleAuthProviderProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const signInWithAppleAction = useAction(api.appleAuth.signInWithApple);
@@ -56,9 +57,14 @@ export function AppleAuthProvider({ children }: AppleAuthProviderProps) {
         ],
       });
 
+      // Validate credential data
+      if (!credential.identityToken) {
+        throw new Error('No identity token received from Apple');
+      }
+
       // Call our Convex action to verify token and create/update user
       const result = await signInWithAppleAction({
-        identityToken: credential.identityToken!,
+        identityToken: credential.identityToken,
         user: credential.user,
         email: credential.email || undefined,
         fullName: credential.fullName || undefined,
@@ -68,8 +74,11 @@ export function AppleAuthProvider({ children }: AppleAuthProviderProps) {
         // Store Apple user ID for future logins
         await AsyncStorage.setItem(APPLE_USER_KEY, credential.user);
         
+        // Clear any previous errors on success
+        setError(null);
+        
         // Navigate to main app
-        router.replace('/(main)/(tabs)/');
+        router.replace(onSuccessRoute);
       }
     } catch (err: any) {
       if (err?.code === 'ERR_CANCELED') {
