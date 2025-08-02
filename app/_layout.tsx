@@ -44,6 +44,7 @@ import { Platform, AppState } from 'react-native';
 import { useFonts } from 'expo-font';
 import { initializeApp } from '@/utils/envCheck';
 import { ConvexAuthProvider } from '@/providers/ConvexAuthProvider';
+import { AppleAuthProvider } from '@/providers/AppleAuthProvider';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { View, Text, ActivityIndicator } from 'react-native';
 
@@ -237,9 +238,11 @@ const RootLayoutNav = () => {
           <AnalyticsProviderComponent provider={mixpanelProvider}>
             <ConvexProviderWithClerk client={convex} useAuth={useAuth}>
               <ConvexAuthProvider>
-                <GestureHandlerRootView style={{ flex: 1 }}>
-                  <Slot />
-                </GestureHandlerRootView>
+                <AppleAuthProvider>
+                  <GestureHandlerRootView style={{ flex: 1 }}>
+                    <Slot />
+                  </GestureHandlerRootView>
+                </AppleAuthProvider>
               </ConvexAuthProvider>
             </ConvexProviderWithClerk>
           </AnalyticsProviderComponent>

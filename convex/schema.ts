@@ -4,6 +4,7 @@ import { v } from "convex/values";
 export default defineSchema({
     users: defineTable({
       name: v.optional(v.string()),
+      email: v.optional(v.string()),
       tokenIdentifier: v.string(),
       onboarded: v.boolean(),
       // Anti-gambling specific fields

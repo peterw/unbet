@@ -13,6 +13,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as appleAuth from "../appleAuth.js";
 import type * as journalEntries from "../journalEntries.js";
 import type * as migrations from "../migrations.js";
 import type * as users from "../users.js";
@@ -26,6 +27,7 @@ import type * as users from "../users.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  appleAuth: typeof appleAuth;
   journalEntries: typeof journalEntries;
   migrations: typeof migrations;
   users: typeof users;

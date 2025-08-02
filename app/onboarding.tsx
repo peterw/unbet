@@ -51,6 +51,7 @@ import AdjustEvents from '@/utils/adjustEvents';
 import FacebookSDK from '@/utils/facebook';
 import LottieView from 'lottie-react-native';
 import { useAnalytics } from '@/providers/AnalyticsProvider';
+import { useAppleAuth } from '@/providers/AppleAuthProvider';
 
 type OnboardingMode = 'full' | 'user_details' | 'signin';
 
@@ -94,8 +95,16 @@ export default function Onboarding() {
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const scrollRef = useRef<ScrollView>(null);
   const analytics = useAnalytics();
+  const { signInWithApple, isLoading: isAppleLoading } = useAppleAuth();
 
-  // Apple Sign In function
+  // New Native Apple Sign In function
+  const handleNativeAppleSignIn = async () => {
+    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    analytics.track({ name: 'apple_signin_attempt' });
+    await signInWithApple();
+  };
+
+  // Legacy Clerk Apple Sign In function
   const handleAppleSignIn = async () => {
     try {
       console.log('Starting Apple Sign In...');
@@ -389,10 +398,15 @@ export default function Onboarding() {
               </TouchableOpacity>
               
               <TouchableOpacity 
-                style={styles.loginButton} 
-                onPress={handleAppleSignIn}
+                style={[styles.loginButton, isAppleLoading && styles.disabledButton]} 
+                onPress={handleNativeAppleSignIn}
+                disabled={isAppleLoading}
               >
-                <Text style={styles.loginButtonText}>Login</Text>
+                {isAppleLoading ? (
+                  <ActivityIndicator color="#FFFFFF" />
+                ) : (
+                  <Text style={styles.loginButtonText}>Login with Apple</Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>
@@ -1275,9 +1289,19 @@ export default function Onboarding() {
           <View style={styles.signupContainer}>
             <Text style={styles.signupTitle}>Create your account</Text>
             <Text style={styles.signupSubtitle}>Join thousands on the path to freedom</Text>
-            <TouchableOpacity style={styles.authButton} onPress={() => handleOAuthSignUp('oauth_apple')}>
-              <Ionicons name="logo-apple" size={24} color="#FFFFFF" />
-              <Text style={styles.authButtonText}>Continue with Apple</Text>
+            <TouchableOpacity 
+              style={[styles.authButton, isAppleLoading && styles.disabledButton]} 
+              onPress={handleNativeAppleSignIn}
+              disabled={isAppleLoading}
+            >
+              {isAppleLoading ? (
+                <ActivityIndicator color="#FFFFFF" />
+              ) : (
+                <>
+                  <Ionicons name="logo-apple" size={24} color="#FFFFFF" />
+                  <Text style={styles.authButtonText}>Continue with Apple</Text>
+                </>
+              )}
             </TouchableOpacity>
             <Text style={styles.termsText}>
               By continuing, you agree to our{' '}
@@ -2589,6 +2613,9 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     marginLeft: 10,
     fontFamily: 'DMSans_500Medium',
+  },
+  disabledButton: {
+    opacity: 0.6,
   },
   // Complete styles
   completeContainer: {
