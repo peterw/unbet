@@ -1,4 +1,4 @@
-import { useAuthSync } from '@/providers/AuthSyncProvider';
+import { useAuth } from '@/providers/FirebaseAuthProvider';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 
@@ -8,21 +8,22 @@ import { useEffect } from 'react';
  * Returns the authenticated user once ready
  */
 export function useAuthenticatedUser() {
-  const { user, isReady, error } = useAuthSync();
+  const { user, userData, loading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    // If auth sync failed or user doesn't exist after sync, redirect to onboarding
-    if (isReady && !user) {
-      console.warn('[useAuthenticatedUser] No user found after auth sync, redirecting to onboarding');
+    // If auth is loaded and user doesn't exist, redirect to onboarding
+    if (!loading && !user) {
+      console.warn('[useAuthenticatedUser] No user found after auth check, redirecting to onboarding');
       router.replace('/onboarding');
     }
-  }, [isReady, user, router]);
+  }, [loading, user, router]);
 
   return {
-    user,
-    isReady,
-    error,
-    isAuthenticated: !!(isReady && user),
+    user: userData,
+    firebaseUser: user,
+    isReady: !loading,
+    error: null,
+    isAuthenticated: !!(user && userData),
   };
 }
